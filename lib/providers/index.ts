@@ -68,34 +68,34 @@ async function buildMessagesWithImages(
   prompt: string,
   attachments: Attachment[],
   supportsVision: boolean
-): Promise<Array<{ role: "user"; content: string | Array<{ type: string; text?: string; image?: { url: string } }> }>> {
+) {
   // Get text content first
   const textPrompt = await buildPromptWithAttachments(prompt, attachments);
   
   // If no vision support or no images, return simple text message
   const imageAttachments = attachments.filter((a) => a.type === "image");
   if (!supportsVision || imageAttachments.length === 0) {
-    return [{ role: "user", content: textPrompt }];
+    return [{ role: "user" as const, content: textPrompt }];
   }
 
   // Build multimodal message with images
-  const contentParts: Array<{ type: string; text?: string; image?: { url: string } }> = [];
+  const contentParts: Array<{ type: "text"; text: string } | { type: "image"; image: string }> = [];
   
   // Add text first
-  contentParts.push({ type: "text", text: textPrompt });
+  contentParts.push({ type: "text" as const, text: textPrompt });
   
-  // Add images
+  // Add images - image should be the data URL string directly, not wrapped in an object
   for (const att of imageAttachments) {
     const dataUrl = await readAttachment(att);
     if (dataUrl) {
       contentParts.push({
-        type: "image",
-        image: { url: dataUrl },
+        type: "image" as const,
+        image: dataUrl,  // Direct string, not { url: dataUrl }
       });
     }
   }
 
-  return [{ role: "user", content: contentParts }];
+  return [{ role: "user" as const, content: contentParts }];
 }
 
 // Retry configuration

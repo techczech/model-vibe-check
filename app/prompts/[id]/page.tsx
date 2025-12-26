@@ -38,9 +38,10 @@ const methodLabels = {
 export default async function PromptDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const prompt = await getPrompt(params.id);
+  const { id } = await params;
+  const prompt = await getPrompt(id);
 
   if (!prompt) {
     notFound();

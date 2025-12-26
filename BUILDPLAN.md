@@ -1,6 +1,8 @@
-# Model Vibe Check — Build Plan v4
+# Model Vibe Check — Build Plan
 
-## Core Principle
+## Version 0.1.0 Release
+
+### Core Principle
 
 **You check the vibe by READING responses, not looking at scores.**
 
@@ -8,83 +10,81 @@ Browse by Prompt / Model / Category. Runs are just archives.
 
 ---
 
-## ✅ ALL PHASES COMPLETE
+## What's Included
 
-### What Was Built
-
-**Three main browsing paths:**
+### Three browsing paths:
 
 1. **By Prompt** → `/prompts/[id]/responses`
-   - See all responses to a specific prompt
-   - Compare across models and iterations side-by-side
-   - Switch iterations per column in compare mode
-   - Access from prompt detail page or run archive
+   - All responses to a prompt, grouped by model
+   - Side-by-side comparison (2-4 columns)
+   - Iteration switching per column
 
 2. **By Model** → `/models/[id]/responses`
-   - See all responses from a specific model
-   - Grouped by prompt
+   - All responses from a model, grouped by prompt
    - Same comparison features
-   - Access from models list or run archive
 
 3. **By Category** → `/categories/[slug]`
-   - Browse prompts by category
-   - See response counts per prompt
-   - Quick links to prompt response browsers
+   - Prompts grouped by category
+   - Response counts and quick links
 
-**Runs are now archives:**
-- Show what was run and when
-- Links to browse responses by prompt or model
-- Execution and export still work
-- No more score-centric emoji grid as primary view
+### Run management:
+- Create runs with multiple prompts × models × iterations
+- Execute with parallel processing and retry logic
+- Archive view with links to response browsers
+- CSV/JSON export
 
----
-
-## Files Created/Modified
-
-**New pages:**
-- `/app/categories/page.tsx` — Categories list
-- `/app/categories/[slug]/page.tsx` — Category detail
-- `/app/prompts/[id]/responses/page.tsx` — Prompt response browser + comparison
-- `/app/models/[id]/responses/page.tsx` — Model response browser + comparison
-
-**New API endpoints:**
-- `/app/api/prompts/[id]/responses/route.ts`
-- `/app/api/models/[id]/responses/route.ts`
-
-**Modified:**
-- `/lib/storage.ts` — Added `getResultsForPrompt()`, `getResultsForModel()`
-- `/app/runs/[id]/page.tsx` — Simplified to archive view
-- `/app/layout.tsx` — Added Categories to navigation
-- `/app/prompts/[id]/page.tsx` — Added "Responses" button
-- `/app/models/page.tsx` — Added "Responses" button per model
+### Legacy evaluation (optional):
+- Human scoring (1-10)
+- LLM judge (automated scoring)
+- Pairwise comparison
 
 ---
 
-## Test It
+## Sample Prompts
 
-```bash
-cd /Users/dominiklukes/gitrepos/model-vibe-check
-npm run dev
-```
-
-1. Go to **Prompts** → pick one → click **Responses**
-   - See all responses grouped by model
-   - Select 2+ responses → **Compare**
-   - Switch models/iterations in compare columns
-
-2. Go to **Models** → pick one → click **Responses**
-   - See all responses grouped by prompt
-
-3. Go to **Categories** → pick one
-   - See prompts in that category with response counts
-
-4. Go to **Runs** → pick a completed run
-   - See archive view with links to browse by prompt/model
+10 prompts included covering:
+- Spatial cognition (vertical text)
+- Multilingual (German, Czech, Japanese)
+- Creative writing (Wodehouse style)
+- Code generation (SVG, mermaid, regex)
+- Reasoning (logic with misleading context)
 
 ---
 
-## What's Left (Optional Polish)
+## Release Checklist
 
-- [ ] Remove old evaluation pages if redundant (`/runs/[id]/evaluate`, `/runs/[id]/judge`, `/runs/[id]/compare`)
-- [ ] Add inline notes/scores in response browsers
+- [x] MIT License added
+- [x] README.md written
+- [x] .gitignore updated (models.json, settings.json, runs/)
+- [x] Sample prompts preserved
+- [x] Version 0.1.0 in package.json
+
+### Manual cleanup needed:
+
+1. **Remove duplicate config file** — there are both `next.config.mjs` and `next.config.ts`. Delete one:
+   ```bash
+   rm next.config.mjs
+   ```
+
+2. **Verify build works**:
+   ```bash
+   npm run build
+   ```
+
+3. **Create GitHub repo and push**:
+   ```bash
+   git add .
+   git commit -m "v0.1.0 - Initial release"
+   git tag v0.1.0
+   git push origin main --tags
+   ```
+
+---
+
+## Future Ideas
+
+- [ ] Inline notes/scores in response browsers
 - [ ] Keyboard shortcuts for comparison navigation
+- [ ] Diff view between iterations
+- [ ] Response search/filtering
+- [ ] Dark mode
