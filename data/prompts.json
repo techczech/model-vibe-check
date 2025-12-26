@@ -1,0 +1,303 @@
+{
+  "version": "1.0",
+  "exportedAt": "2025-12-26T22:03:47.423Z",
+  "prompts": [
+    {
+      "id": "vertical-text",
+      "title": "Vertical Text Recognition",
+      "category": "Spatial Cognition",
+      "keywords": [
+        "vision",
+        "text recognition",
+        "spatial",
+        "vertical"
+      ],
+      "description": "Tests ability to read vertically arranged text and find hidden messages",
+      "content": "This image contains text. What does it say? Is there any hidden message in there?",
+      "expectedAnswer": "The text reads vertically and contains a secret message: 'This text has in it secret message'",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine",
+          "llm-judge"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "secret,message",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "german-rilke",
+      "title": "German Modal Translation (Rilke)",
+      "category": "Multilingual",
+      "keywords": [
+        "German",
+        "translation",
+        "modal verbs",
+        "Rilke",
+        "poetry"
+      ],
+      "description": "Tests understanding of German modal verb 'nicht müssen' which means 'not having to' rather than 'must not'",
+      "content": "Translate the following German sentences into English with a focus on conveying the original meaning.\n\n\"Du mußt dein Leben ändern\" - Rilke\n\"Du mußt nicht dein Leben ändern\"\n\nPay attention to the negation of modal verbs.",
+      "expectedAnswer": "The second sentence should be translated as 'You don't have to change your life' NOT 'You must not change your life'",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine",
+          "llm-judge"
+        ],
+        "machineJudge": {
+          "type": "regex",
+          "criteria": "(do not have to|don't have to|need not|not required)",
+          "caseSensitive": false
+        },
+        "llmJudge": {
+          "criteria": "Evaluate whether translation captures the modal meaning of German 'nicht müssen' (not having to) rather than English 'must not' (prohibition)."
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "anaphora-resolution",
+      "title": "Anaphora Resolution",
+      "category": "Linguistics",
+      "keywords": [
+        "linguistics",
+        "anaphora",
+        "reference",
+        "pronoun resolution"
+      ],
+      "description": "Tests ability to resolve pronoun references in complex sentences",
+      "content": "In the sentence 'The trophy doesn't fit in the suitcase because it is too big', what does 'it' refer to?\n\nIn the sentence 'The trophy doesn't fit in the suitcase because it is too small', what does 'it' refer to?",
+      "expectedAnswer": "In the first sentence, 'it' refers to the trophy (too big to fit). In the second sentence, 'it' refers to the suitcase (too small to contain the trophy).",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ],
+        "llmJudge": {
+          "rubric": {
+            "firstSentence": "Correctly identifies 'it' as the trophy",
+            "secondSentence": "Correctly identifies 'it' as the suitcase",
+            "reasoning": "Provides clear explanation of the disambiguation"
+          }
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "czech-morphology",
+      "title": "Czech Morphological Analysis",
+      "category": "Multilingual",
+      "keywords": [
+        "Czech",
+        "morphology",
+        "linguistics",
+        "case system"
+      ],
+      "description": "Tests knowledge of Czech noun declension and case system",
+      "content": "Analyze the Czech word 'ženami' morphologically. What is the base form, what case is it in, and what does the ending tell us?",
+      "expectedAnswer": "Base form: žena (woman). The form 'ženami' is instrumental plural. The ending -ami indicates this is the instrumental case used for means/manner.",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine",
+          "llm-judge"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "žena,instrumental,plural",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "svg-generation",
+      "title": "SVG Code Generation",
+      "category": "Coding",
+      "keywords": [
+        "SVG",
+        "code generation",
+        "graphics",
+        "visualization"
+      ],
+      "description": "Tests ability to generate valid SVG code for a simple graphic",
+      "content": "Generate SVG code for a simple traffic light with three circles (red, yellow, green) arranged vertically in a dark gray rectangle.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "<svg,<rect,<circle,red,yellow,green",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "academic-paper-length",
+      "title": "Long-Form Academic Writing",
+      "category": "Creative Writing",
+      "keywords": [
+        "academic",
+        "long-form",
+        "writing",
+        "research paper"
+      ],
+      "description": "Tests ability to generate substantial academic content approaching 7000 words",
+      "content": "Write a 7000-word academic paper on the impact of large language models on educational assessment practices. Include an abstract, introduction, literature review, methodology section, findings, discussion, and conclusion. Use appropriate academic style and citations (you may use placeholder citations like [Author, Year]).",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine",
+          "llm-judge"
+        ],
+        "machineJudge": {
+          "type": "custom",
+          "criteria": "const wordCount = response.split(/\\s+/).filter(w => w.length > 0).length; return { pass: wordCount >= 5000, details: `Word count: ${wordCount}` };"
+        },
+        "llmJudge": {
+          "rubric": {
+            "length": "Did it approach or exceed 7000 words?",
+            "academicStyle": "Maintains formal academic tone throughout?",
+            "structure": "Has proper sections (abstract, intro, lit review, methodology, findings, discussion, conclusion)?",
+            "coherence": "Is the argument coherent from start to finish?",
+            "verisimilitude": "Does it read like a real academic paper?"
+          }
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "wodehouse-style",
+      "title": "Wodehouse Style Transfer",
+      "category": "Creative Writing",
+      "keywords": [
+        "style transfer",
+        "Wodehouse",
+        "humor",
+        "British"
+      ],
+      "description": "Tests ability to write in the distinctive style of P.G. Wodehouse",
+      "content": "Rewrite the following news item in the style of P.G. Wodehouse:\n\n'A man was arrested yesterday for stealing a garden gnome from his neighbor's front yard. The suspect claimed he believed the gnome was sentient and needed rescuing.'",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ],
+        "llmJudge": {
+          "rubric": {
+            "vocabulary": "Uses Wodehousian vocabulary (bally, blighter, rummy, etc.)?",
+            "similes": "Includes creative similes in Wodehouse's style?",
+            "tone": "Maintains light, comedic upper-class English tone?",
+            "structure": "Uses Wodehouse's characteristic sentence construction?"
+          }
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "metalanguage",
+      "title": "Use-Mention Distinction",
+      "category": "Linguistics",
+      "keywords": [
+        "metalanguage",
+        "use-mention",
+        "quotation",
+        "linguistics"
+      ],
+      "description": "Tests understanding of the use-mention distinction in language",
+      "content": "Explain the difference between these two statements:\n1. 'Cat' has three letters.\n2. A cat has four legs.\n\nWhat linguistic concept does this illustrate?",
+      "expectedAnswer": "This illustrates the use-mention distinction. In (1), 'cat' is mentioned (we're talking about the word itself). In (2), 'cat' is used (we're talking about the animal the word refers to).",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine",
+          "llm-judge"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "use,mention",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "readability-tool",
+      "title": "Readability Analysis Tool",
+      "category": "Coding",
+      "keywords": [
+        "coding",
+        "readability",
+        "Flesch-Kincaid",
+        "web app"
+      ],
+      "description": "Tests ability to create a functional web-based readability analysis tool",
+      "content": "Create a single HTML file with embedded CSS and JavaScript that:\n1. Has a textarea for inputting text\n2. Calculates and displays the Flesch-Kincaid readability score\n3. Shows word count, sentence count, and average words per sentence\n4. Has a clean, modern UI\n\nThe tool should update in real-time as the user types.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "<!DOCTYPE,<textarea,Flesch,addEventListener",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2024-12-26T00:00:00.000Z"
+    },
+    {
+      "id": "idiom-translation",
+      "title": "Idiom Translation Equivalence",
+      "category": "Multilingual",
+      "keywords": [
+        "idioms",
+        "translation",
+        "Czech",
+        "equivalence"
+      ],
+      "description": "Tests ability to find equivalent idioms across languages rather than literal translation",
+      "content": "What is the Czech equivalent of the English idiom 'to kill two birds with one stone'? Don't translate literally - find the actual Czech idiom with the same meaning.",
+      "expectedAnswer": "The Czech equivalent is 'zabít dvě mouchy jednou ranou' (to kill two flies with one strike/blow).",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-26T00:00:00.000Z",
+      "updatedAt": "2025-12-26T22:03:47.423Z"
+    }
+  ]
+}
