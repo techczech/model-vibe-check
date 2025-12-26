@@ -37,9 +37,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Data (keep structure, ignore content)
+# User data (keep sample prompts, ignore everything else)
 data/settings.json
-data/runs/*.json
+data/models.json
+data/runs/*
+!data/runs/.gitkeep
 
 # Attachments (user uploaded files)
 attachments/text/*

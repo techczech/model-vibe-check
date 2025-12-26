@@ -1,133 +1,136 @@
 # Model Vibe Check
 
-Systematic vibes-based LLM evaluation. Test new models against your personal prompt library.
+A tool for qualitative LLM evaluation. Run prompts against multiple models, read the responses side-by-side, and decide which ones have the right vibe.
 
-## What is this?
+**Version 0.1.0**
 
-Model Vibe Check fills the gap between formal benchmarks (MMLU, HumanEval) and crowd preferences (Chatbot Arena). It's for the question: **does this model work for my tasks?**
+## Philosophy
 
-When Claude 4 drops on Tuesday, you can have a systematic comparison vs Claude 3.5 on your 47 prompts by lunch.
+Most LLM benchmarks reduce model outputs to numbers. But you can't check the vibe from a score. This tool is built around one idea: **you need to read the actual responses**.
+
+- Browse responses by **Prompt**, **Model**, or **Category**
+- Compare outputs **side-by-side** across models and iterations
+- Runs are archives — browsing is the primary experience
 
 ## Features
 
-- **Personal Prompt Library**: Curate prompts that matter to you
-- **Four Evaluation Methods**: Human rating, LLM judge, machine checks, pairwise comparison
-- **Multi-Provider Support**: Ollama (local), OpenAI, Google, OpenRouter (everything else)
-- **Persistent History**: Track how models evolve across versions
-- **Local-First**: JSON files, runs locally, optional Vercel deployment
+- **Multi-provider support**: OpenAI, Google (Gemini), Ollama (local models), OpenRouter
+- **Prompt library**: Organize prompts by category with expected answers
+- **Batch execution**: Run multiple prompts against multiple models with multiple iterations
+- **Response browser**: See all responses to a prompt, compare across models
+- **Comparison mode**: Side-by-side columns with iteration switching
+- **Attachments**: Include images or text files with prompts
+- **Export**: Download results as CSV or JSON
 
 ## Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/model-vibe-check.git
+cd model-vibe-check
+
 # Install dependencies
 npm install
 
-# Run locally
+# Start the development server
 npm run dev
 
 # Open http://localhost:3000
 ```
 
-## Configuration
+## Setup
 
-### API Keys
+1. **Settings** → Add your API keys (OpenAI, Google, OpenRouter)
+2. **Models** → Add models you want to test
+3. **Prompts** → Create prompts or import the sample library
 
-Add your API keys in Settings or via environment variables:
+## Usage
 
-```bash
-# .env.local
-OPENAI_API_KEY=sk-...
-GOOGLE_AI_API_KEY=AIza...
-OPENROUTER_API_KEY=sk-or-...
-```
+### Running a Vibe Check
 
-### Ollama
+1. Go to **Runs** → **New Vibe Check**
+2. Select prompts and models
+3. Set number of iterations (more = see variation)
+4. Execute and wait for completion
 
-For local models, ensure Ollama is running:
+### Reading Responses
 
-```bash
-ollama serve
-ollama pull llama3.2
-```
+After a run completes, browse responses in three ways:
 
-## Evaluation Methods
+- **By Prompt**: See how different models answered the same question
+- **By Model**: See how one model answered different questions  
+- **By Category**: Browse prompts grouped by type
 
-### Human Judge
-Rate responses 1-10 with notes. Simple, authoritative, slow.
+### Comparing Responses
 
-### LLM Judge
-Another model evaluates against a configurable rubric. Default criteria: accuracy, completeness, clarity, relevance.
+1. Open any prompt's responses
+2. Select 2-4 responses (checkboxes)
+3. Click **Compare**
+4. Each column can switch between iterations
+5. Use dropdowns to swap models
 
-### Machine Judge
-Algorithmic checks:
-- `contains`: Required terms (comma-separated)
-- `regex`: Pattern matching
-- `exact`: Exact string match
-- `json-schema`: Validate JSON structure
-- `custom`: JavaScript function
+## Sample Prompts
 
-### Pairwise Comparison
-Side-by-side voting (A/Tie/B). Randomizes order to avoid position bias.
+The repository includes 10 sample prompts covering:
+
+- **Spatial Cognition**: Vertical text recognition
+- **Multilingual**: German modal verbs, Czech morphology, Japanese honorifics
+- **Creative Writing**: Wodehouse pastiche
+- **Code Generation**: SVG, mermaid diagrams, regex
+- **Reasoning**: Logic puzzles with misleading context
+
+Import them from the Prompts page or start fresh with your own.
 
 ## Project Structure
 
 ```
 model-vibe-check/
-├── app/                 # Next.js pages
-│   ├── prompts/         # Prompt library
-│   ├── models/          # Model configuration
-│   ├── runs/            # Evaluation runs
-│   └── settings/        # API keys & defaults
-├── components/          # React components
-├── lib/                 # Core logic
-│   ├── providers/       # LLM provider integrations
-│   ├── evaluation/      # Judge implementations
-│   ├── storage.ts       # JSON file handling
-│   └── types.ts         # TypeScript definitions
-├── data/                # JSON data files
-│   ├── prompts.json     # Prompt library
-│   ├── models.json      # Configured models
-│   └── runs/            # Run results
-└── attachments/         # Prompt attachments
-    ├── text/
-    └── images/
+├── app/                    # Next.js pages and API routes
+│   ├── prompts/           # Prompt management + response browser
+│   ├── models/            # Model management + response browser
+│   ├── categories/        # Category browser
+│   ├── runs/              # Run management + execution
+│   └── settings/          # API keys and configuration
+├── lib/                    # Core logic
+│   ├── providers/         # LLM provider integrations
+│   ├── storage.ts         # JSON file storage
+│   └── types.ts           # TypeScript definitions
+├── components/ui/          # shadcn/ui components
+├── data/                   # User data (gitignored except samples)
+└── attachments/            # Uploaded files
 ```
 
-## Adding Prompts
+## Data Storage
 
-Prompts are stored in `data/prompts.json`. Each prompt includes:
+All data is stored locally in JSON files:
 
-```json
-{
-  "id": "unique-id",
-  "title": "Prompt Title",
-  "category": "Category Name",
-  "keywords": ["keyword1", "keyword2"],
-  "content": "The actual prompt text...",
-  "expectedAnswer": "Optional expected answer",
-  "attachments": [],
-  "evaluationConfig": {
-    "methods": ["human", "machine", "llm-judge"],
-    "machineJudge": {
-      "type": "contains",
-      "criteria": "required,terms"
-    }
-  }
-}
-```
+- `data/prompts.json` — Your prompt library
+- `data/models.json` — Configured models (gitignored)
+- `data/settings.json` — API keys (gitignored)
+- `data/runs/*.json` — Run results (gitignored)
 
-## Deployment
+No data leaves your machine except API calls to the LLM providers you configure.
 
-### Local Only
-Just run `npm run dev`. Data stays in `data/` directory.
+## Legacy Evaluation Features
 
-### Vercel
-```bash
-vercel deploy
-```
+The app includes optional scoring features from an earlier design:
 
-Set environment variables in Vercel dashboard for API keys.
+- **Human Eval** (`/runs/[id]/evaluate`): Rate responses 1-10
+- **LLM Judge** (`/runs/[id]/judge`): Automated scoring via LLM
+- **Pairwise Compare** (`/runs/[id]/compare`): A/B comparison
+
+These are accessible from the run pages but aren't the primary workflow.
+
+## Requirements
+
+- Node.js 18+
+- npm or yarn
+- API keys for cloud providers (optional — Ollama works locally)
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE)
+
+## Contributing
+
+Issues and PRs welcome. This is a tool for qualitative evaluation, so suggestions for better ways to read and compare responses are especially appreciated.

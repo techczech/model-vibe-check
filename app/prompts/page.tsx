@@ -17,18 +17,19 @@ import { truncate } from "@/lib/utils";
 export default async function PromptsPage({
   searchParams,
 }: {
-  searchParams: { category?: string; q?: string };
+  searchParams: Promise<{ category?: string; q?: string }>;
 }) {
+  const params = await searchParams;
   const prompts = await getPrompts();
   const categories = await getCategories();
 
   // Filter prompts
   let filtered = prompts;
-  if (searchParams.category) {
-    filtered = filtered.filter((p) => p.category === searchParams.category);
+  if (params.category) {
+    filtered = filtered.filter((p) => p.category === params.category);
   }
-  if (searchParams.q) {
-    const q = searchParams.q.toLowerCase();
+  if (params.q) {
+    const q = params.q.toLowerCase();
     filtered = filtered.filter(
       (p) =>
         p.title.toLowerCase().includes(q) ||
@@ -81,7 +82,7 @@ export default async function PromptsPage({
             <Input
               name="q"
               placeholder="Search prompts..."
-              defaultValue={searchParams.q || ""}
+              defaultValue={params.q || ""}
               className="pl-9"
             />
           </form>
@@ -89,7 +90,7 @@ export default async function PromptsPage({
         <div className="flex gap-2">
           <Link href="/prompts">
             <Badge
-              variant={!searchParams.category ? "default" : "outline"}
+              variant={!params.category ? "default" : "outline"}
               className="cursor-pointer"
             >
               All ({prompts.length})
@@ -100,7 +101,7 @@ export default async function PromptsPage({
             return (
               <Link key={cat} href={`/prompts?category=${cat}`}>
                 <Badge
-                  variant={searchParams.category === cat ? "default" : "outline"}
+                  variant={params.category === cat ? "default" : "outline"}
                   className="cursor-pointer"
                 >
                   {cat} ({count})
@@ -118,7 +119,7 @@ export default async function PromptsPage({
             <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg font-semibold mb-2">No prompts found</h3>
             <p className="text-muted-foreground mb-4">
-              {searchParams.q || searchParams.category
+                          {params.q || params.category
                 ? "Try adjusting your filters"
                 : "Get started by adding your first prompt"}
             </p>

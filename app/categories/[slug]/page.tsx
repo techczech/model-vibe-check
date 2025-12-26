@@ -22,7 +22,7 @@ interface PromptWithStats {
 export default async function CategoryPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
