@@ -3,7 +3,7 @@ import { getRuns, getPrompts, getModels } from "@/lib/storage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Play, Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Plus, Play, Clock, CheckCircle, XCircle, Loader2, Sparkles } from "lucide-react";
 import { formatDate, formatDuration } from "@/lib/utils";
 
 const statusConfig = {

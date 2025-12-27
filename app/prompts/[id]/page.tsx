@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPrompt, getRuns } from "@/lib/storage";
+import { getPrompt, getRuns, getPromptsCoverage, getModels } from "@/lib/storage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,9 @@ import {
   User,
   GitCompare,
   MessageSquare,
+  Sparkles,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -48,8 +51,17 @@ export default async function PromptDetailPage({
   }
 
   // Get runs that include this prompt
-  const allRuns = await getRuns();
+  const [allRuns, coverage, models] = await Promise.all([
+    getRuns(),
+    getPromptsCoverage(),
+    getModels(),
+  ]);
   const relatedRuns = allRuns.filter((r) => r.promptIds.includes(prompt.id));
+  const promptCoverage = coverage[prompt.id];
+  const modelIndex: Record<string, typeof models[0]> = {};
+  for (const m of models) {
+    modelIndex[m.id] = m;
+  }
 
   return (
     <div className="space-y-6">
@@ -76,6 +88,18 @@ export default async function PromptDetailPage({
           </div>
         </div>
         <div className="flex gap-2">
+          <Link href={`/vibe-check/prompt?prompt=${prompt.id}`}>
+            <Button variant="outline">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Prompt Vibe
+            </Button>
+          </Link>
+          <Link href={`/vibe-check/compare?prompt=${prompt.id}`}>
+            <Button variant="outline">
+              <Eye className="h-4 w-4 mr-2" />
+              Head-to-Head
+            </Button>
+          </Link>
           <Link href={`/prompts/${prompt.id}/responses`}>
             <Button variant="outline">
               <MessageSquare className="h-4 w-4 mr-2" />
@@ -229,6 +253,39 @@ export default async function PromptDetailPage({
                   <p className="text-xs text-muted-foreground">
                     {prompt.evaluationConfig.llmJudge.criteria}
                   </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Response Coverage */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Response Coverage</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!promptCoverage || promptCoverage.totalResponses === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No responses yet
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  <div className="text-sm">
+                    <span className="font-medium">{promptCoverage.totalResponses}</span>
+                    <span className="text-muted-foreground"> responses from </span>
+                    <span className="font-medium">{promptCoverage.modelCount}</span>
+                    <span className="text-muted-foreground"> models</span>
+                  </div>
+                  <div className="space-y-1">
+                    {promptCoverage.models.map((m) => (
+                      <div key={m.modelId} className="flex items-center justify-between text-sm">
+                        <span className="truncate">{m.modelName}</span>
+                        <Badge variant="secondary" className="text-xs">
+                          {m.iterationCount} iter{m.iterationCount !== 1 ? "s" : ""}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>

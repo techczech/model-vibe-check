@@ -59,6 +59,336 @@
       },
       "isActive": true,
       "createdAt": "2025-12-26T22:07:14.461Z"
+    },
+    {
+      "id": "ollama-minimax-m2:cloud-1766856350478",
+      "provider": "ollama",
+      "modelId": "minimax-m2:cloud",
+      "displayName": "minimax-m2",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 128000,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:25:50.478Z"
+    },
+    {
+      "id": "ollama-qwen3:8b-1766856350480",
+      "provider": "ollama",
+      "modelId": "qwen3:8b",
+      "displayName": "qwen3",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 128000,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:25:50.480Z"
+    },
+    {
+      "id": "ollama-gemma3:270m-1766856350480",
+      "provider": "ollama",
+      "modelId": "gemma3:270m",
+      "displayName": "gemma3",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 128000,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:25:50.480Z"
+    },
+    {
+      "id": "openai-gpt-5.2-chat-latest-1766856399945",
+      "provider": "openai",
+      "modelId": "gpt-5.2-chat-latest",
+      "displayName": "gpt-5.2-chat-latest",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 128000,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:26:39.945Z"
+    },
+    {
+      "id": "openai-gpt-5.1-chat-latest-1766856399945",
+      "provider": "openai",
+      "modelId": "gpt-5.1-chat-latest",
+      "displayName": "gpt-5.1-chat-latest",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 128000,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:26:39.945Z"
+    },
+    {
+      "id": "openai-gpt-5-nano-1766856399945",
+      "provider": "openai",
+      "modelId": "gpt-5-nano",
+      "displayName": "gpt-5-nano",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 128000,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:26:39.945Z"
+    },
+    {
+      "id": "openai-gpt-5-mini-1766856399945",
+      "provider": "openai",
+      "modelId": "gpt-5-mini",
+      "displayName": "gpt-5-mini",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 128000,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:26:39.945Z"
+    },
+    {
+      "id": "openai-gpt-5-chat-latest-1766856399945",
+      "provider": "openai",
+      "modelId": "gpt-5-chat-latest",
+      "displayName": "gpt-5-chat-latest",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 128000,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:26:39.945Z"
+    },
+    {
+      "id": "google-gemini-2.5-flash-1766856594726",
+      "provider": "google",
+      "modelId": "gemini-2.5-flash",
+      "displayName": "Gemini 2.5 Flash",
+      "supportsVision": true,
+      "supportsAudio": false,
+      "maxTokens": 1048576,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:29:54.726Z"
+    },
+    {
+      "id": "google-gemini-2.0-flash-1766856594726",
+      "provider": "google",
+      "modelId": "gemini-2.0-flash",
+      "displayName": "Gemini 2.0 Flash",
+      "supportsVision": true,
+      "supportsAudio": false,
+      "maxTokens": 1048576,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:29:54.726Z"
+    },
+    {
+      "id": "google-gemini-2.0-flash-lite-1766856594726",
+      "provider": "google",
+      "modelId": "gemini-2.0-flash-lite",
+      "displayName": "Gemini 2.0 Flash-Lite",
+      "supportsVision": true,
+      "supportsAudio": false,
+      "maxTokens": 1048576,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:29:54.726Z"
+    },
+    {
+      "id": "google-gemini-2.5-flash-lite-1766856594726",
+      "provider": "google",
+      "modelId": "gemini-2.5-flash-lite",
+      "displayName": "Gemini 2.5 Flash-Lite",
+      "supportsVision": true,
+      "supportsAudio": false,
+      "maxTokens": 1048576,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:29:54.726Z"
+    },
+    {
+      "id": "google-gemini-3-flash-preview-1766856594726",
+      "provider": "google",
+      "modelId": "gemini-3-flash-preview",
+      "displayName": "Gemini 3 Flash Preview",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 1048576,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:29:54.726Z"
+    },
+    {
+      "id": "openrouter-openai-gpt-oss-120b:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "openai/gpt-oss-120b:free",
+      "displayName": "gpt-oss-120b:free",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 131072,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
+    },
+    {
+      "id": "openrouter-openai-gpt-oss-20b:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "openai/gpt-oss-20b:free",
+      "displayName": "gpt-oss-20b:free",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 131072,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
+    },
+    {
+      "id": "openrouter-google-gemma-3-27b-it:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "google/gemma-3-27b-it:free",
+      "displayName": "gemma-3-27b-it:free",
+      "supportsVision": true,
+      "supportsAudio": false,
+      "maxTokens": 131072,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
+    },
+    {
+      "id": "openrouter-meta-llama-llama-3.2-3b-instruct:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "meta-llama/llama-3.2-3b-instruct:free",
+      "displayName": "llama-3.2-3b-instruct:free",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 131072,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
+    },
+    {
+      "id": "openrouter-meta-llama-llama-3.3-70b-instruct:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "meta-llama/llama-3.3-70b-instruct:free",
+      "displayName": "llama-3.3-70b-instruct:free",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 131072,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
+    },
+    {
+      "id": "openrouter-allenai-olmo-3.1-32b-think:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "allenai/olmo-3.1-32b-think:free",
+      "displayName": "olmo-3.1-32b-think:free",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 65536,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
+    },
+    {
+      "id": "openrouter-deepseek-deepseek-r1-0528:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "deepseek/deepseek-r1-0528:free",
+      "displayName": "deepseek-r1-0528:free",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 163840,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
+    },
+    {
+      "id": "openrouter-qwen-qwen3-4b:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "qwen/qwen3-4b:free",
+      "displayName": "qwen3-4b:free",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 40960,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
+    },
+    {
+      "id": "openrouter-z-ai-glm-4.5-air:free-1766856690108",
+      "provider": "openrouter",
+      "modelId": "z-ai/glm-4.5-air:free",
+      "displayName": "glm-4.5-air:free",
+      "supportsVision": false,
+      "supportsAudio": false,
+      "maxTokens": 131072,
+      "config": {
+        "temperature": 0.7,
+        "maxOutputTokens": 4096
+      },
+      "isActive": true,
+      "createdAt": "2025-12-27T17:31:30.108Z"
     }
   ]
 }
