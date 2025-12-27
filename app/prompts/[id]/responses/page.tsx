@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useState, useEffect, useMemo, useCallback, Suspense } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,90 +16,94 @@ import {
 import {
   ArrowLeft,
   RefreshCw,
-  GitCompare,
   Calendar,
-  Hash,
-  ChevronDown,
-  ChevronUp,
-  Check,
-  X,
-  Plus,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardCheck,
+  Bot,
+  User,
+  Sparkles,
+  Shuffle,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-import type { Prompt, Model, Evaluation } from "@/lib/types";
+import { ResponseViewer } from "@/components/response-viewer";
+import { 
+  toViewerPrompt, 
+  getResponsesForPrompt,
+  groupResponsesByIteration,
+  getLatestResponsePerModel,
+} from "@/lib/viewer-utils";
+import { EvaluationForm } from "@/components/evaluation-form";
+import { useToast } from "@/hooks/use-toast";
+import type { Prompt, Model, Run, Rubric, RubricEvaluation, ViewerResponse } from "@/lib/types";
 
-interface ResponseWithMeta {
-  id: string;
-  promptId: string;
-  modelId: string;
-  iteration: number;
-  response: string;
-  latencyMs: number;
-  tokensInput?: number;
-  tokensOutput?: number;
-  error?: string;
-  createdAt: string;
-  runId: string;
-  runName: string;
-  runDate: string;
-}
-
-interface GroupedResponses {
-  modelId: string;
-  modelName: string;
-  provider: string;
-  responses: ResponseWithMeta[];
-}
-
-// A column in compare mode - tracks model and which response is shown
-interface CompareColumn {
-  modelId: string;
-  responseId: string; // which specific response is shown
-}
-
-export default function PromptResponsesPage() {
+function PromptResponsesContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const promptId = params.id as string;
+  const { toast } = useToast();
 
   const [prompt, setPrompt] = useState<Prompt | null>(null);
-  const [models, setModels] = useState<Record<string, Model>>({});
-  const [responses, setResponses] = useState<ResponseWithMeta[]>([]);
-  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [runs, setRuns] = useState<Run[]>([]);
+  const [rubrics, setRubrics] = useState<Rubric[]>([]);
+  const [rubricEvaluations, setRubricEvaluations] = useState<RubricEvaluation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Selection for comparison
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [comparing, setComparing] = useState(false);
-  
-  // Compare columns - each tracks which model and which response
-  const [compareColumns, setCompareColumns] = useState<CompareColumn[]>([]);
+  // View controls
+  const [showLatestOnly, setShowLatestOnly] = useState(true);
+  const [shuffleOrder, setShuffleOrder] = useState(false);
+  const [currentIteration, setCurrentIteration] = useState(0);
 
-  // Expanded responses (show full text)
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  // Evaluation state
+  const [evaluatingResponseId, setEvaluatingResponseId] = useState<string | null>(null);
+  const [selectedRubricId, setSelectedRubricId] = useState<string | null>(null);
+  const [judging, setJudging] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
       try {
-        // Load prompt
-        const promptRes = await fetch(`/api/prompts?id=${promptId}`);
-        const promptData = await promptRes.json();
-        const foundPrompt = promptData.prompts?.find((p: Prompt) => p.id === promptId);
+        // Load all data
+        const [promptsRes, modelsRes, runsRes, rubricsRes, evalsRes] = await Promise.all([
+          fetch("/api/prompts"),
+          fetch("/api/models"),
+          fetch("/api/runs"),
+          fetch("/api/rubrics"),
+          fetch("/api/evaluations"),
+        ]);
+        
+        const [promptsData, modelsData, runsData, rubricsData, evalsData] = await Promise.all([
+          promptsRes.json(),
+          modelsRes.json(),
+          runsRes.json(),
+          rubricsRes.json(),
+          evalsRes.json(),
+        ]);
+
+        const allPrompts = promptsData.prompts || [];
+        const allModels = modelsData.models || [];
+        const allRuns = runsData.runs || [];
+        const allRubrics = rubricsData.rubrics || [];
+        const allEvals = evalsData.evaluations || [];
+
+        setPrompts(allPrompts);
+        setModels(allModels);
+        setRuns(allRuns);
+        setRubrics(allRubrics);
+        setRubricEvaluations(allEvals);
+
+        // Find the specific prompt
+        const foundPrompt = allPrompts.find((p: Prompt) => p.id === promptId);
         setPrompt(foundPrompt || null);
 
-        // Load models
-        const modelsRes = await fetch("/api/models");
-        const modelsData = await modelsRes.json();
-        const modelIndex: Record<string, Model> = {};
-        (modelsData.models || []).forEach((m: Model) => {
-          modelIndex[m.id] = m;
-        });
-        setModels(modelIndex);
-
-        // Load responses for this prompt
-        const responsesRes = await fetch(`/api/prompts/${promptId}/responses`);
-        const responsesData = await responsesRes.json();
-        setResponses(responsesData.results || []);
-        setEvaluations(responsesData.evaluations || []);
+        // Set default rubric
+        const defaultRubric = allRubrics.find(
+          (r: Rubric) => r.id === foundPrompt?.rubricId
+        ) || allRubrics.find((r: Rubric) => r.id === "general-quality");
+        if (defaultRubric) {
+          setSelectedRubricId(defaultRubric.id);
+        }
       } catch (error) {
         console.error("Failed to load data:", error);
       } finally {
@@ -110,150 +114,176 @@ export default function PromptResponsesPage() {
     loadData();
   }, [promptId]);
 
-  // Group responses by model
-  const grouped: GroupedResponses[] = useMemo(() => {
-    const result: GroupedResponses[] = [];
-    const modelIds = [...new Set(responses.map((r) => r.modelId))];
-    
-    for (const modelId of modelIds) {
-      const modelResponses = responses
-        .filter((r) => r.modelId === modelId)
-        .sort((a, b) => {
-          // Sort by run date desc, then iteration asc
-          const dateCompare = new Date(b.runDate).getTime() - new Date(a.runDate).getTime();
-          if (dateCompare !== 0) return dateCompare;
-          return a.iteration - b.iteration;
-        });
-
-      result.push({
-        modelId,
-        modelName: models[modelId]?.displayName || modelId,
-        provider: models[modelId]?.provider || "unknown",
-        responses: modelResponses,
-      });
-    }
-
-    return result.sort((a, b) => a.modelName.localeCompare(b.modelName));
-  }, [responses, models]);
-
-  // Get responses grouped by model for the compare column selector
-  const responsesByModel = useMemo(() => {
-    const result: Record<string, ResponseWithMeta[]> = {};
-    for (const resp of responses) {
-      if (!result[resp.modelId]) {
-        result[resp.modelId] = [];
-      }
-      result[resp.modelId].push(resp);
-    }
-    // Sort each model's responses
-    for (const modelId in result) {
-      result[modelId].sort((a, b) => {
-        const dateCompare = new Date(b.runDate).getTime() - new Date(a.runDate).getTime();
-        if (dateCompare !== 0) return dateCompare;
-        return a.iteration - b.iteration;
-      });
-    }
-    return result;
-  }, [responses]);
-
-  function toggleSelect(responseId: string) {
-    const newSelected = new Set(selected);
-    if (newSelected.has(responseId)) {
-      newSelected.delete(responseId);
-    } else {
-      newSelected.add(responseId);
-    }
-    setSelected(newSelected);
-  }
-
-  function toggleExpand(responseId: string) {
-    const newExpanded = new Set(expanded);
-    if (newExpanded.has(responseId)) {
-      newExpanded.delete(responseId);
-    } else {
-      newExpanded.add(responseId);
-    }
-    setExpanded(newExpanded);
-  }
-
-  function expandAll() {
-    setExpanded(new Set(responses.map((r) => r.id)));
-  }
-
-  function collapseAll() {
-    setExpanded(new Set());
-  }
-
-  function getEvaluation(resultId: string): Evaluation | undefined {
-    return evaluations.find((e) => e.resultId === resultId);
-  }
-
-  // Start comparison with selected responses
-  function startCompare() {
-    const selectedResponses = responses.filter((r) => selected.has(r.id));
-    setCompareColumns(
-      selectedResponses.map((r) => ({
-        modelId: r.modelId,
-        responseId: r.id,
+  // Get all responses for this prompt
+  const allResponses = useMemo(() => {
+    return getResponsesForPrompt(promptId, { 
+      models, 
+      prompts, 
+      runs, 
+      evaluations: rubricEvaluations.map(e => ({
+        responseId: e.responseId,
+        impressionScore: e.impressionScore,
       }))
+    });
+  }, [promptId, models, prompts, runs, rubricEvaluations]);
+
+  // Group by iteration
+  const iterationGroups = useMemo(() => {
+    return groupResponsesByIteration(allResponses);
+  }, [allResponses]);
+
+  // Get responses to display
+  const displayResponses = useMemo(() => {
+    let responses: ViewerResponse[];
+    
+    if (showLatestOnly) {
+      responses = getLatestResponsePerModel(allResponses);
+    } else if (iterationGroups.size > 0) {
+      responses = iterationGroups.get(currentIteration) || [];
+    } else {
+      responses = allResponses;
+    }
+    
+    if (shuffleOrder) {
+      // Fisher-Yates shuffle with stable seed based on promptId
+      const shuffled = [...responses];
+      const seed = promptId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+      let m = shuffled.length;
+      let t, i;
+      let random = seed;
+      while (m) {
+        random = (random * 1103515245 + 12345) & 0x7fffffff;
+        i = random % m--;
+        t = shuffled[m];
+        shuffled[m] = shuffled[i];
+        shuffled[i] = t;
+      }
+      return shuffled;
+    }
+    
+    return responses;
+  }, [allResponses, showLatestOnly, shuffleOrder, iterationGroups, currentIteration, promptId]);
+
+  // Viewer prompt
+  const viewerPrompt = useMemo(() => {
+    return prompt ? toViewerPrompt(prompt) : undefined;
+  }, [prompt]);
+
+  // Evaluation stats
+  const evalStats = useMemo(() => {
+    const humanEvaluatedIds = new Set(
+      rubricEvaluations.filter((e) => e.evaluatorType === "human").map((e) => e.responseId)
     );
-    setComparing(true);
+    const llmEvaluatedIds = new Set(
+      rubricEvaluations.filter((e) => e.evaluatorType === "llm").map((e) => e.responseId)
+    );
+    const responseIds = new Set(allResponses.map((r) => r.id));
+    const evaluated = [...responseIds].filter(
+      (id) => humanEvaluatedIds.has(id) || llmEvaluatedIds.has(id)
+    );
+    return {
+      human: [...responseIds].filter((id) => humanEvaluatedIds.has(id)).length,
+      llm: [...responseIds].filter((id) => llmEvaluatedIds.has(id)).length,
+      total: evaluated.length,
+      pending: responseIds.size - evaluated.length,
+    };
+  }, [allResponses, rubricEvaluations]);
+
+  // Unevaluated response IDs
+  const unevaluatedIds = useMemo(() => {
+    const evaluatedIds = new Set(rubricEvaluations.map((e) => e.responseId));
+    return allResponses
+      .filter((r) => !evaluatedIds.has(r.id))
+      .map((r) => r.id);
+  }, [allResponses, rubricEvaluations]);
+
+  const goToNextUnevaluated = useCallback(() => {
+    if (unevaluatedIds.length === 0) return;
+    
+    if (evaluatingResponseId) {
+      const currentIndex = unevaluatedIds.indexOf(evaluatingResponseId);
+      const nextIndex = (currentIndex + 1) % unevaluatedIds.length;
+      setEvaluatingResponseId(unevaluatedIds[nextIndex]);
+    } else {
+      setEvaluatingResponseId(unevaluatedIds[0]);
+    }
+  }, [unevaluatedIds, evaluatingResponseId]);
+
+  async function submitEvaluation(evaluation: Omit<RubricEvaluation, "id" | "createdAt">) {
+    const res = await fetch("/api/evaluations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(evaluation),
+    });
+    const data = await res.json();
+    if (data.evaluation) {
+      setRubricEvaluations((prev) => [...prev, data.evaluation]);
+      toast({
+        type: "success",
+        title: "Evaluation saved",
+        description: "Your evaluation has been recorded.",
+      });
+    } else {
+      toast({
+        type: "error",
+        title: "Failed to save",
+        description: data.error || "Something went wrong.",
+      });
+      throw new Error(data.error || "Failed to save evaluation");
+    }
   }
 
-  // Quick compare: all models, first response each
-  function quickCompareAllModels() {
-    const columns: CompareColumn[] = [];
-    for (const group of grouped) {
-      if (group.responses.length > 0) {
-        columns.push({
-          modelId: group.modelId,
-          responseId: group.responses[0].id,
+  async function runLLMJudge(responseId: string) {
+    if (!selectedRubricId) return;
+    
+    const judgeModel = models.find((m) => m.isActive);
+    if (!judgeModel) {
+      toast({
+        type: "error",
+        title: "No models available",
+        description: "Configure at least one active model to use as a judge.",
+      });
+      return;
+    }
+
+    setJudging(responseId);
+    try {
+      const res = await fetch("/api/evaluations/judge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          responseId,
+          rubricId: selectedRubricId,
+          judgeModelId: judgeModel.id,
+        }),
+      });
+      const data = await res.json();
+      if (data.evaluation) {
+        setRubricEvaluations((prev) => [...prev, data.evaluation]);
+        toast({
+          type: "success",
+          title: "LLM judge complete",
+          description: `Evaluated by ${judgeModel.displayName}`,
+        });
+      } else if (data.error) {
+        toast({
+          type: "error",
+          title: "Judge failed",
+          description: data.error,
         });
       }
-    }
-    setCompareColumns(columns);
-    setComparing(true);
-  }
-
-  // Add a column to compare
-  function addCompareColumn() {
-    // Find a model not yet in columns
-    for (const group of grouped) {
-      const existing = compareColumns.find((c) => c.modelId === group.modelId);
-      if (!existing && group.responses.length > 0) {
-        setCompareColumns([
-          ...compareColumns,
-          { modelId: group.modelId, responseId: group.responses[0].id },
-        ]);
-        return;
-      }
+    } catch (error) {
+      toast({
+        type: "error",
+        title: "Judge failed",
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    } finally {
+      setJudging(null);
     }
   }
 
-  // Remove a column
-  function removeColumn(index: number) {
-    setCompareColumns(compareColumns.filter((_, i) => i !== index));
-  }
-
-  // Change which response is shown in a column
-  function setColumnResponse(index: number, responseId: string) {
-    const resp = responses.find((r) => r.id === responseId);
-    if (!resp) return;
-    
-    const newColumns = [...compareColumns];
-    newColumns[index] = { modelId: resp.modelId, responseId };
-    setCompareColumns(newColumns);
-  }
-
-  // Change which model a column shows
-  function setColumnModel(index: number, modelId: string) {
-    const modelResponses = responsesByModel[modelId];
-    if (!modelResponses || modelResponses.length === 0) return;
-    
-    const newColumns = [...compareColumns];
-    newColumns[index] = { modelId, responseId: modelResponses[0].id };
-    setCompareColumns(newColumns);
-  }
+  const currentRubric = rubrics.find((r) => r.id === selectedRubricId);
 
   if (loading) {
     return (
@@ -289,319 +319,188 @@ export default function PromptResponsesPage() {
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline">{prompt.category}</Badge>
               <span className="text-sm text-muted-foreground">
-                {responses.length} responses from {grouped.length} models
+                {allResponses.length} responses from {new Set(allResponses.map(r => r.modelId)).size} models
               </span>
             </div>
           </div>
         </div>
         <div className="flex gap-2">
-          {!comparing && (
-            <>
-              <Button variant="outline" size="sm" onClick={expandAll}>
-                Expand All
-              </Button>
-              <Button variant="outline" size="sm" onClick={collapseAll}>
-                Collapse All
-              </Button>
-              {grouped.length >= 2 && (
-                <Button variant="outline" onClick={quickCompareAllModels}>
-                  <GitCompare className="h-4 w-4 mr-2" />
-                  Compare All Models
-                </Button>
-              )}
-              {selected.size >= 2 && (
-                <Button onClick={startCompare}>
-                  <GitCompare className="h-4 w-4 mr-2" />
-                  Compare {selected.size} Selected
-                </Button>
-              )}
-            </>
-          )}
+          <Link href={`/vibe-check/prompt?prompt=${promptId}`}>
+            <Button variant="outline">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Full Vibe Check
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Prompt Content */}
+      {/* Controls */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Prompt</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <pre className="whitespace-pre-wrap text-sm bg-muted p-4 rounded-lg">
-            {prompt.content}
-          </pre>
-          {prompt.expectedAnswer && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-xs font-medium text-green-800 mb-1">Expected</p>
-              <p className="text-sm text-green-900">{prompt.expectedAnswer}</p>
+        <CardContent className="py-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Left: View controls */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Show:</span>
+                <Select
+                  value={showLatestOnly ? "latest" : "iteration"}
+                  onValueChange={(v) => setShowLatestOnly(v === "latest")}
+                >
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="latest">Latest per model</SelectItem>
+                    <SelectItem value="iteration">By iteration</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {!showLatestOnly && iterationGroups.size > 1 && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentIteration(Math.max(0, currentIteration - 1))}
+                    disabled={currentIteration === 0}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm">
+                    Iteration {currentIteration + 1} of {iterationGroups.size}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentIteration(Math.min(iterationGroups.size - 1, currentIteration + 1))}
+                    disabled={currentIteration === iterationGroups.size - 1}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              <Button
+                variant={shuffleOrder ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setShuffleOrder(!shuffleOrder)}
+              >
+                <Shuffle className="h-4 w-4 mr-2" />
+                Shuffle
+              </Button>
             </div>
-          )}
+
+            {/* Right: Evaluation controls */}
+            <div className="flex items-center gap-3">
+              {rubrics.length > 0 && (
+                <Select
+                  value={selectedRubricId || ""}
+                  onValueChange={setSelectedRubricId}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select rubric" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rubrics.map((r) => (
+                      <SelectItem key={r.id} value={r.id}>
+                        {r.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              
+              <span className="text-sm text-muted-foreground flex items-center gap-2">
+                {evalStats.human > 0 && (
+                  <span className="flex items-center gap-1">
+                    <User className="h-3 w-3" />{evalStats.human}
+                  </span>
+                )}
+                {evalStats.llm > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Bot className="h-3 w-3" />{evalStats.llm}
+                  </span>
+                )}
+                <span>{evalStats.total}/{allResponses.length} evaluated</span>
+              </span>
+
+              {unevaluatedIds.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToNextUnevaluated}
+                >
+                  <ClipboardCheck className="h-4 w-4 mr-2" />
+                  Evaluate ({unevaluatedIds.length})
+                </Button>
+              )}
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Comparison Mode */}
-      {comparing && compareColumns.length >= 1 && (
-        <Card className="border-2 border-primary">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Comparing Responses</CardTitle>
-              <div className="flex gap-2">
-                {compareColumns.length < 4 && compareColumns.length < grouped.length && (
-                  <Button variant="outline" size="sm" onClick={addCompareColumn}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add Column
-                  </Button>
-                )}
-                <Button variant="ghost" size="sm" onClick={() => setComparing(false)}>
-                  Exit Compare
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className={`grid gap-4 ${
-              compareColumns.length === 1 ? "grid-cols-1" :
-              compareColumns.length === 2 ? "grid-cols-2" :
-              compareColumns.length === 3 ? "grid-cols-3" :
-              "grid-cols-2 lg:grid-cols-4"
-            }`}>
-              {compareColumns.map((col, index) => {
-                const resp = responses.find((r) => r.id === col.responseId);
-                const modelResponses = responsesByModel[col.modelId] || [];
-                
-                if (!resp) return null;
-
-                return (
-                  <div key={`${col.modelId}-${index}`} className="border rounded-lg flex flex-col">
-                    {/* Column Header */}
-                    <div className="p-3 border-b bg-muted/50">
-                      <div className="flex items-center justify-between mb-2">
-                        <Select
-                          value={col.modelId}
-                          onValueChange={(v) => setColumnModel(index, v)}
-                        >
-                          <SelectTrigger className="h-8 text-sm font-medium">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {grouped.map((g) => (
-                              <SelectItem key={g.modelId} value={g.modelId}>
-                                {g.modelName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {compareColumns.length > 1 && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => removeColumn(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                      
-                      {/* Response/Iteration Selector */}
-                      <Select
-                        value={col.responseId}
-                        onValueChange={(v) => setColumnResponse(index, v)}
-                      >
-                        <SelectTrigger className="h-7 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {modelResponses.map((r) => (
-                            <SelectItem key={r.id} value={r.id}>
-                              {formatDate(r.runDate)} • Iter {r.iteration + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Response Content */}
-                    <div className="flex-1 overflow-auto p-3 max-h-[60vh]">
-                      {resp.error ? (
-                        <div className="text-sm text-destructive">
-                          Error: {resp.error}
-                        </div>
-                      ) : (
-                        <pre className="whitespace-pre-wrap text-sm">
-                          {resp.response}
-                        </pre>
-                      )}
-                    </div>
-
-                    {/* Footer */}
-                    <div className="p-2 border-t text-xs text-muted-foreground flex justify-between">
-                      <span>{resp.latencyMs}ms</span>
-                      {resp.tokensOutput && <span>{resp.tokensOutput} tokens</span>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+      {/* Responses */}
+      {allResponses.length === 0 ? (
+        <Card className="border-dashed">
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground mb-4">No responses yet for this prompt.</p>
+            <Link href="/runs/new">
+              <Button>Run a Vibe Check</Button>
+            </Link>
           </CardContent>
         </Card>
+      ) : (
+        <ResponseViewer
+          prompt={viewerPrompt}
+          responses={displayResponses}
+          showToolbar={true}
+          defaultExpanded={true}
+        />
       )}
 
-      {/* Responses by Model */}
-      {!comparing && (
-        <>
-          {responses.length === 0 ? (
-            <Card className="border-dashed">
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">No responses yet for this prompt.</p>
-                <Link href="/runs/new" className="text-primary hover:underline">
-                  Run a vibe check
-                </Link>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              {grouped.map((group) => (
-                <Card key={group.modelId}>
-                  <CardHeader>
-                    <CardTitle className="text-base flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span>{group.modelName}</span>
-                        <Badge variant="secondary" className="text-xs">
-                          {group.provider}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-normal text-muted-foreground">
-                          {group.responses.length} response{group.responses.length !== 1 ? "s" : ""}
-                        </span>
-                        {group.responses.length >= 2 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              // Compare all iterations of this model
-                              setCompareColumns(
-                                group.responses.slice(0, 4).map((r) => ({
-                                  modelId: r.modelId,
-                                  responseId: r.id,
-                                }))
-                              );
-                              setComparing(true);
-                            }}
-                          >
-                            Compare Iterations
-                          </Button>
-                        )}
-                      </div>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {group.responses.map((resp) => {
-                      const isExpanded = expanded.has(resp.id);
-                      const isSelected = selected.has(resp.id);
-                      const evaluation = getEvaluation(resp.id);
-
-                      return (
-                        <div
-                          key={resp.id}
-                          className={`border rounded-lg p-4 transition-colors ${
-                            isSelected ? "border-primary bg-primary/5" : ""
-                          }`}
-                        >
-                          {/* Response Header */}
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => toggleSelect(resp.id)}
-                                className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
-                                  isSelected
-                                    ? "bg-primary border-primary text-primary-foreground"
-                                    : "border-muted-foreground/30 hover:border-primary"
-                                }`}
-                              >
-                                {isSelected && <Check className="h-3 w-3" />}
-                              </button>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Calendar className="h-3 w-3" />
-                                <span>{formatDate(resp.runDate)}</span>
-                                <span>•</span>
-                                <Hash className="h-3 w-3" />
-                                <span>Iteration {resp.iteration + 1}</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {evaluation?.humanScore && (
-                                <Badge variant="outline">
-                                  Score: {evaluation.humanScore}/10
-                                </Badge>
-                              )}
-                              {evaluation?.machinePass !== undefined && (
-                                <Badge variant={evaluation.machinePass ? "default" : "destructive"}>
-                                  {evaluation.machinePass ? "✓ Pass" : "✗ Fail"}
-                                </Badge>
-                              )}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleExpand(resp.id)}
-                              >
-                                {isExpanded ? (
-                                  <ChevronUp className="h-4 w-4" />
-                                ) : (
-                                  <ChevronDown className="h-4 w-4" />
-                                )}
-                              </Button>
-                            </div>
-                          </div>
-
-                          {/* Response Content */}
-                          {resp.error ? (
-                            <div className="text-sm text-destructive bg-destructive/10 p-3 rounded">
-                              Error: {resp.error}
-                            </div>
-                          ) : (
-                            <div
-                              className={`bg-muted rounded-lg p-4 ${
-                                isExpanded ? "" : "max-h-48 overflow-hidden relative"
-                              }`}
-                            >
-                              <pre className="whitespace-pre-wrap text-sm">
-                                {resp.response}
-                              </pre>
-                              {!isExpanded && resp.response.length > 500 && (
-                                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-muted to-transparent" />
-                              )}
-                            </div>
-                          )}
-
-                          {/* Show full toggle for long responses */}
-                          {!isExpanded && resp.response.length > 500 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="mt-2 w-full"
-                              onClick={() => toggleExpand(resp.id)}
-                            >
-                              Show full response ({resp.response.length} chars)
-                            </Button>
-                          )}
-
-                          {/* Metadata */}
-                          <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                            <span>{resp.latencyMs}ms</span>
-                            {resp.tokensOutput && <span>{resp.tokensOutput} tokens</span>}
-                            <span className="truncate">Run: {resp.runName}</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </>
-      )}
+      {/* Evaluation Modal */}
+      {evaluatingResponseId && currentRubric && prompt && (() => {
+        const evaluatingResponse = allResponses.find(r => r.id === evaluatingResponseId);
+        if (!evaluatingResponse) return null;
+        
+        const existingEval = rubricEvaluations.find(
+          (e) => e.responseId === evaluatingResponseId && e.evaluatorType === "human"
+        );
+        
+        return (
+          <EvaluationForm
+            responseId={evaluatingResponseId}
+            response={{
+              content: evaluatingResponse.content,
+              modelName: evaluatingResponse.modelName,
+              provider: evaluatingResponse.provider || "unknown",
+              runDate: evaluatingResponse.runDate || "",
+              iteration: evaluatingResponse.iteration || 0,
+              latencyMs: evaluatingResponse.latencyMs ?? 0,
+              tokensOutput: evaluatingResponse.tokensOutput ?? 0,
+            }}
+            promptContent={prompt.content}
+            rubric={currentRubric}
+            existingEvaluation={existingEval}
+            onSubmit={submitEvaluation}
+            onClose={() => setEvaluatingResponseId(null)}
+            onNext={goToNextUnevaluated}
+            hasNext={unevaluatedIds.length > 1 || (unevaluatedIds.length === 1 && unevaluatedIds[0] !== evaluatingResponseId)}
+          />
+        );
+      })()}
     </div>
+  );
+}
+
+export default function PromptResponsesPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    }>
+      <PromptResponsesContent />
+    </Suspense>
   );
 }

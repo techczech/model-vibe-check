@@ -26,8 +26,10 @@ import {
   FileText,
   Image,
   X,
+  ClipboardCheck,
+  ExternalLink,
 } from "lucide-react";
-import type { Prompt, Attachment, EvaluationMethod } from "@/lib/types";
+import type { Prompt, Attachment, EvaluationMethod, Rubric } from "@/lib/types";
 
 const CATEGORIES = [
   "Spatial Cognition",
@@ -62,6 +64,7 @@ export default function EditPromptPage() {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [rubrics, setRubrics] = useState<Rubric[]>([]);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -72,16 +75,28 @@ export default function EditPromptPage() {
   const [expectedAnswer, setExpectedAnswer] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [methods, setMethods] = useState<EvaluationMethod[]>(["human"]);
+  const [rubricId, setRubricId] = useState<string | undefined>(undefined);
   const [machineType, setMachineType] = useState("contains");
   const [machineCriteria, setMachineCriteria] = useState("");
   const [machineCaseSensitive, setMachineCaseSensitive] = useState(false);
   const [llmCriteria, setLlmCriteria] = useState("");
 
   useEffect(() => {
+    loadRubrics();
     if (!isNew) {
       loadPrompt();
     }
   }, [isNew, promptId]);
+
+  async function loadRubrics() {
+    try {
+      const res = await fetch("/api/rubrics");
+      const data = await res.json();
+      setRubrics(data.rubrics || []);
+    } catch (error) {
+      console.error("Failed to load rubrics:", error);
+    }
+  }
 
   async function loadPrompt() {
     try {
@@ -98,6 +113,7 @@ export default function EditPromptPage() {
         setExpectedAnswer(prompt.expectedAnswer || "");
         setAttachments(prompt.attachments || []);
         setMethods(prompt.evaluationConfig?.methods || ["human"]);
+        setRubricId(prompt.rubricId);
 
         if (prompt.evaluationConfig?.machineJudge) {
           setMachineType(prompt.evaluationConfig.machineJudge.type);
@@ -184,6 +200,7 @@ export default function EditPromptPage() {
         content,
         expectedAnswer: expectedAnswer || undefined,
         attachments,
+        rubricId: rubricId || undefined,
         evaluationConfig: {
           methods,
           machineJudge: methods.includes("machine")
@@ -411,6 +428,66 @@ export default function EditPromptPage() {
           <CardTitle className="text-base">Evaluation Configuration</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Rubric Selector */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <ClipboardCheck className="h-4 w-4" />
+              Evaluation Rubric
+            </Label>
+            <div className="flex gap-2">
+              <Select
+                value={rubricId || "_default"}
+                onValueChange={(v) => setRubricId(v === "_default" ? undefined : v)}
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Select rubric" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_default">
+                    <span className="text-muted-foreground">Use default rubric</span>
+                  </SelectItem>
+                  {rubrics.filter(r => r.scope === 'global' || r.scope === undefined).length > 0 && (
+                    <>
+                      <SelectItem value="_header_global" disabled>
+                        <span className="text-xs font-semibold text-muted-foreground">— Global Rubrics —</span>
+                      </SelectItem>
+                      {rubrics.filter(r => r.scope === 'global' || r.scope === undefined).map((rubric) => (
+                        <SelectItem key={rubric.id} value={rubric.id}>
+                          {rubric.name} ({rubric.items.length} items)
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
+                  {rubrics.filter(r => r.scope === 'prompt-specific').length > 0 && (
+                    <>
+                      <SelectItem value="_header_specific" disabled>
+                        <span className="text-xs font-semibold text-muted-foreground">— Prompt-Specific —</span>
+                      </SelectItem>
+                      {rubrics.filter(r => r.scope === 'prompt-specific').map((rubric) => (
+                        <SelectItem key={rubric.id} value={rubric.id}>
+                          {rubric.name} ({rubric.items.length} items)
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+              <Link href="/settings/evaluators" target="_blank">
+                <Button variant="outline" size="icon" title="Manage Rubrics">
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+            {rubricId && (() => {
+              const selectedRubric = rubrics.find(r => r.id === rubricId);
+              return selectedRubric?.description ? (
+                <p className="text-xs text-muted-foreground">
+                  {selectedRubric.description}
+                </p>
+              ) : null;
+            })()}
+          </div>
+
           {/* Methods */}
           <div className="space-y-2">
             <Label>Evaluation Methods</Label>

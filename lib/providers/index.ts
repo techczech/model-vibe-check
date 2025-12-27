@@ -304,7 +304,32 @@ async function executeOpenRouter(
   };
 }
 
-// Get available Ollama models
+// ============================================
+// Model Discovery Types and Functions
+// ============================================
+
+export interface DiscoveredModel {
+  id: string;
+  name: string;
+  description?: string;
+  contextWindow?: number;
+  supportsVision?: boolean;
+  supportsAudio?: boolean;
+  pricing?: {
+    prompt?: number;  // per 1M tokens
+    completion?: number;
+  };
+  size?: string;  // e.g., "7B", "70B"
+}
+
+export interface ProviderModelsResult {
+  provider: string;
+  connected: boolean;
+  error?: string;
+  models: DiscoveredModel[];
+}
+
+// Get available Ollama models (simple list)
 export async function getOllamaModels(baseUrl: string): Promise<string[]> {
   try {
     const ollama = new Ollama({ host: baseUrl });
@@ -312,6 +337,280 @@ export async function getOllamaModels(baseUrl: string): Promise<string[]> {
     return response.models.map((m) => m.name);
   } catch {
     return [];
+  }
+}
+
+// Get detailed Ollama models for discovery
+export async function discoverOllamaModels(baseUrl: string): Promise<ProviderModelsResult> {
+  try {
+    const ollama = new Ollama({ host: baseUrl });
+    const response = await ollama.list();
+    
+    const models: DiscoveredModel[] = response.models.map((m) => {
+      // Parse size from model details if available
+      const sizeMatch = m.name.match(/(\d+)b/i);
+      const size = sizeMatch ? `${sizeMatch[1]}B` : undefined;
+      
+      // Vision models typically have "vision" or "llava" in name
+      const supportsVision = /vision|llava|bakllava/i.test(m.name);
+      
+      return {
+        id: m.name,
+        name: m.name.split(':')[0], // Remove tag
+        description: `Local model · ${m.details?.parameter_size || 'Unknown size'}`,
+        supportsVision,
+        size: m.details?.parameter_size || size,
+      };
+    });
+    
+    return {
+      provider: 'ollama',
+      connected: true,
+      models,
+    };
+  } catch (error) {
+    return {
+      provider: 'ollama',
+      connected: false,
+      error: error instanceof Error ? error.message : 'Failed to connect to Ollama',
+      models: [],
+    };
+  }
+}
+
+// Get available OpenAI models
+export async function discoverOpenAIModels(apiKey: string): Promise<ProviderModelsResult> {
+  if (!apiKey) {
+    return {
+      provider: 'openai',
+      connected: false,
+      error: 'API key not configured',
+      models: [],
+    };
+  }
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/models', {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Filter to chat-capable models and sort by relevance
+    const chatModels = (data.data as Array<{ id: string; created: number }>)
+      .filter((m) => {
+        const id = m.id.toLowerCase();
+        // Include GPT models, o1/o3 reasoning models
+        return (
+          id.startsWith('gpt-') ||
+          id.startsWith('o1') ||
+          id.startsWith('o3') ||
+          id.startsWith('chatgpt')
+        ) && !id.includes('instruct') && !id.includes('realtime');
+      })
+      .sort((a, b) => b.created - a.created);
+
+    const models: DiscoveredModel[] = chatModels.map((m) => {
+      const id = m.id;
+      const supportsVision = id.includes('4o') || id.includes('gpt-4-turbo') || id.includes('vision');
+      
+      // Context window estimates
+      let contextWindow = 128000;
+      if (id.includes('gpt-3.5')) contextWindow = 16385;
+      if (id.includes('o1') || id.includes('o3')) contextWindow = 200000;
+      
+      return {
+        id,
+        name: id,
+        description: supportsVision ? 'Vision capable' : undefined,
+        contextWindow,
+        supportsVision,
+      };
+    });
+
+    return {
+      provider: 'openai',
+      connected: true,
+      models,
+    };
+  } catch (error) {
+    return {
+      provider: 'openai',
+      connected: false,
+      error: error instanceof Error ? error.message : 'Failed to connect to OpenAI',
+      models: [],
+    };
+  }
+}
+
+// Get available Google AI models
+export async function discoverGoogleModels(apiKey: string): Promise<ProviderModelsResult> {
+  if (!apiKey) {
+    return {
+      provider: 'google',
+      connected: false,
+      error: 'API key not configured',
+      models: [],
+    };
+  }
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Filter to generative models
+    const generativeModels = (data.models as Array<{
+      name: string;
+      displayName: string;
+      description: string;
+      inputTokenLimit?: number;
+      supportedGenerationMethods?: string[];
+    }>)
+      .filter((m) => {
+        // Only include models that support generateContent
+        return m.supportedGenerationMethods?.includes('generateContent');
+      });
+
+    const models: DiscoveredModel[] = generativeModels.map((m) => {
+      const id = m.name.replace('models/', '');
+      const supportsVision = id.includes('vision') || id.includes('gemini-1.5') || id.includes('gemini-2');
+      
+      return {
+        id,
+        name: m.displayName || id,
+        description: m.description,
+        contextWindow: m.inputTokenLimit,
+        supportsVision,
+      };
+    });
+
+    return {
+      provider: 'google',
+      connected: true,
+      models,
+    };
+  } catch (error) {
+    return {
+      provider: 'google',
+      connected: false,
+      error: error instanceof Error ? error.message : 'Failed to connect to Google AI',
+      models: [],
+    };
+  }
+}
+
+// Get available OpenRouter models
+export async function discoverOpenRouterModels(apiKey: string): Promise<ProviderModelsResult> {
+  if (!apiKey) {
+    return {
+      provider: 'openrouter',
+      connected: false,
+      error: 'API key not configured',
+      models: [],
+    };
+  }
+
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/models', {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    const models: DiscoveredModel[] = (data.data as Array<{
+      id: string;
+      name: string;
+      description?: string;
+      context_length?: number;
+      pricing?: { prompt: string; completion: string };
+      architecture?: { modality?: string };
+    }>).map((m) => {
+      const supportsVision = m.architecture?.modality?.includes('image') || 
+        m.id.includes('vision') || 
+        m.name.toLowerCase().includes('vision');
+      
+      return {
+        id: m.id,
+        name: m.name,
+        description: m.description,
+        contextWindow: m.context_length,
+        supportsVision,
+        pricing: m.pricing ? {
+          prompt: parseFloat(m.pricing.prompt) * 1000000,
+          completion: parseFloat(m.pricing.completion) * 1000000,
+        } : undefined,
+      };
+    });
+
+    // Sort by popularity/relevance - put major providers first
+    const priorityProviders = ['anthropic', 'openai', 'google', 'meta-llama', 'mistralai'];
+    models.sort((a, b) => {
+      const aProvider = a.id.split('/')[0];
+      const bProvider = b.id.split('/')[0];
+      const aIndex = priorityProviders.indexOf(aProvider);
+      const bIndex = priorityProviders.indexOf(bProvider);
+      
+      if (aIndex !== -1 && bIndex === -1) return -1;
+      if (bIndex !== -1 && aIndex === -1) return 1;
+      if (aIndex !== bIndex) return aIndex - bIndex;
+      return a.name.localeCompare(b.name);
+    });
+
+    return {
+      provider: 'openrouter',
+      connected: true,
+      models,
+    };
+  } catch (error) {
+    return {
+      provider: 'openrouter',
+      connected: false,
+      error: error instanceof Error ? error.message : 'Failed to connect to OpenRouter',
+      models: [],
+    };
+  }
+}
+
+// Unified discovery function
+export async function discoverModels(
+  provider: string,
+  settings: Settings
+): Promise<ProviderModelsResult> {
+  switch (provider) {
+    case 'ollama':
+      return discoverOllamaModels(settings.ollamaBaseUrl);
+    case 'openai':
+      return discoverOpenAIModels(settings.apiKeys.openai || '');
+    case 'google':
+      return discoverGoogleModels(settings.apiKeys.google || '');
+    case 'openrouter':
+      return discoverOpenRouterModels(settings.apiKeys.openrouter || '');
+    default:
+      return {
+        provider,
+        connected: false,
+        error: `Unknown provider: ${provider}`,
+        models: [],
+      };
   }
 }
 

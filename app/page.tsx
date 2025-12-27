@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getPrompts, getModels, getRuns } from "@/lib/storage";
+import { getPrompts, getModels, getRuns, getRubricEvaluations } from "@/lib/storage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,14 +12,20 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  Sparkles,
+  GitCompare,
+  Eye,
+  EyeOff,
+  Swords,
 } from "lucide-react";
-import { formatDate, getScoreEmoji } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 
 export default async function DashboardPage() {
-  const [prompts, models, runs] = await Promise.all([
+  const [prompts, models, runs, evaluations] = await Promise.all([
     getPrompts(),
     getModels(),
     getRuns(),
+    getRubricEvaluations(),
   ]);
 
   const activeModels = models.filter((m) => m.isActive);
@@ -31,10 +37,10 @@ export default async function DashboardPage() {
     (sum, r) => sum + r.results.length,
     0
   );
-  const totalEvaluations = completedRuns.reduce(
-    (sum, r) => sum + r.evaluations.length,
-    0
-  );
+  
+  // Count unique evaluated responses
+  const evaluatedResponseIds = new Set(evaluations.map(e => e.responseId));
+  const unevaluatedCount = totalResults - evaluatedResponseIds.size;
 
   // Group prompts by category
   const categories = [...new Set(prompts.map((p) => p.category))];
@@ -46,16 +52,81 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground mt-1">
-            Quick overview of your vibe check setup
+            Your qualitative LLM evaluation workbench
           </p>
         </div>
-        <Link href="/runs/new">
-          <Button>
-            <Play className="h-4 w-4 mr-2" />
-            New Vibe Check
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/vibe-check">
+            <Button variant="outline">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Vibe Check
+            </Button>
+          </Link>
+          <Link href="/runs/new">
+            <Button>
+              <Play className="h-4 w-4 mr-2" />
+              New Run
+            </Button>
+          </Link>
+        </div>
       </div>
+
+      {/* Vibe Check Quick Actions - Featured */}
+      {totalResults > 0 && (
+        <Card className="border-primary/50 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Vibe Check
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Compare and evaluate model responses. {unevaluatedCount > 0 && (
+                <span className="text-primary font-medium">{unevaluatedCount} responses awaiting evaluation.</span>
+              )}
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Link href="/vibe-check/prompt">
+                <Button variant="outline" className="w-full justify-start h-auto py-3">
+                  <FileText className="h-4 w-4 mr-2 shrink-0" />
+                  <div className="text-left">
+                    <div className="font-medium">Prompt Vibe</div>
+                    <div className="text-xs text-muted-foreground">Compare models on a prompt</div>
+                  </div>
+                </Button>
+              </Link>
+              <Link href="/vibe-check/model">
+                <Button variant="outline" className="w-full justify-start h-auto py-3">
+                  <Cpu className="h-4 w-4 mr-2 shrink-0" />
+                  <div className="text-left">
+                    <div className="font-medium">Model Vibe</div>
+                    <div className="text-xs text-muted-foreground">Explore a model's responses</div>
+                  </div>
+                </Button>
+              </Link>
+              <Link href="/vibe-check/blind">
+                <Button variant="outline" className="w-full justify-start h-auto py-3">
+                  <EyeOff className="h-4 w-4 mr-2 shrink-0" />
+                  <div className="text-left">
+                    <div className="font-medium">Blind Review</div>
+                    <div className="text-xs text-muted-foreground">Rate without knowing model</div>
+                  </div>
+                </Button>
+              </Link>
+              <Link href="/vibe-check/compare">
+                <Button variant="outline" className="w-full justify-start h-auto py-3">
+                  <Swords className="h-4 w-4 mr-2 shrink-0" />
+                  <div className="text-left">
+                    <div className="font-medium">Head-to-Head</div>
+                    <div className="text-xs text-muted-foreground">Pairwise model comparison</div>
+                  </div>
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -87,26 +158,26 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed Runs</CardTitle>
+            <CardTitle className="text-sm font-medium">Responses</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{completedRuns.length}</div>
+            <div className="text-2xl font-bold">{totalResults}</div>
             <p className="text-xs text-muted-foreground">
-              {totalResults} total results
+              from {completedRuns.length} completed runs
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Evaluations</CardTitle>
+            <CardTitle className="text-sm font-medium">Evaluated</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalEvaluations}</div>
+            <div className="text-2xl font-bold">{evaluatedResponseIds.size}</div>
             <p className="text-xs text-muted-foreground">
-              human + machine + LLM
+              {unevaluatedCount > 0 ? `${unevaluatedCount} pending` : "all reviewed"}
             </p>
           </CardContent>
         </Card>

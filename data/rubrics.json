@@ -1,0 +1,191 @@
+{
+  "version": "1.0",
+  "rubrics": [
+    {
+      "id": "general-quality",
+      "name": "General Response Quality",
+      "description": "A general-purpose rubric for evaluating any AI response",
+      "items": [
+        {
+          "id": "addresses-prompt",
+          "label": "Addresses the prompt",
+          "description": "Does the response actually answer what was asked?",
+          "type": "binary"
+        },
+        {
+          "id": "accuracy",
+          "label": "Factual accuracy",
+          "description": "Is the information provided correct?",
+          "type": "scale",
+          "scaleLabels": ["Unknown/Unverifiable", "Contains errors", "Mostly accurate", "Fully accurate"]
+        },
+        {
+          "id": "structure",
+          "label": "Well-structured",
+          "description": "Is the response organized and easy to follow?",
+          "type": "scale",
+          "scaleLabels": ["Disorganized", "Somewhat structured", "Well organized", "Excellent structure"]
+        },
+        {
+          "id": "length",
+          "label": "Appropriate length",
+          "description": "Is the response the right length for the task?",
+          "type": "scale",
+          "scaleLabels": ["Too short", "About right", "Too long"]
+        },
+        {
+          "id": "tone",
+          "label": "Appropriate tone",
+          "description": "Does the tone match what was requested or expected?",
+          "type": "binary"
+        }
+      ],
+      "allowImpressionScore": true,
+      "isDefault": true,
+      "createdAt": "2024-12-27T00:00:00.000Z",
+      "updatedAt": "2024-12-27T00:00:00.000Z"
+    },
+    {
+      "id": "code-generation",
+      "name": "Code Generation",
+      "description": "For evaluating generated code",
+      "items": [
+        {
+          "id": "syntactically-valid",
+          "label": "Syntactically valid",
+          "description": "Does the code parse without errors?",
+          "type": "binary"
+        },
+        {
+          "id": "solves-problem",
+          "label": "Solves the problem",
+          "description": "Does the code actually solve what was asked?",
+          "type": "scale",
+          "scaleLabels": ["Does not work", "Partially works", "Works correctly", "Works elegantly"]
+        },
+        {
+          "id": "edge-cases",
+          "label": "Handles edge cases",
+          "description": "Which edge cases are handled?",
+          "type": "checklist",
+          "checklistItems": ["Empty input", "Invalid input", "Boundary values", "Error handling"]
+        },
+        {
+          "id": "readable",
+          "label": "Readable code",
+          "description": "Is the code easy to understand?",
+          "type": "scale",
+          "scaleLabels": ["Confusing", "Acceptable", "Clean", "Exemplary"]
+        },
+        {
+          "id": "commented",
+          "label": "Well-commented",
+          "description": "Are there helpful comments where needed?",
+          "type": "binary"
+        }
+      ],
+      "allowImpressionScore": true,
+      "isDefault": true,
+      "createdAt": "2024-12-27T00:00:00.000Z",
+      "updatedAt": "2024-12-27T00:00:00.000Z"
+    },
+    {
+      "id": "creative-writing",
+      "name": "Creative Writing",
+      "description": "For evaluating creative or stylistic writing",
+      "items": [
+        {
+          "id": "matches-style",
+          "label": "Matches requested style",
+          "description": "Does it match the genre, voice, or style that was asked for?",
+          "type": "scale",
+          "scaleLabels": ["Wrong style", "Hints of style", "Good match", "Perfect capture"]
+        },
+        {
+          "id": "engaging",
+          "label": "Engaging",
+          "description": "Is it interesting to read?",
+          "type": "scale",
+          "scaleLabels": ["Boring", "Acceptable", "Interesting", "Compelling"]
+        },
+        {
+          "id": "technically-competent",
+          "label": "Technically competent",
+          "description": "Is the prose well-crafted (grammar, flow, word choice)?",
+          "type": "scale",
+          "scaleLabels": ["Poor", "Acceptable", "Good", "Excellent"]
+        },
+        {
+          "id": "creative-elements",
+          "label": "Creative elements present",
+          "description": "What creative elements are included?",
+          "type": "checklist",
+          "checklistItems": ["Vivid imagery", "Strong voice", "Originality", "Emotional resonance"]
+        },
+        {
+          "id": "complete",
+          "label": "Complete piece",
+          "description": "Does it feel finished and self-contained?",
+          "type": "binary"
+        }
+      ],
+      "allowImpressionScore": true,
+      "isDefault": true,
+      "createdAt": "2024-12-27T00:00:00.000Z",
+      "updatedAt": "2024-12-27T00:00:00.000Z"
+    },
+    {
+      "id": "instruction-following",
+      "name": "Instruction Following",
+      "description": "For evaluating how well the model follows specific instructions",
+      "items": [
+        {
+          "id": "followed-format",
+          "label": "Followed format",
+          "description": "Did it use the requested format (JSON, markdown, etc)?",
+          "type": "binary"
+        },
+        {
+          "id": "constraints-respected",
+          "label": "Constraints respected",
+          "description": "Did it respect length limits, word counts, or other constraints?",
+          "type": "binary"
+        },
+        {
+          "id": "all-parts-addressed",
+          "label": "All parts addressed",
+          "description": "Did it address all parts of a multi-part question?",
+          "type": "scale",
+          "scaleLabels": ["Missed most", "Some parts", "Most parts", "All parts"]
+        },
+        {
+          "id": "no-extras",
+          "label": "No unwanted extras",
+          "description": "Did it avoid adding things that weren't asked for?",
+          "type": "binary"
+        }
+      ],
+      "allowImpressionScore": true,
+      "isDefault": true,
+      "createdAt": "2024-12-27T00:00:00.000Z",
+      "updatedAt": "2024-12-27T00:00:00.000Z"
+    },
+    {
+      "id": "quick-binary",
+      "name": "Quick Yes/No",
+      "description": "Simple pass/fail evaluation for quick checks",
+      "items": [
+        {
+          "id": "acceptable",
+          "label": "Acceptable response",
+          "description": "Is this response acceptable for the task?",
+          "type": "binary"
+        }
+      ],
+      "allowImpressionScore": true,
+      "isDefault": true,
+      "createdAt": "2024-12-27T00:00:00.000Z",
+      "updatedAt": "2024-12-27T00:00:00.000Z"
+    }
+  ]
+}

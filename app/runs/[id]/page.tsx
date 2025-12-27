@@ -18,10 +18,16 @@ import {
   Calendar,
   Hash,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   ExternalLink,
+  Sparkles,
+  Eye,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-import type { Run, Prompt, Model } from "@/lib/types";
+import { ResponseViewer } from "@/components/response-viewer";
+import { toViewerPrompt, getResponsesForPrompt } from "@/lib/viewer-utils";
+import type { Run, Prompt, Model, ViewerResponse } from "@/lib/types";
 
 export default function RunDetailPage() {
   const params = useParams();
@@ -30,8 +36,15 @@ export default function RunDetailPage() {
   const [run, setRun] = useState<Run | null>(null);
   const [prompts, setPrompts] = useState<Record<string, Prompt>>({});
   const [models, setModels] = useState<Record<string, Model>>({});
+  const [allPrompts, setAllPrompts] = useState<Prompt[]>([]);
+  const [allModels, setAllModels] = useState<Model[]>([]);
+  const [allRuns, setAllRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
+  
+  // Expanded prompt for inline viewing
+  const [expandedPromptId, setExpandedPromptId] = useState<string | null>(null);
+  const [expandedResponses, setExpandedResponses] = useState<ViewerResponse[]>([]);
 
   const loadData = useCallback(async () => {
     try {
@@ -41,22 +54,32 @@ export default function RunDetailPage() {
       setRun(runData.run || runData);
 
       // Load prompts and models for display names
-      const [promptsRes, modelsRes] = await Promise.all([
+      const [promptsRes, modelsRes, runsRes] = await Promise.all([
         fetch("/api/prompts"),
         fetch("/api/models"),
+        fetch("/api/runs"),
       ]);
       const promptsData = await promptsRes.json();
       const modelsData = await modelsRes.json();
+      const runsData = await runsRes.json();
+
+      const promptsList = promptsData.prompts || [];
+      const modelsList = modelsData.models || [];
+      const runsList = runsData.runs || [];
+
+      setAllPrompts(promptsList);
+      setAllModels(modelsList);
+      setAllRuns(runsList);
 
       // Index by ID
       const promptIndex: Record<string, Prompt> = {};
-      (promptsData.prompts || []).forEach((p: Prompt) => {
+      promptsList.forEach((p: Prompt) => {
         promptIndex[p.id] = p;
       });
       setPrompts(promptIndex);
 
       const modelIndex: Record<string, Model> = {};
-      (modelsData.models || []).forEach((m: Model) => {
+      modelsList.forEach((m: Model) => {
         modelIndex[m.id] = m;
       });
       setModels(modelIndex);
@@ -78,6 +101,22 @@ export default function RunDetailPage() {
       return () => clearInterval(interval);
     }
   }, [run?.status, loadData]);
+
+  // Load responses for expanded prompt
+  useEffect(() => {
+    if (expandedPromptId && run) {
+      const prompt = prompts[expandedPromptId];
+      if (prompt) {
+        // Filter runs to only this run
+        const thisRun = [run];
+        const responses = getResponsesForPrompt(
+          expandedPromptId,
+          { models: allModels, prompts: allPrompts, runs: thisRun }
+        );
+        setExpandedResponses(responses);
+      }
+    }
+  }, [expandedPromptId, run, prompts, allModels, allPrompts]);
 
   async function executeRun() {
     setExecuting(true);
@@ -109,6 +148,16 @@ export default function RunDetailPage() {
   // Get response counts per model
   function getResponseCountForModel(modelId: string): number {
     return run?.results.filter((r) => r.modelId === modelId).length || 0;
+  }
+
+  // Toggle expanded prompt
+  function toggleExpandPrompt(promptId: string) {
+    if (expandedPromptId === promptId) {
+      setExpandedPromptId(null);
+      setExpandedResponses([]);
+    } else {
+      setExpandedPromptId(promptId);
+    }
   }
 
   if (loading) {
@@ -238,18 +287,26 @@ export default function RunDetailPage() {
                 </div>
               )}
             </div>
-            {run.results.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => downloadExport("csv")}>
-                  <Download className="h-4 w-4 mr-2" />
-                  CSV
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => downloadExport("json")}>
-                  <Download className="h-4 w-4 mr-2" />
-                  JSON
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              {run.results.length > 0 && (
+                <>
+                  <Link href={`/vibe-check/prompt?run=${runId}`}>
+                    <Button variant="outline" size="sm">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Vibe Check
+                    </Button>
+                  </Link>
+                  <Button variant="outline" size="sm" onClick={() => downloadExport("csv")}>
+                    <Download className="h-4 w-4 mr-2" />
+                    CSV
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => downloadExport("json")}>
+                    <Download className="h-4 w-4 mr-2" />
+                    JSON
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -263,7 +320,7 @@ export default function RunDetailPage() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
                   <FileText className="h-4 w-4" />
-                  Browse by Prompt
+                  Prompts in this Run
                 </CardTitle>
               </div>
             </CardHeader>
@@ -271,34 +328,58 @@ export default function RunDetailPage() {
               {run.promptIds.map((promptId) => {
                 const prompt = prompts[promptId];
                 const count = getResponseCountForPrompt(promptId);
+                const isExpanded = expandedPromptId === promptId;
                 
                 return (
-                  <div
-                    key={promptId}
-                    className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {prompt?.title || promptId}
-                      </p>
-                      {prompt?.category && (
-                        <Badge variant="outline" className="text-xs mt-1">
-                          {prompt.category}
+                  <div key={promptId} className="border rounded-lg">
+                    <div
+                      className="flex items-center justify-between p-3 hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => toggleExpandPrompt(promptId)}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">
+                          {prompt?.title || promptId}
+                        </p>
+                        {prompt?.category && (
+                          <Badge variant="outline" className="text-xs mt-1">
+                            {prompt.category}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary">
+                          {count} response{count !== 1 ? "s" : ""}
                         </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary">
-                        {count} response{count !== 1 ? "s" : ""}
-                      </Badge>
-                      <Link href={`/prompts/${promptId}/responses`}>
-                        <Button variant="ghost" size="sm">
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          View
-                          <ChevronRight className="h-4 w-4 ml-1" />
+                        <Link 
+                          href={`/vibe-check/prompt?prompt=${promptId}`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Button variant="ghost" size="sm">
+                            <Sparkles className="h-4 w-4 mr-1" />
+                            Compare
+                          </Button>
+                        </Link>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          {isExpanded ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
                         </Button>
-                      </Link>
+                      </div>
                     </div>
+                    
+                    {/* Inline ResponseViewer */}
+                    {isExpanded && expandedResponses.length > 0 && (
+                      <div className="border-t p-4 bg-muted/30">
+                        <ResponseViewer
+                          prompt={prompt ? toViewerPrompt(prompt) : undefined}
+                          responses={expandedResponses}
+                          showToolbar={true}
+                          defaultExpanded={false}
+                        />
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -310,7 +391,7 @@ export default function RunDetailPage() {
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Cpu className="h-4 w-4" />
-                Browse by Model
+                Models in this Run
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -337,11 +418,10 @@ export default function RunDetailPage() {
                       <Badge variant="secondary">
                         {count} response{count !== 1 ? "s" : ""}
                       </Badge>
-                      <Link href={`/models/${modelId}/responses`}>
+                      <Link href={`/vibe-check/model?model=${modelId}`}>
                         <Button variant="ghost" size="sm">
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          View
-                          <ChevronRight className="h-4 w-4 ml-1" />
+                          <Sparkles className="h-4 w-4 mr-1" />
+                          Explore
                         </Button>
                       </Link>
                     </div>

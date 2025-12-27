@@ -47,6 +47,34 @@ export function getScoreEmoji(score: number, max: number = 10): string {
   return "❌";
 }
 
+export function formatTokens(count: number): string {
+  if (count < 1000) return `${count}`;
+  if (count < 10000) return `${(count / 1000).toFixed(1)}k`;
+  return `${Math.round(count / 1000)}k`;
+}
+
+export function formatTokenRate(tokens: number, ms: number): string {
+  if (ms === 0) return "—";
+  const tokensPerSecond = (tokens / ms) * 1000;
+  return `${tokensPerSecond.toFixed(1)} tok/s`;
+}
+
+export function formatResponseMeta(latencyMs: number, tokensOutput?: number): string {
+  const parts: string[] = [];
+  
+  if (tokensOutput) {
+    parts.push(formatTokens(tokensOutput) + " tokens");
+  }
+  
+  parts.push(formatDuration(latencyMs));
+  
+  if (tokensOutput && latencyMs > 0) {
+    parts.push(formatTokenRate(tokensOutput, latencyMs));
+  }
+  
+  return parts.join(" · ");
+}
+
 export function truncate(str: string, length: number): string {
   if (str.length <= length) return str;
   return str.slice(0, length - 3) + "...";

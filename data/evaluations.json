@@ -1,0 +1,114 @@
+{
+  "version": "1.0",
+  "evaluations": [
+    {
+      "id": "72auaesa5rt",
+      "responseId": "pqn6gtmnmdb",
+      "rubricId": "general-quality",
+      "evaluatorType": "llm",
+      "evaluatorId": "openai-gpt-4o-mini-1766783879838",
+      "scores": {
+        "addresses-prompt": {
+          "value": true,
+          "confidence": 1,
+          "note": "The response accurately translates both sentences as requested."
+        },
+        "accuracy": {
+          "value": 2,
+          "confidence": 0.9,
+          "note": "The first sentence is translated correctly, but the second could be slightly clearer; however, it captures the intended meaning."
+        },
+        "structure": {
+          "value": 3,
+          "confidence": 1,
+          "note": "The response is well organized, presenting each translation clearly and separately."
+        },
+        "length": {
+          "value": 1,
+          "confidence": 1,
+          "note": "The response is about the right length; it provides the necessary information without being verbose."
+        },
+        "tone": {
+          "value": true,
+          "confidence": 1,
+          "note": "The tone is appropriate for a translation task, being straightforward and informative."
+        }
+      },
+      "impressionScore": 8,
+      "reasoning": "Overall, the response meets the prompt requirements effectively, with accurate and clear translations. It is well-structured and maintains an appropriate tone, though slight improvements could be made for clarity in the second translation.",
+      "createdAt": "2025-12-27T09:06:06.955Z"
+    },
+    {
+      "id": "zi3v4h78x3m",
+      "responseId": "pqn6gtmnmdb",
+      "rubricId": "general-quality",
+      "evaluatorType": "llm",
+      "evaluatorId": "openai-gpt-4o-mini-1766783879838",
+      "scores": {
+        "addresses-prompt": {
+          "value": true,
+          "confidence": 1,
+          "note": "The response provides translations for both German sentences as requested."
+        },
+        "accuracy": {
+          "value": 2,
+          "confidence": 0.9,
+          "note": "The first translation is accurate, but the second sentence could be misinterpreted as it does not highlight the negation adequately."
+        },
+        "structure": {
+          "value": 3,
+          "confidence": 1,
+          "note": "The response is well-organized, presenting the translations clearly."
+        },
+        "length": {
+          "value": 1,
+          "confidence": 0.8,
+          "note": "The response is appropriately concise without omitting necessary information."
+        },
+        "tone": {
+          "value": true,
+          "confidence": 1,
+          "note": "The tone is appropriate for a translation task."
+        }
+      },
+      "impressionScore": 7,
+      "reasoning": "Overall, the response successfully addresses the prompt and is structured well. However, there is a minor issue with the interpretation of the negation in the second sentence, which could lead to misunderstanding. Therefore, while the response is mostly accurate, it falls slightly short of being fully precise.",
+      "createdAt": "2025-12-27T09:06:18.169Z"
+    },
+    {
+      "id": "zqxbag2kfl",
+      "responseId": "pqn6gtmnmdb",
+      "rubricId": "general-quality",
+      "evaluatorType": "human",
+      "scores": {
+        "addresses-prompt": {
+          "value": true,
+          "confidence": 1,
+          "note": "The response accurately translates both sentences as requested."
+        },
+        "accuracy": {
+          "value": 1,
+          "confidence": 0.9,
+          "note": "The first sentence is translated correctly, but the second could be slightly clearer; however, it captures the intended meaning."
+        },
+        "structure": {
+          "value": 1,
+          "confidence": 1,
+          "note": "The response is well organized, presenting each translation clearly and separately."
+        },
+        "length": {
+          "value": 1,
+          "confidence": 1,
+          "note": "The response is about the right length; it provides the necessary information without being verbose."
+        },
+        "tone": {
+          "value": true,
+          "confidence": 1,
+          "note": "The tone is appropriate for a translation task, being straightforward and informative."
+        }
+      },
+      "impressionScore": 5,
+      "createdAt": "2025-12-27T09:06:37.367Z"
+    }
+  ]
+}

@@ -22,6 +22,8 @@ import {
   Eye,
   Headphones,
   MessageSquare,
+  BarChart3,
+  Search,
 } from "lucide-react";
 import Link from "next/link";
 import type { Model, Provider } from "@/lib/types";
@@ -37,6 +39,7 @@ const PROVIDER_MODELS: Record<Provider, string[]> = {
     "mistralai/mistral-large-2411",
     "deepseek/deepseek-chat",
   ],
+  anthropic: [], // Not yet implemented - use OpenRouter for Claude models
 };
 
 const PROVIDER_LABELS: Record<Provider, string> = {
@@ -44,6 +47,7 @@ const PROVIDER_LABELS: Record<Provider, string> = {
   openai: "OpenAI",
   google: "Google AI",
   openrouter: "OpenRouter",
+  anthropic: "Anthropic",
 };
 
 export default function ModelsPage() {
@@ -154,11 +158,27 @@ export default function ModelsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Models</h1>
-        <p className="text-muted-foreground mt-1">
-          Configure which models to include in your vibe checks
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Models</h1>
+          <p className="text-muted-foreground mt-1">
+            Configure which models to include in your vibe checks
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link href="/models/overview">
+            <Button variant="outline">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Overview
+            </Button>
+          </Link>
+          <Link href="/settings?tab=models">
+            <Button>
+              <Search className="h-4 w-4 mr-2" />
+              Discover Models
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Add Model */}

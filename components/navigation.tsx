@@ -10,10 +10,12 @@ import {
   Play,
   Settings,
   Zap,
+  Sparkles,
 } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: Home },
+  { href: "/vibe-check", label: "Vibe Check", icon: Sparkles },
   { href: "/prompts", label: "Prompts", icon: FileText },
   { href: "/models", label: "Models", icon: Cpu },
   { href: "/runs", label: "Runs", icon: Play },
