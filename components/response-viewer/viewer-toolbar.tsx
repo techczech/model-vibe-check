@@ -22,7 +22,7 @@ import {
   MonitorSmartphone,
   Settings2,
   Eye,
-  Code,
+  WrapText,
   Type,
   Link2,
   RotateCcw,
@@ -150,36 +150,23 @@ export function ViewerToolbar({
         </Button>
       </div>
 
-      {/* Column presets (only for 2-col) */}
-      {layout === "2-col" && (
-        <div className="flex items-center border rounded-md bg-background">
+      {/* Column presets (for grid layouts) */}
+      {(layout === "2-col" || layout === "3-col") && (
+        <div className="flex items-center gap-1">
           <Button
             variant={columnPreset === "equal" ? "secondary" : "ghost"}
             size="sm"
-            className="h-8 px-2 rounded-r-none text-xs"
+            className="h-8 px-2 text-xs"
             onClick={() => onColumnPresetChange("equal")}
-            title="Equal widths"
+            title="Reset to equal widths"
           >
-            50/50
+            {layout === "2-col" ? "50/50" : "Equal"}
           </Button>
-          <Button
-            variant={columnPreset === "1/3-2/3" ? "secondary" : "ghost"}
-            size="sm"
-            className="h-8 px-2 rounded-none border-x text-xs"
-            onClick={() => onColumnPresetChange("1/3-2/3")}
-            title="Left smaller"
-          >
-            33/67
-          </Button>
-          <Button
-            variant={columnPreset === "2/3-1/3" ? "secondary" : "ghost"}
-            size="sm"
-            className="h-8 px-2 rounded-l-none text-xs"
-            onClick={() => onColumnPresetChange("2/3-1/3")}
-            title="Right smaller"
-          >
-            67/33
-          </Button>
+          {columnPreset === "custom" && (
+            <Badge variant="outline" className="text-xs h-6">
+              Custom
+            </Badge>
+          )}
         </div>
       )}
 
@@ -201,7 +188,7 @@ export function ViewerToolbar({
           onClick={() => onContentToggle("wordWrap")}
           title="Word wrap"
         >
-          <Code className="h-4 w-4" />
+          <WrapText className="h-4 w-4" />
         </Button>
         {height === "viewport" && (
           <Button

@@ -23,6 +23,9 @@ import {
   ExternalLink,
   Sparkles,
   Eye,
+  GitCompare,
+  ClipboardCheck,
+  Bot,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { ResponseViewer } from "@/components/response-viewer";
@@ -222,6 +225,34 @@ export default function RunDetailPage() {
           {run.status}
         </Badge>
       </div>
+
+      {/* Run Navigation */}
+      {run.results.length > 0 && (
+        <div className="flex gap-2 border-b pb-4">
+          <Button variant="secondary" size="sm" disabled>
+            <FileText className="h-4 w-4 mr-2" />
+            Details
+          </Button>
+          <Link href={`/runs/${runId}/compare`}>
+            <Button variant="ghost" size="sm">
+              <GitCompare className="h-4 w-4 mr-2" />
+              Compare
+            </Button>
+          </Link>
+          <Link href={`/runs/${runId}/evaluate`}>
+            <Button variant="ghost" size="sm">
+              <ClipboardCheck className="h-4 w-4 mr-2" />
+              Evaluate
+            </Button>
+          </Link>
+          <Link href={`/runs/${runId}/judge`}>
+            <Button variant="ghost" size="sm">
+              <Bot className="h-4 w-4 mr-2" />
+              LLM Judge
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {/* Run Summary */}
       <Card>

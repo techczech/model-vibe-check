@@ -2,7 +2,7 @@
 
 A tool for qualitative LLM evaluation. Run prompts against multiple models, read the responses side-by-side, and decide which ones have the right vibe.
 
-**Version 0.5.0**
+**Version 0.6.0**
 
 ## Philosophy
 
@@ -14,15 +14,14 @@ Most LLM benchmarks reduce model outputs to numbers. But you can't check the vib
 - Use **LLM-as-judge** for automated evaluation
 - Runs are archives — browsing is the primary experience
 
-## What's New in v0.5.0
+## What's New in v0.6.0
 
-- **Vibe Check Hub**: Central evaluation dashboard with four distinct modes
-- **Rubric System**: Create structured evaluation criteria (binary, scale, checklist)
-- **LLM Judge**: Automated rubric-based evaluation using any model
-- **Model Overview**: See all your models and their response statistics
-- **Enhanced Response Viewer**: Modular viewer with keyboard shortcuts
-- **Model Discovery**: Auto-discover models from configured providers
-- **Evaluator Configuration**: Dedicated settings for evaluation models
+- **Resizable Columns**: Drag to resize columns in comparison views
+- **Model Metadata Filtering**: Filter and sort models by size class (Frontier/Flash/Open) and reasoning capability
+- **Collapsible Sidebar**: More screen space for reading responses
+- **Quick Model Selection**: Quickly add all Frontier, Flash, or Reasoning models when creating runs
+- **Improved Response Viewer**: Better markdown toggle, word wrap, and toolbar layout
+- **Evaluations Page**: Dedicated page for managing evaluations
 
 ## Features
 
@@ -211,6 +210,18 @@ MIT — see [LICENSE](LICENSE)
 Issues and PRs welcome. This is a tool for qualitative evaluation, so suggestions for better ways to read and compare responses are especially appreciated.
 
 ## Changelog
+
+### v0.6.0
+- Added resizable columns with drag handles in comparison views
+- Added model metadata filtering in Runs list and New Run form
+- Added sorting by provider, size class, or name in model selection
+- Added quick select buttons for Frontier, Flash, and Reasoning models
+- Added collapsible sidebar for more reading space
+- Added dedicated Evaluations page
+- Fixed markdown toggle not re-enabling after being turned off
+- Improved toolbar icons (word wrap now uses proper icon)
+- Simplified column presets (removed redundant 33/67 options)
+- Reorganized sidebar navigation (removed Categories, added Evaluations)
 
 ### v0.5.0
 - Added Vibe Check hub with four evaluation modes

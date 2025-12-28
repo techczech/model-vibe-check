@@ -18,7 +18,7 @@ import {
   Play,
   Settings,
   Zap,
-  FolderOpen,
+  ClipboardCheck,
   Sparkles,
   PanelLeftClose,
   PanelLeft,
@@ -28,9 +28,9 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Vibe Check", href: "/vibe-check", icon: Sparkles },
   { name: "Prompts", href: "/prompts", icon: FileText },
-  { name: "Categories", href: "/categories", icon: FolderOpen },
   { name: "Models", href: "/models", icon: Cpu },
   { name: "Runs", href: "/runs", icon: Play },
+  { name: "Evaluations", href: "/evaluations", icon: ClipboardCheck },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 

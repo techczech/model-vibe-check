@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,12 +9,35 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   ArrowLeft,
   Play,
   RefreshCw,
   Check,
   AlertCircle,
+  ArrowUpDown,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  SIZE_FILTER_GROUPS,
+  REASONING_FILTER_GROUPS,
+  matchesSizeFilter,
+  matchesReasoningFilter,
+  sortModels,
+  getEffectiveMetadata,
+  getSizeClassColor,
+  getSizeClassLabel,
+  getReasoningLabel,
+  type SizeFilterGroup,
+  type ReasoningFilterGroup,
+  type ModelSortOption,
+} from "@/lib/model-metadata";
 import type { Prompt, Model } from "@/lib/types";
 
 export default function NewRunForm() {
@@ -33,6 +56,11 @@ export default function NewRunForm() {
   const [selectedPrompts, setSelectedPrompts] = useState<Set<string>>(new Set());
   const [selectedModels, setSelectedModels] = useState<Set<string>>(new Set());
   const [iterations, setIterations] = useState(1);
+
+  // Model filter state
+  const [sizeFilter, setSizeFilter] = useState<SizeFilterGroup>("all");
+  const [reasoningFilter, setReasoningFilter] = useState<ReasoningFilterGroup>("all");
+  const [sortBy, setSortBy] = useState<ModelSortOption>("provider");
 
   useEffect(() => {
     loadData();
@@ -96,6 +124,29 @@ export default function NewRunForm() {
     setSelectedPrompts(new Set());
   }
 
+  function selectAllModels() {
+    setSelectedModels(new Set(filteredAndSortedModels.map((m) => m.id)));
+  }
+
+  function selectNoModels() {
+    setSelectedModels(new Set());
+  }
+
+  function selectModelsByFilter(filter: SizeFilterGroup | "reasoning") {
+    const newSet = new Set(selectedModels);
+    models.forEach((model) => {
+      const meta = getEffectiveMetadata(model);
+      if (filter === "reasoning") {
+        if (meta.reasoningCapability !== "none") {
+          newSet.add(model.id);
+        }
+      } else if (matchesSizeFilter(meta.sizeClass, filter)) {
+        newSet.add(model.id);
+      }
+    });
+    setSelectedModels(newSet);
+  }
+
   async function createRun() {
     if (selectedPrompts.size === 0 || selectedModels.size === 0) return;
 
@@ -133,15 +184,65 @@ export default function NewRunForm() {
     {} as Record<string, Prompt[]>
   );
 
-  // Group models by provider
-  const groupedModels = models.reduce(
-    (acc, model) => {
-      if (!acc[model.provider]) acc[model.provider] = [];
-      acc[model.provider].push(model);
-      return acc;
-    },
-    {} as Record<string, Model[]>
-  );
+  // Calculate filter counts for models
+  const modelFilterCounts = useMemo(() => {
+    const sizeCounts: Record<SizeFilterGroup, number> = {
+      all: models.length,
+      frontier: 0,
+      flash: 0,
+      "open-large": 0,
+      "open-medium": 0,
+      "open-small": 0,
+    };
+    const reasoningCounts: Record<ReasoningFilterGroup, number> = {
+      all: models.length,
+      reasoning: 0,
+      "non-reasoning": 0,
+    };
+
+    models.forEach((model) => {
+      const meta = getEffectiveMetadata(model);
+      SIZE_FILTER_GROUPS.forEach((group) => {
+        if (group.value !== "all" && matchesSizeFilter(meta.sizeClass, group.value)) {
+          sizeCounts[group.value]++;
+        }
+      });
+      if (meta.reasoningCapability !== "none") {
+        reasoningCounts.reasoning++;
+      } else {
+        reasoningCounts["non-reasoning"]++;
+      }
+    });
+
+    return { sizeCounts, reasoningCounts };
+  }, [models]);
+
+  // Filter and sort models
+  const filteredAndSortedModels = useMemo(() => {
+    let filtered = models.filter((model) => {
+      const meta = getEffectiveMetadata(model);
+      if (!matchesSizeFilter(meta.sizeClass, sizeFilter)) return false;
+      if (!matchesReasoningFilter(meta.reasoningCapability, reasoningFilter)) return false;
+      return true;
+    });
+    return sortModels(filtered, sortBy);
+  }, [models, sizeFilter, reasoningFilter, sortBy]);
+
+  // Group filtered models by provider (for provider sort) or flat list
+  const groupedModels = useMemo(() => {
+    if (sortBy === "provider") {
+      return filteredAndSortedModels.reduce(
+        (acc, model) => {
+          if (!acc[model.provider]) acc[model.provider] = [];
+          acc[model.provider].push(model);
+          return acc;
+        },
+        {} as Record<string, Model[]>
+      );
+    }
+    // For other sort modes, use a single group
+    return { "All Models": filteredAndSortedModels };
+  }, [filteredAndSortedModels, sortBy]);
 
   const totalCombinations =
     selectedPrompts.size * selectedModels.size * iterations;
@@ -297,50 +398,179 @@ export default function NewRunForm() {
 
         {/* Models Selection */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              Models ({selectedModels.size}/{models.length})
-            </CardTitle>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">
+                Models ({selectedModels.size}/{models.length})
+              </CardTitle>
+              <div className="flex gap-2">
+                <Button variant="ghost" size="sm" onClick={selectAllModels}>
+                  All
+                </Button>
+                <Button variant="ghost" size="sm" onClick={selectNoModels}>
+                  None
+                </Button>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="max-h-96 overflow-y-auto space-y-4">
-            {Object.entries(groupedModels).map(([provider, providerModels]) => (
-              <div key={provider}>
-                <p className="text-sm font-medium mb-2 capitalize">{provider}</p>
-                <div className="space-y-1">
-                  {providerModels.map((model) => (
-                    <button
-                      key={model.id}
-                      onClick={() => toggleModel(model.id)}
-                      className={`w-full text-left p-2 rounded border text-sm transition-colors ${
-                        selectedModels.has(model.id)
-                          ? "border-primary bg-primary/5"
-                          : "border-transparent bg-muted/50 hover:bg-muted"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-4 h-4 rounded border flex items-center justify-center ${
-                            selectedModels.has(model.id)
-                              ? "bg-primary border-primary text-white"
-                              : "border-muted-foreground"
-                          }`}
-                        >
-                          {selectedModels.has(model.id) && (
-                            <Check className="h-3 w-3" />
-                          )}
-                        </div>
-                        <span>{model.displayName}</span>
-                        {!model.isActive && (
-                          <Badge variant="secondary" className="text-xs">
-                            Inactive
-                          </Badge>
-                        )}
-                      </div>
-                    </button>
-                  ))}
+          <CardContent className="space-y-3">
+            {/* Filter and sort controls */}
+            <div className="space-y-2 pb-2 border-b">
+              {/* Size filter */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-xs text-muted-foreground w-14">Size:</span>
+                {SIZE_FILTER_GROUPS.map((group) => (
+                  <button
+                    key={group.value}
+                    onClick={() => setSizeFilter(group.value)}
+                    className={cn(
+                      "px-2 py-0.5 rounded-full text-xs font-medium transition-colors",
+                      sizeFilter === group.value
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                    )}
+                  >
+                    {group.label}
+                    {modelFilterCounts.sizeCounts[group.value] > 0 && (
+                      <span className="ml-1 opacity-70">
+                        ({modelFilterCounts.sizeCounts[group.value]})
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              {/* Reasoning filter */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-xs text-muted-foreground w-14">Type:</span>
+                {REASONING_FILTER_GROUPS.map((group) => (
+                  <button
+                    key={group.value}
+                    onClick={() => setReasoningFilter(group.value)}
+                    className={cn(
+                      "px-2 py-0.5 rounded-full text-xs font-medium transition-colors",
+                      reasoningFilter === group.value
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                    )}
+                  >
+                    {group.label}
+                    {modelFilterCounts.reasoningCounts[group.value] > 0 && (
+                      <span className="ml-1 opacity-70">
+                        ({modelFilterCounts.reasoningCounts[group.value]})
+                      </span>
+                    )}
+                  </button>
+                ))}
+                {/* Sort dropdown */}
+                <div className="ml-auto flex items-center gap-1">
+                  <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+                  <Select value={sortBy} onValueChange={(v) => setSortBy(v as ModelSortOption)}>
+                    <SelectTrigger className="h-6 w-[100px] text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="provider">By Provider</SelectItem>
+                      <SelectItem value="size">By Size</SelectItem>
+                      <SelectItem value="name">By Name</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-            ))}
+              {/* Quick select actions */}
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                <span className="text-xs text-muted-foreground">Quick add:</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-5 px-2 text-xs"
+                  onClick={() => selectModelsByFilter("frontier")}
+                >
+                  + Frontier
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-5 px-2 text-xs"
+                  onClick={() => selectModelsByFilter("flash")}
+                >
+                  + Flash
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-5 px-2 text-xs"
+                  onClick={() => selectModelsByFilter("reasoning")}
+                >
+                  + Reasoning
+                </Button>
+              </div>
+            </div>
+
+            {/* Model list */}
+            <div className="max-h-64 overflow-y-auto space-y-3">
+              {filteredAndSortedModels.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No models match the current filters
+                </p>
+              ) : (
+                Object.entries(groupedModels).map(([groupName, groupModels]) => (
+                  <div key={groupName}>
+                    <p className="text-sm font-medium mb-2 capitalize">{groupName}</p>
+                    <div className="space-y-1">
+                      {groupModels.map((model) => {
+                        const meta = getEffectiveMetadata(model);
+                        return (
+                          <button
+                            key={model.id}
+                            onClick={() => toggleModel(model.id)}
+                            className={cn(
+                              "w-full text-left p-2 rounded border text-sm transition-colors",
+                              selectedModels.has(model.id)
+                                ? "border-primary bg-primary/5"
+                                : "border-transparent bg-muted/50 hover:bg-muted"
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={cn(
+                                  "w-4 h-4 rounded border flex items-center justify-center flex-shrink-0",
+                                  selectedModels.has(model.id)
+                                    ? "bg-primary border-primary text-white"
+                                    : "border-muted-foreground"
+                                )}
+                              >
+                                {selectedModels.has(model.id) && (
+                                  <Check className="h-3 w-3" />
+                                )}
+                              </div>
+                              <span className="flex-1 truncate">{model.displayName}</span>
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <span className={cn(
+                                  "px-1.5 py-0.5 rounded text-[10px] font-medium",
+                                  getSizeClassColor(meta.sizeClass)
+                                )}>
+                                  {getSizeClassLabel(meta.sizeClass)}
+                                </span>
+                                {meta.reasoningCapability !== "none" && (
+                                  <Badge variant="outline" className="text-[10px] h-5 px-1">
+                                    {getReasoningLabel(meta.reasoningCapability)}
+                                  </Badge>
+                                )}
+                                {!model.isActive && (
+                                  <Badge variant="secondary" className="text-[10px] h-5">
+                                    Off
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

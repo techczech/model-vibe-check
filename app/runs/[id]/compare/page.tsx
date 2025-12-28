@@ -12,6 +12,10 @@ import {
   Check,
   Trophy,
   Equal,
+  FileText,
+  GitCompare,
+  ClipboardCheck,
+  Bot,
 } from "lucide-react";
 import type { Run, Prompt, Model, Result, PairwiseComparison } from "@/lib/types";
 
@@ -293,6 +297,32 @@ export default function ComparePage() {
         <Badge variant="outline">
           {currentIndex + 1} of {comparisonPairs.length}
         </Badge>
+      </div>
+
+      {/* Run Navigation */}
+      <div className="flex gap-2 border-b pb-4">
+        <Link href={`/runs/${runId}`}>
+          <Button variant="ghost" size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            Details
+          </Button>
+        </Link>
+        <Button variant="secondary" size="sm" disabled>
+          <GitCompare className="h-4 w-4 mr-2" />
+          Compare
+        </Button>
+        <Link href={`/runs/${runId}/evaluate`}>
+          <Button variant="ghost" size="sm">
+            <ClipboardCheck className="h-4 w-4 mr-2" />
+            Evaluate
+          </Button>
+        </Link>
+        <Link href={`/runs/${runId}/judge`}>
+          <Button variant="ghost" size="sm">
+            <Bot className="h-4 w-4 mr-2" />
+            LLM Judge
+          </Button>
+        </Link>
       </div>
 
       {/* Prompt */}

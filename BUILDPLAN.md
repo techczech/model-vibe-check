@@ -5,6 +5,8 @@
 - **v0.1.0** — Initial release (2024-12-26)
 - **v0.2.0** — Evaluation system (complete)
 - **v0.2.1** — Evaluation UX fixes (complete)
+- **v0.5.0** — Vibe Check Workbench (released 2024-12-28)
+- **v0.6.0** — Polish & Integration (planned)
 
 ---
 
@@ -81,11 +83,11 @@ Rationale for Option A (side-by-side modal) over alternatives:
   - If exists: Pre-fill form with existing scores ✓
   - Shows amber banner: "Existing evaluation from [date] — submitting will replace it" ✓
   
-- [ ] **3.2** Add "View" mode toggle (deferred)
+- [ ] **3.2** Add "View" mode toggle *(moved to v0.6.0)*
   - Read-only display of existing evaluation
   - Button to switch to "Edit" mode
-  
-- [ ] **3.3** Show both human and LLM evaluations if both exist (deferred)
+
+- [ ] **3.3** Show both human and LLM evaluations if both exist *(moved to v0.6.0)*
   - Tabs or accordion: "Human evaluation" / "LLM evaluation"
   - Can re-evaluate as human even if LLM exists
 
@@ -155,13 +157,13 @@ Rationale for Option A (side-by-side modal) over alternatives:
   - Border and shadow on kbd elements for depth
   - Higher z-index to appear above modals
 
-### Phase 8: Configurable Judge Model (Deferred)
+### Phase 8: Configurable Judge Model *(Moved to v0.6.0)*
 
 **Goal:** Choose which model evaluates responses.
 
-- [ ] **8.1** Add judge model selector to Settings page
-- [ ] **8.2** Store in settings.json
-- [ ] **8.3** Use configured model in runLLMJudge
+- [x] **8.1** Add judge model selector to Settings page *(done in /settings/evaluators)*
+- [x] **8.2** Store in settings.json *(done)*
+- [ ] **8.3** Use configured model in runLLMJudge *(moved to v0.6.0)*
 
 ---
 
@@ -529,3 +531,115 @@ No breaking changes to existing data.
 - Run execution with parallel processing
 - CSV/JSON export
 - 10 sample prompts
+
+---
+
+## v0.5.0 — Vibe Check Workbench
+
+**STATUS: RELEASED (2024-12-28)**
+
+See BUILDPLAN-v0.3.0.md for full implementation details.
+
+### Major Additions
+- Vibe Check hub with 4 evaluation modes (Prompt, Model, Blind, Compare)
+- Rubric-based evaluation system with LLM-as-judge
+- Model discovery from providers
+- Enhanced response viewer with keyboard navigation
+- Model overview dashboard
+- Evaluator configuration page
+- Toast notifications
+- Improved model metadata (size classes, reasoning capabilities)
+
+---
+
+## v0.6.0 — UI Cleanup & Feature Consolidation
+
+**STATUS: PLANNED**
+
+Major UI restructuring to surface hidden features, consolidate navigation, and complete partially-implemented functionality.
+
+### Overview
+
+| Problem | Solution |
+|---------|----------|
+| Categories as separate nav | Merge into Prompts as tabs |
+| Models Overview hidden | Tabbed interface (Overview/Manage) |
+| Evaluators buried in Settings | New top-level Evaluations section |
+| Model metadata not visible | Display & edit in Models page |
+| Run sub-pages no navigation | Add tabs to Run detail |
+
+### Phase 1: Navigation Restructuring
+
+- [ ] **1.1** Merge Categories into Prompts
+  - Remove Categories from navigation
+  - Add category tabs to Prompts page
+  - Remove/redirect `/app/categories/`
+
+- [ ] **1.2** Models page with tabs
+  - Overview tab (default): Stats, model cards with metadata
+  - Manage tab: Add/remove/configure models
+  - Merge content from `/models/overview`
+
+- [ ] **1.3** New Evaluations nav section
+  - `/evaluations` - Hub page
+  - `/evaluations/rubrics` - Rubric management (from settings/evaluators)
+  - `/evaluations/judge` - Judge configuration
+  - Redirect old `/settings/evaluators`
+
+- [ ] **1.4** Run detail navigation
+  - Add tabs/buttons for Compare, Evaluate, Judge sub-pages
+
+### Phase 2: Model Metadata Visibility
+
+- [ ] **2.1** Display metadata in Models page
+  - Size class badges (frontier/flash/lite/Xb)
+  - Reasoning capability indicator
+  - Context window, parameters
+
+- [ ] **2.2** Model edit form with metadata
+  - Dropdowns for sizeClass, reasoningCapability
+  - Inputs for contextWindow, parameters
+  - Auto-detect as default values
+
+- [ ] **2.3** Model discovery enhancement
+  - Auto-populate metadata using `getModelMetadata()`
+
+### Phase 3: Evaluation UX
+
+- [ ] **3.1** View mode toggle
+  - Read-only display of existing evaluations
+  - Toggle between View/Edit modes
+  - Show evaluator type and date
+
+- [ ] **3.2** Dual evaluation display
+  - Show human + LLM evaluations side-by-side
+  - Tabs or accordion when both exist
+
+- [ ] **3.3** Judge API integration
+  - Verify uses `settings.judge.modelId`
+  - Add fallback if model unavailable
+
+### Phase 4: ResponseViewer Polish
+
+- [ ] **4.1** Resizable columns
+  - Drag handles between response panels
+  - Store custom widths in ViewerPreferences
+
+- [ ] **4.2** Data migration (optional)
+  - Backfill `reasoningUsed` or display "Unknown"
+
+### Navigation Target State
+
+```
+Dashboard | Vibe Check | Prompts | Models | Runs | Evaluations | Settings
+                       (w/cats)  (tabs)         (new section)
+```
+
+### Files to Modify
+
+**Navigation:** `/components/navigation.tsx`
+**Prompts:** `/app/prompts/page.tsx`, `/app/categories/` (remove)
+**Models:** `/app/models/page.tsx`, `/app/models/overview/page.tsx` (merge)
+**Evaluations:** `/app/evaluations/` (new), `/app/settings/evaluators/` (redirect)
+**Runs:** `/app/runs/[id]/page.tsx`
+**Components:** `evaluation-form.tsx`, `response-viewer/`, `model-discovery.tsx`

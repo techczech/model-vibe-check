@@ -14,6 +14,10 @@ import {
   RefreshCw,
   Check,
   AlertCircle,
+  FileText,
+  GitCompare,
+  ClipboardCheck,
+  Bot,
 } from "lucide-react";
 import type { Run, Prompt, Evaluation } from "@/lib/types";
 
@@ -118,6 +122,32 @@ export default function JudgePage() {
             <p className="text-muted-foreground">{run.name}</p>
           </div>
         </div>
+      </div>
+
+      {/* Run Navigation */}
+      <div className="flex gap-2 border-b pb-4">
+        <Link href={`/runs/${runId}`}>
+          <Button variant="ghost" size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            Details
+          </Button>
+        </Link>
+        <Link href={`/runs/${runId}/compare`}>
+          <Button variant="ghost" size="sm">
+            <GitCompare className="h-4 w-4 mr-2" />
+            Compare
+          </Button>
+        </Link>
+        <Link href={`/runs/${runId}/evaluate`}>
+          <Button variant="ghost" size="sm">
+            <ClipboardCheck className="h-4 w-4 mr-2" />
+            Evaluate
+          </Button>
+        </Link>
+        <Button variant="secondary" size="sm" disabled>
+          <Bot className="h-4 w-4 mr-2" />
+          LLM Judge
+        </Button>
       </div>
 
       {/* Status */}
