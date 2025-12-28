@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { X, Check, Loader2, ChevronDown, ChevronUp, Clock, Zap } from "lucide-react";
+import { X, Check, Loader2, ChevronDown, ChevronUp, Clock, Zap, Eye, Edit, User, Bot } from "lucide-react";
 import { formatDate, formatResponseMeta } from "@/lib/utils";
 import type { Rubric, RubricItem, RubricEvaluation } from "@/lib/types";
 
@@ -31,6 +31,7 @@ interface EvaluationFormProps {
   onClose: () => void;
   onNext?: () => void;
   hasNext?: boolean;
+  initialMode?: "view" | "edit";
 }
 
 type ScoreValue = boolean | number | number[];
@@ -45,13 +46,19 @@ export function EvaluationForm({
   onClose,
   onNext,
   hasNext,
+  initialMode = "edit",
 }: EvaluationFormProps) {
+  const [mode, setMode] = useState<"view" | "edit">(
+    existingEvaluation ? initialMode : "edit"
+  );
   const [scores, setScores] = useState<Record<string, { value: ScoreValue; note?: string }>>({});
   const [impressionScore, setImpressionScore] = useState<number | undefined>(undefined);
   const [reasoning, setReasoning] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [focusedItem, setFocusedItem] = useState(0);
   const [showPrompt, setShowPrompt] = useState(false);
+
+  const isViewMode = mode === "view" && existingEvaluation;
 
   // Initialize/reset scores when response or rubric changes
   useEffect(() => {
@@ -229,7 +236,7 @@ export function EvaluationForm({
   }
 
   function renderRubricItem(item: RubricItem, index: number) {
-    const isFocused = index === focusedItem;
+    const isFocused = index === focusedItem && !isViewMode;
     const score = scores[item.id];
 
     return (
@@ -238,7 +245,7 @@ export function EvaluationForm({
         className={`p-2.5 rounded-lg border transition-colors ${
           isFocused ? "border-primary bg-primary/5" : "border-border"
         }`}
-        onClick={() => setFocusedItem(index)}
+        onClick={() => !isViewMode && setFocusedItem(index)}
       >
         <div className="flex items-start justify-between mb-1.5">
           <div>
@@ -255,53 +262,95 @@ export function EvaluationForm({
         </div>
 
         {item.type === "binary" && (
-          <div className="flex gap-2 mt-1.5">
-            <Button
-              type="button"
-              size="sm"
-              variant={score?.value === false ? "default" : "outline"}
-              onClick={() => setBinaryValue(item.id, false)}
-              className="flex-1 h-7 text-xs"
-            >
-              No {isFocused && <span className="ml-1 opacity-50">(n)</span>}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant={score?.value === true ? "default" : "outline"}
-              onClick={() => setBinaryValue(item.id, true)}
-              className="flex-1 h-7 text-xs"
-            >
-              Yes {isFocused && <span className="ml-1 opacity-50">(y)</span>}
-            </Button>
-          </div>
+          isViewMode ? (
+            <div className="mt-1.5">
+              <Badge
+                variant={score?.value ? "default" : "secondary"}
+                className={score?.value
+                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                  : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                }
+              >
+                {score?.value ? "Yes" : "No"}
+              </Badge>
+            </div>
+          ) : (
+            <div className="flex gap-2 mt-1.5">
+              <Button
+                type="button"
+                size="sm"
+                variant={score?.value === false ? "default" : "outline"}
+                onClick={() => setBinaryValue(item.id, false)}
+                className="flex-1 h-7 text-xs"
+              >
+                No {isFocused && <span className="ml-1 opacity-50">(n)</span>}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={score?.value === true ? "default" : "outline"}
+                onClick={() => setBinaryValue(item.id, true)}
+                className="flex-1 h-7 text-xs"
+              >
+                Yes {isFocused && <span className="ml-1 opacity-50">(y)</span>}
+              </Button>
+            </div>
+          )
         )}
 
         {item.type === "scale" && item.scaleLabels && (
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            {item.scaleLabels.map((label, i) => (
-              <Button
-                key={i}
-                type="button"
-                size="sm"
-                variant={score?.value === i ? "default" : "outline"}
-                onClick={() => setScaleValue(item.id, i)}
-                className="text-[11px] h-7 px-2"
-              >
-                {label}
-                {isFocused && (
-                  <span className="ml-1 opacity-50">({i + 1})</span>
-                )}
-              </Button>
-            ))}
-          </div>
+          isViewMode ? (
+            <div className="mt-1.5">
+              <Badge variant="default">
+                {typeof score?.value === "number" && item.scaleLabels[score.value]
+                  ? item.scaleLabels[score.value]
+                  : "Not scored"}
+              </Badge>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {item.scaleLabels.map((label, i) => (
+                <Button
+                  key={i}
+                  type="button"
+                  size="sm"
+                  variant={score?.value === i ? "default" : "outline"}
+                  onClick={() => setScaleValue(item.id, i)}
+                  className="text-[11px] h-7 px-2"
+                >
+                  {label}
+                  {isFocused && (
+                    <span className="ml-1 opacity-50">({i + 1})</span>
+                  )}
+                </Button>
+              ))}
+            </div>
+          )
         )}
 
         {item.type === "checklist" && item.checklistItems && (
           <div className="space-y-1 mt-1.5">
             {item.checklistItems.map((checkItem, i) => {
               const isChecked = ((score?.value as number[]) || []).includes(i);
-              return (
+              return isViewMode ? (
+                <div
+                  key={i}
+                  className={`p-1.5 rounded text-xs flex items-center gap-2 ${
+                    isChecked ? "text-primary" : "text-muted-foreground line-through"
+                  }`}
+                >
+                  <div
+                    className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
+                      isChecked
+                        ? "bg-primary border-primary text-white"
+                        : "border-muted-foreground"
+                    }`}
+                  >
+                    {isChecked && <Check className="h-2.5 w-2.5" />}
+                  </div>
+                  <span>{checkItem}</span>
+                </div>
+              ) : (
                 <button
                   key={i}
                   type="button"
@@ -339,16 +388,62 @@ export function EvaluationForm({
         {/* Header */}
         <div className="px-4 py-3 border-b flex items-center justify-between bg-muted/30">
           <div>
-            <h2 className="font-semibold">Evaluate Response</h2>
-            {isExistingEvaluation && (
-              <p className="text-xs text-amber-600 mt-0.5">
-                Existing evaluation from {formatDate(existingEvaluation.createdAt)} — submitting will replace it
+            <h2 className="font-semibold flex items-center gap-2">
+              {isViewMode ? "View Evaluation" : "Evaluate Response"}
+              {isExistingEvaluation && existingEvaluation && (
+                <Badge
+                  variant="secondary"
+                  className={`text-xs ${
+                    existingEvaluation.evaluatorType === "human"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      : "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                  }`}
+                >
+                  {existingEvaluation.evaluatorType === "human" ? (
+                    <User className="h-3 w-3 mr-1" />
+                  ) : (
+                    <Bot className="h-3 w-3 mr-1" />
+                  )}
+                  {existingEvaluation.evaluatorType === "human" ? "Human" : "LLM"}
+                </Badge>
+              )}
+            </h2>
+            {isExistingEvaluation && existingEvaluation ? (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Evaluated {formatDate(existingEvaluation.createdAt)}
+                {mode === "edit" && " — submitting will replace this evaluation"}
               </p>
-            )}
+            ) : isExistingEvaluation && mode === "edit" ? (
+              <p className="text-xs text-amber-600 mt-0.5">
+                Existing evaluation — submitting will replace it
+              </p>
+            ) : null}
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {existingEvaluation && (
+              <div className="flex border rounded-md">
+                <Button
+                  variant={mode === "view" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="rounded-r-none h-8"
+                  onClick={() => setMode("view")}
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={mode === "edit" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="rounded-l-none h-8"
+                  onClick={() => setMode("edit")}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Split Panel Content */}
@@ -431,38 +526,54 @@ export function EvaluationForm({
                     Impression Score (1-10)
                   </Label>
                   <p className="text-xs text-muted-foreground mb-2">
-                    Your gut feeling about this response
+                    {isViewMode ? "Overall impression" : "Your gut feeling about this response"}
                   </p>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                      <Button
-                        key={n}
-                        type="button"
-                        size="sm"
-                        variant={impressionScore === n ? "default" : "outline"}
-                        onClick={() => setImpressionScore(n)}
-                        className="flex-1 px-0 h-7 text-xs"
-                      >
-                        {n}
-                      </Button>
-                    ))}
-                  </div>
+                  {isViewMode ? (
+                    <Badge variant="default" className="text-lg px-3 py-1">
+                      {impressionScore !== undefined ? `${impressionScore}/10` : "Not scored"}
+                    </Badge>
+                  ) : (
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                        <Button
+                          key={n}
+                          type="button"
+                          size="sm"
+                          variant={impressionScore === n ? "default" : "outline"}
+                          onClick={() => setImpressionScore(n)}
+                          className="flex-1 px-0 h-7 text-xs"
+                        >
+                          {n}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Notes */}
               <div className="space-y-1.5">
                 <Label htmlFor="reasoning" className="text-sm">
-                  Notes (optional)
+                  Notes {!isViewMode && "(optional)"}
                 </Label>
-                <Textarea
-                  id="reasoning"
-                  value={reasoning}
-                  onChange={(e) => setReasoning(e.target.value)}
-                  placeholder="Any additional observations..."
-                  rows={2}
-                  className="text-sm"
-                />
+                {isViewMode ? (
+                  reasoning ? (
+                    <p className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
+                      {reasoning}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">No notes</p>
+                  )
+                ) : (
+                  <Textarea
+                    id="reasoning"
+                    value={reasoning}
+                    onChange={(e) => setReasoning(e.target.value)}
+                    placeholder="Any additional observations..."
+                    rows={2}
+                    className="text-sm"
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -470,31 +581,54 @@ export function EvaluationForm({
 
         {/* Footer */}
         <div className="px-4 py-3 border-t flex items-center justify-between bg-muted/30">
-          <p className="text-xs text-muted-foreground">
-            ↑↓ navigate · y/n binary · 1-5 scale · ⌘↵ submit{hasNext ? " · ⇧⌘↵ next" : ""} · esc close
-          </p>
-          <div className="flex gap-2">
-            {hasNext && onNext && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleSubmit(true)}
-                disabled={submitting}
-              >
-                Submit & Next
-              </Button>
-            )}
-            <Button size="sm" onClick={() => handleSubmit(false)} disabled={submitting}>
-              {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Submit"
-              )}
-            </Button>
-          </div>
+          {isViewMode ? (
+            <>
+              <p className="text-xs text-muted-foreground">
+                Press Esc to close · Click Edit to modify
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setMode("edit")}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+                <Button size="sm" variant="secondary" onClick={onClose}>
+                  Close
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-xs text-muted-foreground">
+                ↑↓ navigate · y/n binary · 1-5 scale · ⌘↵ submit{hasNext ? " · ⇧⌘↵ next" : ""} · esc close
+              </p>
+              <div className="flex gap-2">
+                {hasNext && onNext && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleSubmit(true)}
+                    disabled={submitting}
+                  >
+                    Submit & Next
+                  </Button>
+                )}
+                <Button size="sm" onClick={() => handleSubmit(false)} disabled={submitting}>
+                  {submitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

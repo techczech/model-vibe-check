@@ -11,6 +11,7 @@ import {
   Settings,
   Zap,
   Sparkles,
+  ClipboardCheck,
 } from "lucide-react";
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/prompts", label: "Prompts", icon: FileText },
   { href: "/models", label: "Models", icon: Cpu },
   { href: "/runs", label: "Runs", icon: Play },
+  { href: "/evaluations", label: "Evaluations", icon: ClipboardCheck },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

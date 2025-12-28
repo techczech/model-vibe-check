@@ -5,7 +5,7 @@
  * This provides reasonable defaults that can be overridden manually.
  */
 
-import type { ModelSizeClass, ReasoningCapability, Provider } from './types';
+import type { ModelSizeClass, ReasoningCapability, Provider, Model } from './types';
 
 interface ModelMetadata {
   sizeClass: ModelSizeClass;
@@ -293,4 +293,117 @@ export function formatCost(usd?: number): string {
   if (usd < 0.001) return `$${(usd * 1000).toFixed(3)}m`;
   if (usd < 0.01) return `$${(usd * 100).toFixed(2)}¢`;
   return `$${usd.toFixed(4)}`;
+}
+
+// ============================================================================
+// Filtering & Sorting Utilities
+// ============================================================================
+
+/**
+ * Size filter groups for UI filtering
+ * Groups: Frontier / Flash / Open Large (70B+) / Open Medium (7-70B) / Open Small (<7B)
+ */
+export type SizeFilterGroup = 'all' | 'frontier' | 'flash' | 'open-large' | 'open-medium' | 'open-small';
+
+export const SIZE_FILTER_GROUPS: { value: SizeFilterGroup; label: string; sizes: ModelSizeClass[] }[] = [
+  { value: 'all', label: 'All', sizes: [] },
+  { value: 'frontier', label: 'Frontier', sizes: ['frontier'] },
+  { value: 'flash', label: 'Flash', sizes: ['flash'] },
+  { value: 'open-large', label: 'Open 70B+', sizes: ['70-100b', '100-200b', '200b+'] },
+  { value: 'open-medium', label: 'Open 7-70B', sizes: ['7-14b', '14-34b', '35-70b'] },
+  { value: 'open-small', label: 'Open <7B', sizes: ['lite', 'sub-1b', '1-3b', '3-7b'] },
+];
+
+/**
+ * Check if a model's size class matches a filter group
+ */
+export function matchesSizeFilter(sizeClass: ModelSizeClass, filter: SizeFilterGroup): boolean {
+  if (filter === 'all') return true;
+  const group = SIZE_FILTER_GROUPS.find(g => g.value === filter);
+  return group?.sizes.includes(sizeClass) ?? false;
+}
+
+/**
+ * Reasoning filter options
+ */
+export type ReasoningFilterGroup = 'all' | 'reasoning' | 'non-reasoning';
+
+export const REASONING_FILTER_GROUPS: { value: ReasoningFilterGroup; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'reasoning', label: 'Reasoning' },
+  { value: 'non-reasoning', label: 'Non-reasoning' },
+];
+
+/**
+ * Check if a model's reasoning capability matches a filter
+ */
+export function matchesReasoningFilter(capability: ReasoningCapability, filter: ReasoningFilterGroup): boolean {
+  if (filter === 'all') return true;
+  if (filter === 'reasoning') return capability !== 'none';
+  if (filter === 'non-reasoning') return capability === 'none';
+  return true;
+}
+
+/**
+ * Sort order for size classes (frontier first, then by decreasing size)
+ */
+export function getSizeClassOrder(sizeClass: ModelSizeClass): number {
+  const order: Record<ModelSizeClass, number> = {
+    'frontier': 0,
+    'flash': 1,
+    'lite': 2,
+    '200b+': 3,
+    '100-200b': 4,
+    '70-100b': 5,
+    '35-70b': 6,
+    '14-34b': 7,
+    '7-14b': 8,
+    '3-7b': 9,
+    '1-3b': 10,
+    'sub-1b': 11,
+    'unknown': 12,
+  };
+  return order[sizeClass] ?? 12;
+}
+
+/**
+ * Get effective metadata for a model (stored values or auto-detected)
+ */
+export function getEffectiveMetadata(model: Model): ModelMetadata {
+  const detected = getModelMetadata(model.modelId, model.provider);
+  return {
+    sizeClass: model.sizeClass || detected.sizeClass,
+    reasoningCapability: model.reasoningCapability || detected.reasoningCapability,
+    contextWindow: model.contextWindow || detected.contextWindow,
+    parameters: model.parameters || detected.parameters,
+  };
+}
+
+export type ModelSortOption = 'provider' | 'size' | 'name';
+
+/**
+ * Sort models by various criteria
+ */
+export function sortModels(models: Model[], sortBy: ModelSortOption): Model[] {
+  const sorted = [...models];
+  switch (sortBy) {
+    case 'provider':
+      return sorted.sort((a, b) => {
+        // Primary: provider, Secondary: displayName
+        const providerCompare = a.provider.localeCompare(b.provider);
+        if (providerCompare !== 0) return providerCompare;
+        return a.displayName.localeCompare(b.displayName);
+      });
+    case 'size':
+      return sorted.sort((a, b) => {
+        const aSize = getSizeClassOrder(getEffectiveMetadata(a).sizeClass);
+        const bSize = getSizeClassOrder(getEffectiveMetadata(b).sizeClass);
+        if (aSize !== bSize) return aSize - bSize;
+        return a.displayName.localeCompare(b.displayName);
+      });
+    case 'name':
+      return sorted.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    default:
+      return sorted;
+  }
 }

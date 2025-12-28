@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -26,6 +26,11 @@ export function ResponseContent({
 }: ResponseContentProps) {
   const [copied, setCopied] = useState(false);
   const [showRaw, setShowRaw] = useState(!renderMarkdown);
+
+  // Sync showRaw when renderMarkdown changes from toolbar
+  useEffect(() => {
+    setShowRaw(!renderMarkdown);
+  }, [renderMarkdown]);
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(content);

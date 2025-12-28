@@ -16,6 +16,10 @@ import {
   Clock,
   SkipForward,
   Keyboard,
+  FileText,
+  GitCompare,
+  ClipboardCheck,
+  Bot,
 } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import type { Run, Prompt, Model, Result, Evaluation } from "@/lib/types";
@@ -371,6 +375,32 @@ export default function EvaluatePage() {
             Skip evaluated
           </label>
         </div>
+      </div>
+
+      {/* Run Navigation */}
+      <div className="flex gap-2 border-b pb-4">
+        <Link href={`/runs/${runId}`}>
+          <Button variant="ghost" size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            Details
+          </Button>
+        </Link>
+        <Link href={`/runs/${runId}/compare`}>
+          <Button variant="ghost" size="sm">
+            <GitCompare className="h-4 w-4 mr-2" />
+            Compare
+          </Button>
+        </Link>
+        <Button variant="secondary" size="sm" disabled>
+          <ClipboardCheck className="h-4 w-4 mr-2" />
+          Evaluate
+        </Button>
+        <Link href={`/runs/${runId}/judge`}>
+          <Button variant="ghost" size="sm">
+            <Bot className="h-4 w-4 mr-2" />
+            LLM Judge
+          </Button>
+        </Link>
       </div>
 
       {/* Current Result */}

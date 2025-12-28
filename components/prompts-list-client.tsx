@@ -193,6 +193,38 @@ export function PromptsListClient({
         </div>
       </div>
 
+      {/* Category Pills */}
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setCategory('all')}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              category === 'all'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+            }`}
+          >
+            All ({prompts.length})
+          </button>
+          {categories.map((cat) => {
+            const count = prompts.filter(p => p.category === cat).length;
+            return (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  category === cat
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                }`}
+              >
+                {cat} ({count})
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex gap-4 items-center flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
@@ -204,20 +236,6 @@ export function PromptsListClient({
             className="pl-9"
           />
         </div>
-
-        <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.map((cat) => (
-              <SelectItem key={cat} value={cat}>
-                {cat}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
 
         <Select value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
           <SelectTrigger className="w-44">

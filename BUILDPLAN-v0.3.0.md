@@ -24,7 +24,7 @@ Transform Model Vibe Check from a response browser into a **qualitative evaluati
 | Part 2: Rubric Management | ✅ Complete | Evaluators page, Rubric editor, Prompt integration |
 | Part 3: Improved Listing | ✅ Complete | Prompts table view, Model overview page |
 | Part 4: Vibe Check Interface | ✅ Complete | Hub, Prompt Vibe, Model Vibe, Blind Review, Head-to-Head |
-| Part 5: Universal ResponseViewer | ✅ Complete | Core viewing component, model metadata expansion |
+| Part 5: Universal ResponseViewer | ⏳ 90% | Core done; resize & migration in v0.6.0 |
 
 ### Overview
 
@@ -755,11 +755,12 @@ Alternatively, add Vibe Check as prominent dashboard action rather than top nav.
 - [x] Head-to-Head mode
 - [x] Aggregate rankings
 
-### Phase 6: Universal ResponseViewer (Week 7-8) ⏳ IN PROGRESS
-- [ ] ResponseViewer component architecture
-- [ ] Model metadata schema expansion
-- [ ] Refactor all vibe check modes to use ResponseViewer
-- [ ] View preferences persistence
+### Phase 6: Universal ResponseViewer (Week 7-8) ✅ MOSTLY COMPLETE
+- [x] ResponseViewer component architecture
+- [x] Model metadata schema expansion
+- [x] Refactor all vibe check modes to use ResponseViewer
+- [x] View preferences persistence
+- Remaining items moved to v0.6.0: resizable columns, data migration
 
 ---
 
@@ -933,7 +934,7 @@ interface RunResult {
 
 - [x] **5.8.2** Update RunResult schema
   - [x] Add reasoningUsed field
-  - [ ] Migrate existing data
+  - [ ] Migrate existing data *(moved to v0.6.0)*
 
 - [x] **5.8.3** Create ViewerToolbar component
   - [x] Layout mode selector (single/2-col/3-col/stacked)
@@ -957,7 +958,7 @@ interface RunResult {
 - [x] **5.8.6** Create ResponseViewer container
   - [x] Layout engine for different modes
   - [x] Synchronized scrolling
-  - [ ] Resizable columns (drag handles)
+  - [ ] Resizable columns (drag handles) *(moved to v0.6.0)*
   - [x] Keyboard navigation
 
 - [x] **5.8.7** Create ViewerPreferences store
