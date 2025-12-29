@@ -7,13 +7,14 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { 
-  ViewerLayoutMode, 
-  ViewerHeightMode, 
+import type {
+  ViewerLayoutMode,
+  ViewerHeightMode,
   ColumnPreset,
+  IterationViewMode,
   ViewerMetadataToggles,
   ViewerContentSettings,
-  ViewerPreferences 
+  ViewerPreferences
 } from '../types';
 
 // Default metadata toggles - all visible by default except temperature
@@ -53,6 +54,8 @@ const defaultPreferences: ViewerPreferences = {
   layout: '2-col',
   height: 'full',
   columnPreset: 'equal',
+  slideshowMode: false, // Default to scroll mode (except single col which defaults to slideshow)
+  iterationMode: 'carousel', // Navigate through iterations by default
   metadata: defaultMetadataToggles,
   content: defaultContentSettings,
 };
@@ -63,12 +66,14 @@ interface ViewerPreferencesState extends ViewerPreferences {
   setHeight: (height: ViewerHeightMode) => void;
   setColumnPreset: (preset: ColumnPreset) => void;
   setCustomColumnWidths: (widths: number[]) => void;
+  setSlideshowMode: (enabled: boolean) => void;
+  setIterationMode: (mode: IterationViewMode) => void;
   toggleMetadata: (key: keyof ViewerMetadataToggles) => void;
   setMetadata: (metadata: Partial<ViewerMetadataToggles>) => void;
   toggleContent: (key: keyof ViewerContentSettings) => void;
   setContent: (content: Partial<ViewerContentSettings>) => void;
   resetToDefaults: () => void;
-  
+
   // Computed helpers
   getEffectiveColumnCount: () => number;
 }
@@ -77,48 +82,52 @@ export const useViewerPreferences = create<ViewerPreferencesState>()(
   persist(
     (set, get) => ({
       ...defaultPreferences,
-      
+
       setLayout: (layout) => set({ layout }),
-      
+
       setHeight: (height) => set({ height }),
-      
+
       setColumnPreset: (preset) => set({ columnPreset: preset }),
-      
-      setCustomColumnWidths: (widths) => set({ 
-        columnPreset: 'custom', 
-        customColumnWidths: widths 
+
+      setCustomColumnWidths: (widths) => set({
+        columnPreset: 'custom',
+        customColumnWidths: widths
       }),
-      
+
+      setSlideshowMode: (enabled) => set({ slideshowMode: enabled }),
+
+      setIterationMode: (mode) => set({ iterationMode: mode }),
+
       toggleMetadata: (key) => set((state) => ({
         metadata: {
           ...state.metadata,
           [key]: !state.metadata[key],
         },
       })),
-      
+
       setMetadata: (metadata) => set((state) => ({
         metadata: {
           ...state.metadata,
           ...metadata,
         },
       })),
-      
+
       toggleContent: (key) => set((state) => ({
         content: {
           ...state.content,
           [key]: !state.content[key],
         },
       })),
-      
+
       setContent: (content) => set((state) => ({
         content: {
           ...state.content,
           ...content,
         },
       })),
-      
+
       resetToDefaults: () => set(defaultPreferences),
-      
+
       getEffectiveColumnCount: () => {
         const layout = get().layout;
         switch (layout) {
@@ -126,14 +135,13 @@ export const useViewerPreferences = create<ViewerPreferencesState>()(
           case '2-col': return 2;
           case '3-col': return 3;
           case 'n-col': return 0; // Dynamic based on content
-          case 'stacked': return 1;
           default: return 2;
         }
       },
     }),
     {
       name: 'viewer-preferences',
-      version: 1,
+      version: 2, // Bump version due to schema change
     }
   )
 );

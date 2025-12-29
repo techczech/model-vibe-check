@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,11 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
+  Check,
+  X,
+  Pencil,
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { Model, Provider, ModelSizeClass, ReasoningCapability } from "@/lib/types";
 import type { ModelStats } from "@/lib/storage";
 import {
@@ -44,6 +48,7 @@ import {
   getReasoningColor,
   formatContextWindow,
 } from "@/lib/model-metadata";
+import { ModelFilterBar } from "@/components/model-filter-bar";
 
 const PROVIDER_MODELS: Record<Provider, string[]> = {
   ollama: ["llama3.2", "qwen2.5", "deepseek-r1", "phi-4", "mistral"],
@@ -100,6 +105,13 @@ export default function ModelsPage() {
   const [stats, setStats] = useState<Record<string, ModelStats>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [filteredActiveModels, setFilteredActiveModels] = useState<Model[]>([]);
+
+  // Manage tab state
+  const [filteredManageModels, setFilteredManageModels] = useState<Model[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [editingCell, setEditingCell] = useState<{ id: string; field: string } | null>(null);
+  const [editValue, setEditValue] = useState<string>("");
 
   // New model form
   const [newProvider, setNewProvider] = useState<Provider>("openai");
@@ -204,6 +216,103 @@ export default function ModelsPage() {
     saveModels(updated);
   }
 
+  // Selection helpers
+  function toggleSelection(id: string) {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  }
+
+  function selectAll() {
+    const displayedIds = filteredManageModels.map((m) => m.id);
+    setSelectedIds(new Set(displayedIds));
+  }
+
+  function clearSelection() {
+    setSelectedIds(new Set());
+  }
+
+  // Batch actions
+  function batchSetSizeClass(sizeClass: ModelSizeClass) {
+    const updated = models.map((m) =>
+      selectedIds.has(m.id) ? { ...m, sizeClass } : m
+    );
+    saveModels(updated);
+    clearSelection();
+  }
+
+  function batchSetReasoning(reasoningCapability: ReasoningCapability) {
+    const updated = models.map((m) =>
+      selectedIds.has(m.id) ? { ...m, reasoningCapability } : m
+    );
+    saveModels(updated);
+    clearSelection();
+  }
+
+  function batchActivate() {
+    const updated = models.map((m) =>
+      selectedIds.has(m.id) ? { ...m, isActive: true } : m
+    );
+    saveModels(updated);
+    clearSelection();
+  }
+
+  function batchDeactivate() {
+    const updated = models.map((m) =>
+      selectedIds.has(m.id) ? { ...m, isActive: false } : m
+    );
+    saveModels(updated);
+    clearSelection();
+  }
+
+  function batchDelete() {
+    if (!confirm(`Delete ${selectedIds.size} model(s)? This cannot be undone.`)) return;
+    const updated = models.filter((m) => !selectedIds.has(m.id));
+    saveModels(updated);
+    clearSelection();
+  }
+
+  // Inline editing
+  function startEdit(id: string, field: string, currentValue: string) {
+    setEditingCell({ id, field });
+    setEditValue(currentValue);
+  }
+
+  function saveEdit() {
+    if (!editingCell) return;
+    const { id, field } = editingCell;
+    const updated = models.map((m) => {
+      if (m.id !== id) return m;
+      const value = field === "contextWindow" ? parseInt(editValue) || undefined : editValue;
+      return { ...m, [field]: value || undefined };
+    });
+    saveModels(updated);
+    setEditingCell(null);
+    setEditValue("");
+  }
+
+  function cancelEdit() {
+    setEditingCell(null);
+    setEditValue("");
+  }
+
+  function updateModelField(id: string, field: string, value: string | boolean | undefined) {
+    const updated = models.map((m) => {
+      if (m.id !== id) return m;
+      return { ...m, [field]: value };
+    });
+    saveModels(updated);
+  }
+
+  // Memoize to prevent infinite re-render loops with ModelFilterBar
+  // Must be called before any early returns to follow Rules of Hooks
+  const activeModels = useMemo(() => models.filter((m) => m.isActive), [models]);
+  const inactiveModels = useMemo(() => models.filter((m) => !m.isActive), [models]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -211,9 +320,6 @@ export default function ModelsPage() {
       </div>
     );
   }
-
-  const activeModels = models.filter((m) => m.isActive);
-  const inactiveModels = models.filter((m) => !m.isActive);
 
   // Calculate aggregate stats
   const totalResponses = Object.values(stats).reduce(
@@ -360,15 +466,30 @@ export default function ModelsPage() {
             </Card>
           </div>
 
+          {/* Model Filter */}
+          {activeModels.length > 0 && (
+            <ModelFilterBar
+              models={activeModels}
+              onFilterChange={setFilteredActiveModels}
+              showSorting={true}
+              showCounts={true}
+              className="bg-card p-4 rounded-lg border"
+            />
+          )}
+
           {/* Models Performance Table */}
           <Card>
             <CardHeader>
               <CardTitle>Model Performance</CardTitle>
             </CardHeader>
             <CardContent>
-              {sortedActiveModels.length === 0 ? (
+              {filteredActiveModels.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  <p>No active models. Add models in the Manage tab.</p>
+                  <p>
+                    {activeModels.length === 0
+                      ? "No active models. Add models in the Manage tab."
+                      : "No models match the current filters."}
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-hidden rounded-lg border">
@@ -395,7 +516,7 @@ export default function ModelsPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {sortedActiveModels.map((model, index) => {
+                      {filteredActiveModels.map((model, index) => {
                         const s = stats[model.id];
                         const evalPct =
                           s?.responseCount > 0
@@ -793,7 +914,79 @@ export default function ModelsPage() {
             </CardContent>
           </Card>
 
-          {/* Models List */}
+          {/* Filter Bar */}
+          {models.length > 0 && (
+            <ModelFilterBar
+              models={models}
+              onFilterChange={setFilteredManageModels}
+              showSorting={true}
+              showCounts={true}
+              className="bg-card p-4 rounded-lg border"
+            />
+          )}
+
+          {/* Batch Actions Bar */}
+          {selectedIds.size > 0 && (
+            <Card className="border-primary/50 bg-primary/5">
+              <CardContent className="py-3">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <span className="font-medium">
+                    {selectedIds.size} model{selectedIds.size !== 1 ? "s" : ""} selected
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Select onValueChange={(v) => batchSetSizeClass(v as ModelSizeClass)}>
+                      <SelectTrigger className="w-[140px] h-8">
+                        <SelectValue placeholder="Set Size..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="frontier">Frontier</SelectItem>
+                        <SelectItem value="flash">Flash</SelectItem>
+                        <SelectItem value="lite">Lite</SelectItem>
+                        <SelectItem value="sub-1b">&lt;1B</SelectItem>
+                        <SelectItem value="1-3b">1-3B</SelectItem>
+                        <SelectItem value="3-7b">3-7B</SelectItem>
+                        <SelectItem value="7-14b">7-14B</SelectItem>
+                        <SelectItem value="14-34b">14-34B</SelectItem>
+                        <SelectItem value="35-70b">35-70B</SelectItem>
+                        <SelectItem value="70-100b">70-100B</SelectItem>
+                        <SelectItem value="100-200b">100-200B</SelectItem>
+                        <SelectItem value="200b+">200B+</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select onValueChange={(v) => batchSetReasoning(v as ReasoningCapability)}>
+                      <SelectTrigger className="w-[140px] h-8">
+                        <SelectValue placeholder="Set Reasoning..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="reasoning">Reasoning</SelectItem>
+                        <SelectItem value="hybrid">Hybrid</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-1 ml-auto">
+                    <Button variant="outline" size="sm" onClick={batchActivate}>
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      Activate
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={batchDeactivate}>
+                      <XCircle className="h-4 w-4 mr-1" />
+                      Deactivate
+                    </Button>
+                    <Button variant="destructive" size="sm" onClick={batchDelete}>
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={clearSelection}>
+                      Clear
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Models Table */}
           {models.length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="py-12 text-center">
@@ -803,103 +996,222 @@ export default function ModelsPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-6">
-              {(Object.keys(grouped) as Provider[]).map((provider) => (
-                <div key={provider}>
-                  <h2 className="text-lg font-semibold mb-3">
-                    {PROVIDER_LABELS[provider]}
-                  </h2>
-                  <div className="grid gap-3">
-                    {grouped[provider].map((model) => {
-                      const meta = getEffectiveMetadata(model);
-                      const reasoningLabel = getReasoningLabel(meta.reasoningCapability);
-                      return (
-                        <Card
-                          key={model.id}
-                          className={model.isActive ? "" : "opacity-60"}
-                        >
-                          <CardContent className="py-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4">
-                                <button
-                                  onClick={() => toggleActive(model.id)}
-                                  className="text-muted-foreground hover:text-foreground"
-                                >
-                                  {model.isActive ? (
-                                    <CheckCircle className="h-5 w-5 text-green-500" />
-                                  ) : (
-                                    <XCircle className="h-5 w-5" />
-                                  )}
-                                </button>
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <p className="font-medium">
-                                      {model.displayName}
-                                    </p>
-                                    <Badge
-                                      variant="secondary"
-                                      className={`text-xs ${getSizeClassColor(meta.sizeClass)}`}
-                                    >
-                                      {getSizeClassLabel(meta.sizeClass)}
-                                    </Badge>
-                                    {reasoningLabel && (
-                                      <Badge
-                                        variant="secondary"
-                                        className={`text-xs ${getReasoningColor(meta.reasoningCapability)}`}
-                                      >
-                                        {reasoningLabel}
-                                      </Badge>
-                                    )}
-                                  </div>
-                                  <p className="text-sm text-muted-foreground">
-                                    {model.modelId}
-                                    {meta.contextWindow && (
-                                      <span className="ml-2">
-                                        · {formatContextWindow(meta.contextWindow)}
-                                      </span>
-                                    )}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center gap-4">
-                                <div className="flex gap-1">
-                                  {model.supportsVision && (
-                                    <Badge variant="outline" className="text-xs">
-                                      <Eye className="h-3 w-3 mr-1" />
-                                      Vision
-                                    </Badge>
-                                  )}
-                                  {model.supportsAudio && (
-                                    <Badge variant="outline" className="text-xs">
-                                      <Headphones className="h-3 w-3 mr-1" />
-                                      Audio
-                                    </Badge>
-                                  )}
-                                </div>
-                                <Link href={`/models/${model.id}/responses`}>
-                                  <Button variant="outline" size="sm">
-                                    <MessageSquare className="h-4 w-4 mr-1" />
-                                    Responses
+            <Card>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/50 border-b">
+                      <tr>
+                        <th className="px-3 py-3 text-left w-10">
+                          <Checkbox
+                            checked={selectedIds.size === filteredManageModels.length && filteredManageModels.length > 0}
+                            onCheckedChange={(checked) => {
+                              if (checked) selectAll();
+                              else clearSelection();
+                            }}
+                          />
+                        </th>
+                        <th className="px-3 py-3 text-left w-16">Active</th>
+                        <th className="px-3 py-3 text-left">Name</th>
+                        <th className="px-3 py-3 text-left">Model ID</th>
+                        <th className="px-3 py-3 text-left w-24">Provider</th>
+                        <th className="px-3 py-3 text-left w-28">Size Class</th>
+                        <th className="px-3 py-3 text-left w-28">Reasoning</th>
+                        <th className="px-3 py-3 text-left w-24">Context</th>
+                        <th className="px-3 py-3 text-left w-20">Params</th>
+                        <th className="px-3 py-3 text-center w-16">Vision</th>
+                        <th className="px-3 py-3 text-center w-16">Audio</th>
+                        <th className="px-3 py-3 text-right w-20">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {filteredManageModels.map((model) => {
+                        const meta = getEffectiveMetadata(model);
+                        const isSelected = selectedIds.has(model.id);
+                        return (
+                          <tr
+                            key={model.id}
+                            className={`hover:bg-muted/30 ${!model.isActive ? "opacity-60" : ""} ${isSelected ? "bg-primary/5" : ""}`}
+                          >
+                            <td className="px-3 py-2">
+                              <Checkbox
+                                checked={isSelected}
+                                onCheckedChange={() => toggleSelection(model.id)}
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <button
+                                onClick={() => toggleActive(model.id)}
+                                className="text-muted-foreground hover:text-foreground"
+                              >
+                                {model.isActive ? (
+                                  <CheckCircle className="h-5 w-5 text-green-500" />
+                                ) : (
+                                  <XCircle className="h-5 w-5" />
+                                )}
+                              </button>
+                            </td>
+                            <td className="px-3 py-2 font-medium">
+                              {editingCell?.id === model.id && editingCell?.field === "displayName" ? (
+                                <div className="flex items-center gap-1">
+                                  <Input
+                                    className="h-7 w-full"
+                                    value={editValue}
+                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") saveEdit();
+                                      if (e.key === "Escape") cancelEdit();
+                                    }}
+                                    autoFocus
+                                  />
+                                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={saveEdit}>
+                                    <Check className="h-3 w-3" />
                                   </Button>
-                                </Link>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => deleteModel(model.id)}
+                                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={cancelEdit}>
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <span
+                                  className="cursor-pointer hover:underline"
+                                  onClick={() => startEdit(model.id, "displayName", model.displayName)}
                                 >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
+                                  {model.displayName}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-2 text-muted-foreground text-xs font-mono">
+                              {model.modelId}
+                            </td>
+                            <td className="px-3 py-2">
+                              <Badge variant="secondary" className={`text-xs ${getProviderColor(model.provider)}`}>
+                                {model.provider}
+                              </Badge>
+                            </td>
+                            <td className="px-3 py-2">
+                              <Select
+                                value={model.sizeClass || "auto"}
+                                onValueChange={(v) => updateModelField(model.id, "sizeClass", v === "auto" ? undefined : v)}
+                              >
+                                <SelectTrigger className="h-7 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="auto">Auto ({getSizeClassLabel(meta.sizeClass)})</SelectItem>
+                                  <SelectItem value="frontier">Frontier</SelectItem>
+                                  <SelectItem value="flash">Flash</SelectItem>
+                                  <SelectItem value="lite">Lite</SelectItem>
+                                  <SelectItem value="sub-1b">&lt;1B</SelectItem>
+                                  <SelectItem value="1-3b">1-3B</SelectItem>
+                                  <SelectItem value="3-7b">3-7B</SelectItem>
+                                  <SelectItem value="7-14b">7-14B</SelectItem>
+                                  <SelectItem value="14-34b">14-34B</SelectItem>
+                                  <SelectItem value="35-70b">35-70B</SelectItem>
+                                  <SelectItem value="70-100b">70-100B</SelectItem>
+                                  <SelectItem value="100-200b">100-200B</SelectItem>
+                                  <SelectItem value="200b+">200B+</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="px-3 py-2">
+                              <Select
+                                value={model.reasoningCapability || "auto"}
+                                onValueChange={(v) => updateModelField(model.id, "reasoningCapability", v === "auto" ? undefined : v)}
+                              >
+                                <SelectTrigger className="h-7 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="auto">Auto ({getReasoningLabel(meta.reasoningCapability) || "None"})</SelectItem>
+                                  <SelectItem value="none">None</SelectItem>
+                                  <SelectItem value="reasoning">Reasoning</SelectItem>
+                                  <SelectItem value="hybrid">Hybrid</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="px-3 py-2">
+                              {editingCell?.id === model.id && editingCell?.field === "contextWindow" ? (
+                                <div className="flex items-center gap-1">
+                                  <Input
+                                    className="h-7 w-20"
+                                    type="number"
+                                    value={editValue}
+                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") saveEdit();
+                                      if (e.key === "Escape") cancelEdit();
+                                    }}
+                                    autoFocus
+                                  />
+                                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={saveEdit}>
+                                    <Check className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <span
+                                  className="cursor-pointer hover:underline text-xs"
+                                  onClick={() => startEdit(model.id, "contextWindow", String(model.contextWindow || meta.contextWindow || ""))}
+                                >
+                                  {formatContextWindow(model.contextWindow || meta.contextWindow)}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-2">
+                              {editingCell?.id === model.id && editingCell?.field === "parameters" ? (
+                                <div className="flex items-center gap-1">
+                                  <Input
+                                    className="h-7 w-16"
+                                    value={editValue}
+                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") saveEdit();
+                                      if (e.key === "Escape") cancelEdit();
+                                    }}
+                                    autoFocus
+                                  />
+                                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={saveEdit}>
+                                    <Check className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <span
+                                  className="cursor-pointer hover:underline text-xs"
+                                  onClick={() => startEdit(model.id, "parameters", model.parameters || meta.parameters || "")}
+                                >
+                                  {model.parameters || meta.parameters || "—"}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-2 text-center">
+                              <Checkbox
+                                checked={model.supportsVision}
+                                onCheckedChange={(checked) => updateModelField(model.id, "supportsVision", !!checked)}
+                              />
+                            </td>
+                            <td className="px-3 py-2 text-center">
+                              <Checkbox
+                                checked={model.supportsAudio}
+                                onCheckedChange={(checked) => updateModelField(model.id, "supportsAudio", !!checked)}
+                              />
+                            </td>
+                            <td className="px-3 py-2 text-right">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => deleteModel(model.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
-              ))}
-            </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Summary */}

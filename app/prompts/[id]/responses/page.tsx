@@ -27,8 +27,9 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { ResponseViewer } from "@/components/response-viewer";
-import { 
-  toViewerPrompt, 
+import { ModelFilterDropdown } from "@/components/response-viewer/model-filter-dropdown";
+import {
+  toViewerPrompt,
   getResponsesForPrompt,
   groupResponsesByIteration,
   getLatestResponsePerModel,
@@ -55,6 +56,7 @@ function PromptResponsesContent() {
   const [showLatestOnly, setShowLatestOnly] = useState(true);
   const [shuffleOrder, setShuffleOrder] = useState(false);
   const [currentIteration, setCurrentIteration] = useState(0);
+  const [selectedModelIds, setSelectedModelIds] = useState<Set<string>>(new Set());
 
   // Evaluation state
   const [evaluatingResponseId, setEvaluatingResponseId] = useState<string | null>(null);
@@ -116,10 +118,10 @@ function PromptResponsesContent() {
 
   // Get all responses for this prompt
   const allResponses = useMemo(() => {
-    return getResponsesForPrompt(promptId, { 
-      models, 
-      prompts, 
-      runs, 
+    return getResponsesForPrompt(promptId, {
+      models,
+      prompts,
+      runs,
       evaluations: rubricEvaluations.map(e => ({
         responseId: e.responseId,
         impressionScore: e.impressionScore,
@@ -127,21 +129,40 @@ function PromptResponsesContent() {
     });
   }, [promptId, models, prompts, runs, rubricEvaluations]);
 
+  // Get models that have responses for this prompt
+  const modelsWithResponses = useMemo(() => {
+    const modelIds = new Set(allResponses.map((r) => r.modelId));
+    return models.filter((m) => modelIds.has(m.id));
+  }, [allResponses, models]);
+
+  // Initialize selected models when data loads
+  useEffect(() => {
+    if (modelsWithResponses.length > 0 && selectedModelIds.size === 0) {
+      setSelectedModelIds(new Set(modelsWithResponses.map((m) => m.id)));
+    }
+  }, [modelsWithResponses, selectedModelIds.size]);
+
+  // Filter responses by selected models, then group by iteration
+  const filteredResponses = useMemo(() => {
+    if (selectedModelIds.size === 0) return allResponses;
+    return allResponses.filter((r) => selectedModelIds.has(r.modelId));
+  }, [allResponses, selectedModelIds]);
+
   // Group by iteration
   const iterationGroups = useMemo(() => {
-    return groupResponsesByIteration(allResponses);
-  }, [allResponses]);
+    return groupResponsesByIteration(filteredResponses);
+  }, [filteredResponses]);
 
   // Get responses to display
   const displayResponses = useMemo(() => {
     let responses: ViewerResponse[];
-    
+
     if (showLatestOnly) {
-      responses = getLatestResponsePerModel(allResponses);
+      responses = getLatestResponsePerModel(filteredResponses);
     } else if (iterationGroups.size > 0) {
       responses = iterationGroups.get(currentIteration) || [];
     } else {
-      responses = allResponses;
+      responses = filteredResponses;
     }
     
     if (shuffleOrder) {
@@ -388,6 +409,15 @@ function PromptResponsesContent() {
                 <Shuffle className="h-4 w-4 mr-2" />
                 Shuffle
               </Button>
+
+              {/* Model Filter */}
+              {modelsWithResponses.length > 1 && (
+                <ModelFilterDropdown
+                  models={modelsWithResponses}
+                  selectedModelIds={selectedModelIds}
+                  onSelectionChange={setSelectedModelIds}
+                />
+              )}
             </div>
 
             {/* Right: Evaluation controls */}

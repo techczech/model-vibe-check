@@ -23,8 +23,9 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { ResponseViewer } from "@/components/response-viewer";
-import { 
-  toViewerPrompt, 
+import { ModelFilterDropdown } from "@/components/response-viewer/model-filter-dropdown";
+import {
+  toViewerPrompt,
   getResponsesForModel,
   getLatestResponsePerModel,
 } from "@/lib/viewer-utils";
@@ -42,6 +43,7 @@ function ModelVibeContent() {
   const [selectedModelId, setSelectedModelId] = useState<string | null>(initialModelId);
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [shuffled, setShuffled] = useState(false);
+  const [selectedModelFilterIds, setSelectedModelFilterIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadData();
@@ -162,6 +164,18 @@ function ModelVibeContent() {
     runs.some((r) => r.results.some((res) => res.modelId === m.id))
   );
 
+  // Initialize model filter with all models when data loads
+  useEffect(() => {
+    if (modelsWithResponses.length > 0 && selectedModelFilterIds.size === 0) {
+      setSelectedModelFilterIds(new Set(modelsWithResponses.map((m) => m.id)));
+    }
+  }, [modelsWithResponses, selectedModelFilterIds.size]);
+
+  // Filter models shown in the dropdown based on the filter selection
+  const filteredModelsForDropdown = modelsWithResponses.filter(
+    (m) => selectedModelFilterIds.size === 0 || selectedModelFilterIds.has(m.id)
+  );
+
   const selectedModel = models.find((m) => m.id === selectedModelId);
   const modelMetadata = selectedModel 
     ? getModelMetadata(selectedModel.modelId, selectedModel.provider)
@@ -210,7 +224,7 @@ function ModelVibeContent() {
               <SelectValue placeholder="Select a model" />
             </SelectTrigger>
             <SelectContent>
-              {modelsWithResponses.map((model) => (
+              {filteredModelsForDropdown.map((model) => (
                 <SelectItem key={model.id} value={model.id}>
                   <div className="flex items-center gap-2">
                     <Bot className="h-4 w-4 text-muted-foreground" />
@@ -224,6 +238,15 @@ function ModelVibeContent() {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Model Filter */}
+        {modelsWithResponses.length > 1 && (
+          <ModelFilterDropdown
+            models={modelsWithResponses}
+            selectedModelIds={selectedModelFilterIds}
+            onSelectionChange={setSelectedModelFilterIds}
+          />
+        )}
 
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
           <SelectTrigger className="w-40">

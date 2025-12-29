@@ -6,7 +6,8 @@
 - **v0.2.0** — Evaluation system (complete)
 - **v0.2.1** — Evaluation UX fixes (complete)
 - **v0.5.0** — Vibe Check Workbench (released 2024-12-28)
-- **v0.6.0** — Polish & Integration (planned)
+- **v0.6.0** — Polish & Integration (complete)
+- **v0.7.0** — Comprehensive Prompt Library (2024-12-29)
 
 ---
 
@@ -554,7 +555,7 @@ See BUILDPLAN-v0.3.0.md for full implementation details.
 
 ## v0.6.0 — UI Cleanup & Feature Consolidation
 
-**STATUS: PLANNED**
+**STATUS: COMPLETE**
 
 Major UI restructuring to surface hidden features, consolidate navigation, and complete partially-implemented functionality.
 
@@ -643,3 +644,45 @@ Dashboard | Vibe Check | Prompts | Models | Runs | Evaluations | Settings
 **Evaluations:** `/app/evaluations/` (new), `/app/settings/evaluators/` (redirect)
 **Runs:** `/app/runs/[id]/page.tsx`
 **Components:** `evaluation-form.tsx`, `response-viewer/`, `model-discovery.tsx`
+
+---
+
+## v0.7.0 — Comprehensive Prompt Library
+
+**STATUS: COMPLETE (2024-12-29)**
+
+### Overview
+
+Imported a comprehensive library of 57 evaluation prompts covering diverse capabilities and languages.
+
+### Completed Features
+
+- [x] **Prompt Import**: Extracted all prompts from `datatoimport.tsx` source file
+- [x] **11 Categories**: Spatial Cognition, Coding, Linguistics, Writing, Multilingual, Small Models, Creative Writing, Generation, Long Context, Vision, Agents
+- [x] **Evaluation Configs**: Each prompt has appropriate evaluation method configuration
+- [x] **Expected Answers**: Many prompts include expected answers for automated verification
+- [x] **Attachments**: Reference files organized in `public/attachments/`
+- [x] **Build Scripts**: Added `clean`, `dev:clean`, `build:clean` scripts to prevent cache issues
+
+### Prompt Categories
+
+| Category | Count | Focus |
+|----------|-------|-------|
+| Spatial Cognition | 5 | Visual-spatial reasoning, vertical text, SVG |
+| Coding | 1 | Code analysis, readability |
+| Linguistics | 2 | Anaphora resolution, metalanguage |
+| Writing | 1 | Long-form generation (7000 words) |
+| Multilingual | 16 | German, Czech, cultural knowledge, idioms |
+| Small Models | 5 | Knowledge coherence tests |
+| Creative Writing | 6 | Style pastiche, poetry |
+| Generation | 10 | Image/video generation prompts |
+| Long Context | 4 | Retrieval with attachments |
+| Vision | 3 | Image understanding |
+| Agents | 4 | Multi-step research |
+
+### Files Changed
+
+- `data/prompts.json` — Replaced with 57 prompts
+- `public/attachments/` — Created for prompt attachments
+- `scripts/datatoimport.tsx.bak` — Archived source file
+- `package.json` — Added clean scripts, version 0.7.0

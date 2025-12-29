@@ -22,8 +22,9 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { ResponseViewer } from "@/components/response-viewer";
-import { 
-  toViewerPrompt, 
+import { ModelFilterDropdown } from "@/components/response-viewer/model-filter-dropdown";
+import {
+  toViewerPrompt,
   getResponsesForPrompt,
   groupResponsesByIteration,
   getLatestResponsePerModel,
@@ -39,6 +40,7 @@ function PromptVibeContent() {
   const [models, setModels] = useState<Model[]>([]);
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(initialPromptId);
+  const [selectedModelIds, setSelectedModelIds] = useState<Set<string>>(new Set());
   const [shuffled, setShuffled] = useState(false);
   const [iterationIndex, setIterationIndex] = useState(0);
   const [showAllIterations, setShowAllIterations] = useState(false);
@@ -87,26 +89,52 @@ function PromptVibeContent() {
     return getResponsesForPrompt(selectedPromptId, { models, prompts, runs });
   }, [selectedPromptId, models, prompts, runs]);
 
-  // Group by iteration or get latest per model
-  const { responses, maxIterations } = useMemo(() => {
-    if (showAllIterations) {
-      return { responses: allResponses, maxIterations: 1 };
+  // Get models that have responses for this prompt
+  const modelsWithResponses = useMemo(() => {
+    const modelIds = new Set(allResponses.map((r) => r.modelId));
+    return models.filter((m) => modelIds.has(m.id));
+  }, [allResponses, models]);
+
+  // Initialize selected models when prompt changes or models load
+  useEffect(() => {
+    if (modelsWithResponses.length > 0 && selectedModelIds.size === 0) {
+      setSelectedModelIds(new Set(modelsWithResponses.map((m) => m.id)));
     }
-    
-    const grouped = groupResponsesByIteration(allResponses);
+  }, [modelsWithResponses, selectedModelIds.size]);
+
+  // Reset model selection when prompt changes
+  useEffect(() => {
+    if (selectedPromptId) {
+      // Will be repopulated by the effect above
+      setSelectedModelIds(new Set());
+    }
+  }, [selectedPromptId]);
+
+  // Group by iteration or get latest per model, then filter by selected models
+  const { responses, maxIterations } = useMemo(() => {
+    // First filter by selected models
+    const modelFilteredResponses = selectedModelIds.size > 0
+      ? allResponses.filter((r) => selectedModelIds.has(r.modelId))
+      : allResponses;
+
+    if (showAllIterations) {
+      return { responses: modelFilteredResponses, maxIterations: 1 };
+    }
+
+    const grouped = groupResponsesByIteration(modelFilteredResponses);
     const iterations = Array.from(grouped.keys()).sort((a, b) => b - a);
     const maxIter = iterations.length;
-    
+
     if (maxIter === 0) {
       return { responses: [], maxIterations: 0 };
     }
-    
+
     const currentIteration = iterations[Math.min(iterationIndex, maxIter - 1)];
     let iterationResponses = grouped.get(currentIteration) || [];
-    
+
     // Get one response per model for this iteration
     iterationResponses = getLatestResponsePerModel(iterationResponses);
-    
+
     // Shuffle if requested
     if (shuffled) {
       iterationResponses = [...iterationResponses];
@@ -115,9 +143,9 @@ function PromptVibeContent() {
         [iterationResponses[i], iterationResponses[j]] = [iterationResponses[j], iterationResponses[i]];
       }
     }
-    
+
     return { responses: iterationResponses, maxIterations: maxIter };
-  }, [allResponses, iterationIndex, shuffled, showAllIterations]);
+  }, [allResponses, selectedModelIds, iterationIndex, shuffled, showAllIterations]);
 
   const selectedPrompt = prompts.find((p) => p.id === selectedPromptId);
   const viewerPrompt = selectedPrompt ? toViewerPrompt(selectedPrompt) : undefined;
@@ -214,6 +242,15 @@ function PromptVibeContent() {
           <Shuffle className="h-4 w-4 mr-2" />
           {shuffled ? "Shuffled" : "Shuffle"}
         </Button>
+
+        {/* Model Filter */}
+        {modelsWithResponses.length > 0 && (
+          <ModelFilterDropdown
+            models={modelsWithResponses}
+            selectedModelIds={selectedModelIds}
+            onSelectionChange={setSelectedModelIds}
+          />
+        )}
 
         {selectedPromptId && (
           <Link href={`/prompts/${selectedPromptId}`}>

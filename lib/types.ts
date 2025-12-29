@@ -270,9 +270,10 @@ export interface AggregatedScore {
 }
 
 // ResponseViewer types
-export type ViewerLayoutMode = 'single' | '2-col' | '3-col' | 'n-col' | 'stacked';
-export type ViewerHeightMode = 'full' | 'compact' | 'viewport';
+export type ViewerLayoutMode = 'single' | '2-col' | '3-col' | 'n-col';
+export type ViewerHeightMode = 'full' | 'compact';
 export type ColumnPreset = 'equal' | '1/3-2/3' | '2/3-1/3' | '1/4-3/4' | '3/4-1/4' | 'custom';
+export type IterationViewMode = 'carousel' | 'side-by-side';
 
 export interface ViewerMetadataToggles {
   // Prompt section
@@ -309,6 +310,8 @@ export interface ViewerPreferences {
   height: ViewerHeightMode;
   columnPreset: ColumnPreset;
   customColumnWidths?: number[]; // percentages
+  slideshowMode: boolean; // Page through responses vs scroll all
+  iterationMode: IterationViewMode; // How to display multiple iterations
   metadata: ViewerMetadataToggles;
   content: ViewerContentSettings;
 }
