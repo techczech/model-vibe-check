@@ -15,36 +15,37 @@ import {
   Columns2,
   Columns3,
   LayoutGrid,
-  Rows3,
   Square,
   Maximize2,
   Minimize2,
-  MonitorSmartphone,
-  Settings2,
   Eye,
   WrapText,
   Type,
   Link2,
   RotateCcw,
+  GalleryHorizontal,
+  ScrollText,
 } from "lucide-react";
-import type { 
-  ViewerLayoutMode, 
-  ViewerHeightMode, 
+import type {
+  ViewerLayoutMode,
+  ViewerHeightMode,
   ColumnPreset,
   ViewerMetadataToggles,
-  ViewerContentSettings 
+  ViewerContentSettings
 } from "@/lib/types";
 
 interface ViewerToolbarProps {
   layout: ViewerLayoutMode;
   height: ViewerHeightMode;
   columnPreset: ColumnPreset;
+  slideshowMode: boolean;
   metadata: ViewerMetadataToggles;
   content: ViewerContentSettings;
   responseCount: number;
   onLayoutChange: (layout: ViewerLayoutMode) => void;
   onHeightChange: (height: ViewerHeightMode) => void;
   onColumnPresetChange: (preset: ColumnPreset) => void;
+  onSlideshowModeChange: (enabled: boolean) => void;
   onMetadataToggle: (key: keyof ViewerMetadataToggles) => void;
   onContentToggle: (key: keyof ViewerContentSettings) => void;
   onReset: () => void;
@@ -55,17 +56,22 @@ export function ViewerToolbar({
   layout,
   height,
   columnPreset,
+  slideshowMode,
   metadata,
   content,
   responseCount,
   onLayoutChange,
   onHeightChange,
   onColumnPresetChange,
+  onSlideshowModeChange,
   onMetadataToggle,
   onContentToggle,
   onReset,
   className,
 }: ViewerToolbarProps) {
+  // Check if we're in a multi-column layout
+  const isMultiColumn = layout === "2-col" || layout === "3-col" || layout === "n-col";
+
   return (
     <div className={cn("flex items-center gap-2 flex-wrap p-2 bg-muted/30 rounded-lg", className)}>
       {/* Layout mode */}
@@ -75,7 +81,7 @@ export function ViewerToolbar({
           size="sm"
           className="h-8 px-2 rounded-r-none"
           onClick={() => onLayoutChange("single")}
-          title="Single column"
+          title="Single column (slideshow)"
         >
           <Square className="h-4 w-4" />
         </Button>
@@ -91,7 +97,10 @@ export function ViewerToolbar({
         <Button
           variant={layout === "3-col" ? "secondary" : "ghost"}
           size="sm"
-          className="h-8 px-2 rounded-none border-r"
+          className={cn(
+            "h-8 px-2",
+            responseCount > 3 ? "rounded-none border-r" : "rounded-l-none"
+          )}
           onClick={() => onLayoutChange("3-col")}
           title="3 columns"
         >
@@ -101,23 +110,38 @@ export function ViewerToolbar({
           <Button
             variant={layout === "n-col" ? "secondary" : "ghost"}
             size="sm"
-            className="h-8 px-2 rounded-none border-r"
+            className="h-8 px-2 rounded-l-none"
             onClick={() => onLayoutChange("n-col")}
             title="All columns (scrollable)"
           >
             <LayoutGrid className="h-4 w-4" />
           </Button>
         )}
-        <Button
-          variant={layout === "stacked" ? "secondary" : "ghost"}
-          size="sm"
-          className="h-8 px-2 rounded-l-none"
-          onClick={() => onLayoutChange("stacked")}
-          title="Stacked vertically"
-        >
-          <Rows3 className="h-4 w-4" />
-        </Button>
       </div>
+
+      {/* Slideshow vs Scroll toggle (for multi-column) */}
+      {isMultiColumn && responseCount > (layout === "3-col" ? 3 : 2) && (
+        <div className="flex items-center border rounded-md bg-background">
+          <Button
+            variant={slideshowMode ? "secondary" : "ghost"}
+            size="sm"
+            className="h-8 px-2 rounded-r-none"
+            onClick={() => onSlideshowModeChange(true)}
+            title="Slideshow (page through)"
+          >
+            <GalleryHorizontal className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={!slideshowMode ? "secondary" : "ghost"}
+            size="sm"
+            className="h-8 px-2 rounded-l-none"
+            onClick={() => onSlideshowModeChange(false)}
+            title="Scroll all"
+          >
+            <ScrollText className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Height mode */}
       <div className="flex items-center border rounded-md bg-background">
@@ -133,20 +157,11 @@ export function ViewerToolbar({
         <Button
           variant={height === "compact" ? "secondary" : "ghost"}
           size="sm"
-          className="h-8 px-2 rounded-none border-x"
+          className="h-8 px-2 rounded-l-none"
           onClick={() => onHeightChange("compact")}
           title="Compact (expandable)"
         >
           <Minimize2 className="h-4 w-4" />
-        </Button>
-        <Button
-          variant={height === "viewport" ? "secondary" : "ghost"}
-          size="sm"
-          className="h-8 px-2 rounded-l-none"
-          onClick={() => onHeightChange("viewport")}
-          title="Viewport height (sync scroll)"
-        >
-          <MonitorSmartphone className="h-4 w-4" />
         </Button>
       </div>
 
@@ -190,7 +205,8 @@ export function ViewerToolbar({
         >
           <WrapText className="h-4 w-4" />
         </Button>
-        {height === "viewport" && (
+        {/* Sync scroll - available for multi-column layouts */}
+        {isMultiColumn && (
           <Button
             variant={content.syncScroll ? "secondary" : "ghost"}
             size="sm"

@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useRef, useEffect } from "react";
+import { forwardRef, useRef, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ResponseHeader } from "./response-header";
@@ -13,7 +13,7 @@ interface ResponsePanelProps {
   preferences: ViewerPreferences;
   isBlind?: boolean;
   isFocused?: boolean;
-  onScroll?: (scrollTop: number, scrollHeight: number) => void;
+  onScroll?: (scrollPercent: number) => void;
   syncScrollTop?: number;
   className?: string;
   style?: React.CSSProperties;
@@ -36,35 +36,39 @@ export const ResponsePanel = forwardRef<HTMLDivElement, ResponsePanelProps>(
     const contentRef = useRef<HTMLDivElement>(null);
     const isScrolling = useRef(false);
 
-    // Handle synchronized scrolling
+    // Handle synchronized scrolling - apply when syncScrollTop changes
     useEffect(() => {
       if (syncScrollTop !== undefined && contentRef.current && !isScrolling.current) {
         const element = contentRef.current;
         const maxScroll = element.scrollHeight - element.clientHeight;
-        const targetScroll = (syncScrollTop / 100) * maxScroll;
-        element.scrollTop = targetScroll;
+        if (maxScroll > 0) {
+          const targetScroll = (syncScrollTop / 100) * maxScroll;
+          element.scrollTop = targetScroll;
+        }
       }
     }, [syncScrollTop]);
 
-    const handleScroll = () => {
+    const handleScroll = useCallback(() => {
       if (!contentRef.current || !onScroll) return;
-      
+
       isScrolling.current = true;
       const element = contentRef.current;
-      const scrollPercent = element.scrollHeight > element.clientHeight
-        ? (element.scrollTop / (element.scrollHeight - element.clientHeight)) * 100
+      const maxScroll = element.scrollHeight - element.clientHeight;
+      const scrollPercent = maxScroll > 0
+        ? (element.scrollTop / maxScroll) * 100
         : 0;
-      onScroll(scrollPercent, element.scrollHeight);
-      
-      // Reset scrolling flag after a short delay
+      onScroll(scrollPercent);
+
+      // Reset scrolling flag after a short delay to prevent feedback loops
       setTimeout(() => {
         isScrolling.current = false;
       }, 50);
-    };
+    }, [onScroll]);
 
     const { height, content: contentSettings, metadata } = preferences;
-    const isViewport = height === "viewport";
     const isCompact = height === "compact";
+    // Enable scroll syncing when syncScrollTop is provided (controlled by parent)
+    const enableScrollSync = syncScrollTop !== undefined;
 
     return (
       <Card
@@ -95,12 +99,10 @@ export const ResponsePanel = forwardRef<HTMLDivElement, ResponsePanelProps>(
         <div
           ref={contentRef}
           className={cn(
-            "flex-1 p-3",
-            isViewport && "overflow-y-auto",
-            isCompact && "max-h-32 overflow-hidden relative",
-            !isViewport && !isCompact && "overflow-visible"
+            "flex-1 p-3 overflow-y-auto",
+            isCompact && "max-h-32 overflow-hidden relative"
           )}
-          onScroll={isViewport ? handleScroll : undefined}
+          onScroll={enableScrollSync ? handleScroll : undefined}
         >
           <ResponseContent
             content={response.content}
@@ -108,7 +110,7 @@ export const ResponsePanel = forwardRef<HTMLDivElement, ResponsePanelProps>(
             syntaxHighlight={contentSettings.syntaxHighlight}
             wordWrap={contentSettings.wordWrap}
           />
-          
+
           {/* Compact mode fade overlay */}
           {isCompact && (
             <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent pointer-events-none" />

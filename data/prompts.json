@@ -1,112 +1,20 @@
 {
   "version": "1.0",
-  "exportedAt": "2025-12-27T17:37:01.405Z",
+  "exportedAt": "2025-12-29T00:23:25.389Z",
   "prompts": [
     {
-      "id": "vertical-text",
-      "title": "Vertical Text Recognition",
+      "id": "vertical-text-1",
+      "title": "Vertical Text Recognition - Simple",
       "category": "Spatial Cognition",
       "keywords": [
-        "vision",
-        "text recognition",
         "spatial",
-        "vertical"
+        "vertical",
+        "text recognition",
+        "vision"
       ],
-      "description": "Tests ability to read vertically arranged text and find hidden messages",
-      "content": "This image contains text. What does it say? Is there any hidden message in there?",
-      "expectedAnswer": "The text reads vertically and contains a secret message: 'This text has in it secret message'",
-      "attachments": [],
-      "evaluationConfig": {
-        "methods": [
-          "human",
-          "machine",
-          "llm-judge"
-        ],
-        "machineJudge": {
-          "type": "contains",
-          "criteria": "secret,message",
-          "caseSensitive": false
-        }
-      },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2024-12-26T00:00:00.000Z"
-    },
-    {
-      "id": "german-rilke",
-      "title": "German Modal Translation (Rilke)",
-      "category": "Multilingual",
-      "keywords": [
-        "German",
-        "translation",
-        "modal verbs",
-        "Rilke",
-        "poetry"
-      ],
-      "description": "Tests understanding of German modal verb 'nicht müssen' which means 'not having to' rather than 'must not'",
-      "content": "Translate the following German sentences into English with a focus on conveying the original meaning.\n\n\"Du mußt dein Leben ändern\" - Rilke\n\"Du mußt nicht dein Leben ändern\"\n\nPay attention to the negation of modal verbs.",
-      "expectedAnswer": "The second sentence should be translated as 'You don't have to change your life' NOT 'You must not change your life'",
-      "attachments": [],
-      "evaluationConfig": {
-        "methods": [
-          "human",
-          "machine",
-          "llm-judge"
-        ],
-        "machineJudge": {
-          "type": "regex",
-          "criteria": "(do not have to|don't have to|need not|not required)",
-          "caseSensitive": false
-        },
-        "llmJudge": {
-          "criteria": "Evaluate whether translation captures the modal meaning of German 'nicht müssen' (not having to) rather than English 'must not' (prohibition)."
-        }
-      },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2024-12-26T00:00:00.000Z"
-    },
-    {
-      "id": "anaphora-resolution",
-      "title": "Anaphora Resolution",
-      "category": "Linguistics",
-      "keywords": [
-        "linguistics",
-        "anaphora",
-        "reference",
-        "pronoun resolution"
-      ],
-      "description": "Tests ability to resolve pronoun references in complex sentences",
-      "content": "In the sentence 'The trophy doesn't fit in the suitcase because it is too big', what does 'it' refer to?\n\nIn the sentence 'The trophy doesn't fit in the suitcase because it is too small', what does 'it' refer to?",
-      "expectedAnswer": "In the first sentence, 'it' refers to the trophy (too big to fit). In the second sentence, 'it' refers to the suitcase (too small to contain the trophy).",
-      "attachments": [],
-      "evaluationConfig": {
-        "methods": [
-          "human",
-          "llm-judge"
-        ],
-        "llmJudge": {
-          "rubric": {
-            "firstSentence": "Correctly identifies 'it' as the trophy",
-            "secondSentence": "Correctly identifies 'it' as the suitcase",
-            "reasoning": "Provides clear explanation of the disambiguation"
-          }
-        }
-      },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2024-12-26T00:00:00.000Z"
-    },
-    {
-      "id": "czech-morphology",
-      "title": "Czech Morphological Analysis",
-      "category": "Multilingual",
-      "keywords": [
-        "Czech",
-        "morphology",
-        "linguistics",
-        "case system"
-      ],
-      "description": "Tests knowledge of Czech noun declension and case system",
-      "content": "Analyze the Czech word 'ženami' morphologically. What is the base form, what case is it in, and what does the ending tell us?",
-      "expectedAnswer": "Base form: žena (woman). The form 'ženami' is instrumental plural. The ending -ami indicates this is the instrumental case used for means/manner.",
+      "description": "All models fail at these tasks most of the time. Tests ability to read vertically arranged text.",
+      "content": "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nT   t   i   s   m\nh   e   t   e   e\ni   x       c   s\ns   t   o   r   s\n        n   e   a\n    h   e   t   g\n    a           e\n    s            \n\n    i            \n    n            ",
+      "expectedAnswer": "This, text, has, in, it, one, secret, message",
       "attachments": [],
       "evaluationConfig": {
         "methods": [
@@ -114,21 +22,89 @@
           "llm-judge"
         ]
       },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2025-12-27T17:37:01.405Z"
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
     },
     {
-      "id": "svg-generation",
-      "title": "SVG Code Generation",
-      "category": "Coding",
+      "id": "vertical-text-2",
+      "title": "Vertical Text Recognition - Short Words",
+      "category": "Spatial Cognition",
       "keywords": [
-        "SVG",
-        "code generation",
-        "graphics",
-        "visualization"
+        "spatial",
+        "vertical",
+        "text recognition",
+        "vision"
       ],
-      "description": "Tests ability to generate valid SVG code for a simple graphic",
-      "content": "Generate SVG code for a simple traffic light with three circles (red, yellow, green) arranged vertically in a dark gray rectangle.",
+      "description": "Tests ability to read vertically arranged short words.",
+      "content": "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nV t m s L\ne e a e L\nr x k n M\nt t e s s\ni   s e\nc\na   n t\nl   o o",
+      "expectedAnswer": "Vertical, text, makes, sense, to, LLMs",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "vertical-text-3",
+      "title": "Vertical Text Recognition - Long Sentence",
+      "category": "Spatial Cognition",
+      "keywords": [
+        "spatial",
+        "vertical",
+        "text recognition",
+        "vision"
+      ],
+      "description": "Tests ability to read a longer vertically arranged message.",
+      "content": "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nI  t  e  d  t  t  t  l  g  m  L  M  t  t\nf  h  n  i  h  e  h  o  e  o  a  o  o  h\n   i  o  s  e  x  i  n  t  r  r  d     i\ny  s  u  c  r  t  s  g  s  e  g  e  b  s\no     g  o  e     .  e        e  l  e  .\nu  c  h  v     h     r  i  c            \n   a     e  i  i  A     n  c  L  b  b   \nl  r  y  r  s  d  s  a  c  h  a  u  e   \no  e  o        d     n  r  a  n  t  s   \no  f  u  t  a  e  i  d  e  l  g     t   \nk  u     h  n  n  t     a  l  u  o      \n   l  w  a           l  s  e  a  3  a   \na  l  i  t  a  i  g  o  i  n  g     t   \nt  y  l     c  n  e  n  n  g        s   \n      l     t     t  g  g  i  e  e      \n            u     s  e  l  n  m  e      \n            a        r  y  g  s  m      \n            l              f            \n                     i     o            \n                     t     r            \n                                        \n                           a            \n                           n            \n                           y            ",
+      "expectedAnswer": "If you look at this carefully you will enough discover that there is this text hidden in it. As it gets longer and longer it increasingly more challenging Large Language Models to be best at this.",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "spatial-relationships",
+      "title": "Spatial Relationships in Language",
+      "category": "Spatial Cognition",
+      "keywords": [
+        "spatial relationships",
+        "language context",
+        "reasoning"
+      ],
+      "description": "This prompt asks the model to come up with contexts for seemingly contradictory spatial descriptions.",
+      "content": "Come up with contexts in which the sentence The cathedral is in front of the statue makes sense.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "svg-bicycle",
+      "title": "Visual Reasoning - SVG Bicycle",
+      "category": "Spatial Cognition",
+      "keywords": [
+        "svg",
+        "bicycle",
+        "visual",
+        "code generation"
+      ],
+      "description": "Tests visual reasoning and code generation ability.",
+      "content": "Make an SVG of a bicyle.",
       "expectedAnswer": null,
       "attachments": [],
       "evaluationConfig": {
@@ -138,25 +114,101 @@
         ],
         "machineJudge": {
           "type": "contains",
-          "criteria": "<svg,<rect,<circle,red,yellow,green",
+          "criteria": "<svg,circle,wheel",
           "caseSensitive": false
         }
       },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2024-12-26T00:00:00.000Z"
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
     },
     {
-      "id": "academic-paper-length",
-      "title": "Long-Form Academic Writing",
-      "category": "Creative Writing",
+      "id": "readability-tool",
+      "title": "Coding - Readability Analysis Tool",
+      "category": "Coding",
       "keywords": [
-        "academic",
-        "long-form",
-        "writing",
-        "research paper"
+        "readability",
+        "code",
+        "python",
+        "tool",
+        "web app"
       ],
-      "description": "Tests ability to generate substantial academic content approaching 7000 words",
-      "content": "Write a 7000-word academic paper on the impact of large language models on educational assessment practices. Include an abstract, introduction, literature review, methodology section, findings, discussion, and conclusion. Use appropriate academic style and citations (you may use placeholder citations like [Author, Year]).",
+      "description": "This single prompt tests the models knowledge of readability formulas, its ability to implement them and output enough code to achieve this. This is also a good prompt to test coding agents. Claude 3.7 Sonnet performs best at this as a single shot with Gemini 2.5 a close second.",
+      "content": "Make a detailed, visually interesting readability analysis tool.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "Flesch,readability,function",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "anaphora-single",
+      "title": "Anaphora Resolution - Single Sentence",
+      "category": "Linguistics",
+      "keywords": [
+        "pronouns",
+        "reference",
+        "linguistics",
+        "anaphora"
+      ],
+      "description": "Tests the ability to disambiguate anaphora in a single sentence.",
+      "content": "Make a table of all the pronouns in this sentence matched to what noun they refer to: Natasha was afraid that her mother would be worried and that's why she didn't tell her about her accident.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "anaphora-extended",
+      "title": "Anaphora Resolution - Extended Text",
+      "category": "Linguistics",
+      "keywords": [
+        "pronouns",
+        "reference",
+        "linguistics",
+        "anaphora"
+      ],
+      "description": "Tests the ability to disambiguate anaphora across multiple sentences.",
+      "content": "Make a table of all the pronouns in this text matched to what noun they refer to (for possessive pronouns include the noun and for subject or objects include the predicate in the table to make it easier to read): \n\nNatasha was afraid that her mother would be worried and that's why she didn't tell her about her accident. Her reaction, after she eventually told her about it, convinced her she had been right to wait because she was inconsolable until she promised her she would never drive in the dark again.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "academic-paper-7000",
+      "title": "Long-Form Academic Writing (7000 words)",
+      "category": "Writing",
+      "keywords": [
+        "long form",
+        "essay",
+        "coherence",
+        "7000 words",
+        "academic"
+      ],
+      "description": "Most models cannot output text longer than about 3,000 words (even if the actual limit is higher). This prompt tests their ability to maintain coherence over the length of the output. Claude 3.7 Sonnet and Gemini 2.5 are the best at this with Gemini 2.5 being the only one that can output the full 7,000 words but struggling to maintain academic style throughout.",
+      "content": "Write a full 7,000 word paper in the academic style including references about the dangers of placing the Earth's strategic icecream stockpile in the Sahara. Yes, this is a parody but I want high level of verisimilitude including length.",
       "expectedAnswer": null,
       "attachments": [],
       "evaluationConfig": {
@@ -168,64 +220,199 @@
         "machineJudge": {
           "type": "custom",
           "criteria": "const wordCount = response.split(/\\s+/).filter(w => w.length > 0).length; return { pass: wordCount >= 5000, details: `Word count: ${wordCount}` };"
-        },
-        "llmJudge": {
-          "rubric": {
-            "length": "Did it approach or exceed 7000 words?",
-            "academicStyle": "Maintains formal academic tone throughout?",
-            "structure": "Has proper sections (abstract, intro, lit review, methodology, findings, discussion, conclusion)?",
-            "coherence": "Is the argument coherent from start to finish?",
-            "verisimilitude": "Does it read like a real academic paper?"
-          }
         }
       },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2024-12-26T00:00:00.000Z"
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
     },
     {
-      "id": "wodehouse-style",
-      "title": "Wodehouse Style Transfer",
-      "category": "Creative Writing",
+      "id": "german-rilke",
+      "title": "German Modal Translation (Rilke)",
+      "category": "Multilingual",
       "keywords": [
-        "style transfer",
-        "Wodehouse",
-        "humor",
-        "British"
+        "german",
+        "translation",
+        "rilke",
+        "modal verbs"
       ],
-      "description": "Tests ability to write in the distinctive style of P.G. Wodehouse",
-      "content": "Rewrite the following news item in the style of P.G. Wodehouse:\n\n'A man was arrested yesterday for stealing a garden gnome from his neighbor's front yard. The suspect claimed he believed the gnome was sentient and needed rescuing.'",
+      "description": "The correct translation is 'You do not have to understand life' even though the literal words say 'You must not understand life'. German and English have different meanings when they negate the word must. English negates (reverses) the command to do something, German negates the requirement contained within the command.",
+      "content": "Translate the title of the Rilke poem:  Du mußt das Leben nicht verstehen",
+      "expectedAnswer": "You do not have to understand life (NOT 'You must not understand life')",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine",
+          "llm-judge"
+        ],
+        "machineJudge": {
+          "type": "regex",
+          "criteria": "(do not have to|don't have to|need not|not required)",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "czech-metalanguage-cs",
+      "title": "Czech Metalanguage - Czech Prompt",
+      "category": "Multilingual",
+      "keywords": [
+        "czech",
+        "linguistics",
+        "totiz",
+        "metalanguage"
+      ],
+      "description": "Tests ability to provide metalinguistic analysis in Czech.",
+      "content": "Napiš 10 vět, které ilustrují různá použití slova totiž.",
       "expectedAnswer": null,
       "attachments": [],
       "evaluationConfig": {
         "methods": [
           "human",
           "llm-judge"
-        ],
-        "llmJudge": {
-          "rubric": {
-            "vocabulary": "Uses Wodehousian vocabulary (bally, blighter, rummy, etc.)?",
-            "similes": "Includes creative similes in Wodehouse's style?",
-            "tone": "Maintains light, comedic upper-class English tone?",
-            "structure": "Uses Wodehouse's characteristic sentence construction?"
-          }
-        }
+        ]
       },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2024-12-26T00:00:00.000Z"
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
     },
     {
-      "id": "metalanguage",
-      "title": "Use-Mention Distinction",
-      "category": "Linguistics",
+      "id": "czech-metalanguage-en",
+      "title": "Czech Metalanguage - English Prompt",
+      "category": "Multilingual",
       "keywords": [
-        "metalanguage",
-        "use-mention",
-        "quotation",
-        "linguistics"
+        "czech",
+        "linguistics",
+        "totiz",
+        "metalanguage"
       ],
-      "description": "Tests understanding of the use-mention distinction in language",
-      "content": "Explain the difference between these two statements:\n1. 'Cat' has three letters.\n2. A cat has four legs.\n\nWhat linguistic concept does this illustrate?",
-      "expectedAnswer": "This illustrates the use-mention distinction. In (1), 'cat' is mentioned (we're talking about the word itself). In (2), 'cat' is used (we're talking about the animal the word refers to).",
+      "description": "Tests ability to provide metalinguistic analysis about Czech from English.",
+      "content": "Write 10 sentences illustrating the use of the word totiž.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "czech-morphology-short-cs",
+      "title": "Czech Morphology - Short (Czech)",
+      "category": "Multilingual",
+      "keywords": [
+        "czech",
+        "grammar",
+        "cases",
+        "apple",
+        "story",
+        "morphology"
+      ],
+      "description": "This requires a high level of metalinguistic awareness and ability to maintain this. No model performs perfectly on this task with Gemini 2.5 and Claude 3.7 Sonnet being the closest. Shorter prompt with no instructions how to perform the task.",
+      "content": "Napiš krátký příběh o jablku, kde každá další věta použije slovo jablko v jiném pádě. Začni prvním a skonči sedmým.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "czech-morphology-short-en",
+      "title": "Czech Morphology - Short (English)",
+      "category": "Multilingual",
+      "keywords": [
+        "czech",
+        "grammar",
+        "cases",
+        "apple",
+        "story",
+        "morphology"
+      ],
+      "description": "Shorter prompt in English for the Czech morphology task.",
+      "content": "Write a short story about an apple in Czech, where each following sentence uses the word apple in a different grammatical case. Start with the first case and end with the seventh case.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "czech-morphology-long-cs",
+      "title": "Czech Morphology - Long (Czech)",
+      "category": "Multilingual",
+      "keywords": [
+        "czech",
+        "grammar",
+        "cases",
+        "apple",
+        "story",
+        "morphology"
+      ],
+      "description": "Longer prompt encouraging reasoning in Czech.",
+      "content": "Napiš krátký příběh o jablku, kde každá další věta použije slovo jablko v jiném pádě. Začni prvním a skonči sedmým. Začni tím, že vypíšeš všechny pády a formy slova jablko. Potom napiš příběh v jednom odstavci.",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2025-12-29T00:12:37.226Z"
+    },
+    {
+      "id": "czech-morphology-long-en",
+      "title": "Czech Morphology - Long (English)",
+      "category": "Multilingual",
+      "keywords": [
+        "czech",
+        "grammar",
+        "cases",
+        "apple",
+        "story",
+        "morphology"
+      ],
+      "description": "Longer prompt encouraging reasoning in English.",
+      "content": "Write a short story about an apple, where each following sentence uses the word apple in a different grammatical case. Start with the first case and end with the seventh case. Begin by listing all the cases and forms of the word apple. Then write the story in one paragraph.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "prague-towers-cs",
+      "title": "Prague Towers (Czech)",
+      "category": "Multilingual",
+      "keywords": [
+        "culture",
+        "prague",
+        "towers",
+        "nickname",
+        "czech"
+      ],
+      "description": "The model's answer should include the fact that Prague is often called 'Praha stověžatá' meaning 'hundred-towered Prague'. Smaller models often do not and larger models almost always do.",
+      "content": "Kolik je v Praze věží?",
+      "expectedAnswer": "Should mention 'Praha stověžatá' (hundred-towered Prague)",
       "attachments": [],
       "evaluationConfig": {
         "methods": [
@@ -235,26 +422,72 @@
         ],
         "machineJudge": {
           "type": "contains",
-          "criteria": "use,mention",
+          "criteria": "stověžat",
           "caseSensitive": false
         }
       },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2024-12-26T00:00:00.000Z"
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
     },
     {
-      "id": "readability-tool",
-      "title": "Readability Analysis Tool",
-      "category": "Coding",
+      "id": "prague-spires-en",
+      "title": "Prague Spires (English)",
+      "category": "Multilingual",
       "keywords": [
-        "coding",
-        "readability",
-        "Flesch-Kincaid",
-        "web app"
+        "culture",
+        "prague",
+        "towers",
+        "nickname"
       ],
-      "description": "Tests ability to create a functional web-based readability analysis tool",
-      "content": "Create a single HTML file with embedded CSS and JavaScript that:\n1. Has a textarea for inputting text\n2. Calculates and displays the Flesch-Kincaid readability score\n3. Shows word count, sentence count, and average words per sentence\n4. Has a clean, modern UI\n\nThe tool should update in real-time as the user types.",
-      "expectedAnswer": null,
+      "description": "English version of Prague towers question.",
+      "content": "How many spires are there in Prague?",
+      "expectedAnswer": "Should mention that Prague is called the 'City of a Hundred Spires'",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "prague-towers-en",
+      "title": "Prague Towers (English)",
+      "category": "Multilingual",
+      "keywords": [
+        "culture",
+        "prague",
+        "towers",
+        "nickname"
+      ],
+      "description": "Alternative English phrasing.",
+      "content": "How many towers are there in Prague?",
+      "expectedAnswer": "Should mention that Prague is called the 'City of a Hundred Spires/Towers'",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "prague-nickname-cs",
+      "title": "Prague Nickname (Czech)",
+      "category": "Multilingual",
+      "keywords": [
+        "culture",
+        "prague",
+        "nickname",
+        "czech"
+      ],
+      "description": "Direct test of whether the model knows Prague's nickname.",
+      "content": "Jak se přezdívá Praze?",
+      "expectedAnswer": "Praha stověžatá (hundred-towered Prague)",
       "attachments": [],
       "evaluationConfig": {
         "methods": [
@@ -263,26 +496,25 @@
         ],
         "machineJudge": {
           "type": "contains",
-          "criteria": "<!DOCTYPE,<textarea,Flesch,addEventListener",
+          "criteria": "stověžat",
           "caseSensitive": false
         }
       },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2024-12-26T00:00:00.000Z"
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
     },
     {
-      "id": "idiom-translation",
-      "title": "Idiom Translation Equivalence",
+      "id": "prague-nickname-en",
+      "title": "Prague Nickname (English)",
       "category": "Multilingual",
       "keywords": [
-        "idioms",
-        "translation",
-        "Czech",
-        "equivalence"
+        "culture",
+        "prague",
+        "nickname"
       ],
-      "description": "Tests ability to find equivalent idioms across languages rather than literal translation",
-      "content": "What is the Czech equivalent of the English idiom 'to kill two birds with one stone'? Don't translate literally - find the actual Czech idiom with the same meaning.",
-      "expectedAnswer": "The Czech equivalent is 'zabít dvě mouchy jednou ranou' (to kill two flies with one strike/blow).",
+      "description": "English version of Prague nickname question.",
+      "content": "What is Prague's nickname?",
+      "expectedAnswer": "City of a Hundred Spires/Towers, Golden City, etc.",
       "attachments": [],
       "evaluationConfig": {
         "methods": [
@@ -290,8 +522,902 @@
           "llm-judge"
         ]
       },
-      "createdAt": "2024-12-26T00:00:00.000Z",
-      "updatedAt": "2025-12-26T22:03:47.423Z"
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "idiom-heavy-light",
+      "title": "Idiom Translation - Heavy/Light",
+      "category": "Multilingual",
+      "keywords": [
+        "idiom",
+        "czech",
+        "english",
+        "translation"
+      ],
+      "description": "Knowledge about idioms. Here, the Czech words for 'light' and 'heavy' are used idiomatically to mean 'easy' and 'hard' in English but the idiom is contrasted into a sort of pun.",
+      "content": "Translate this sentence into English with the appropriate English idioms taking into account how both languages use idioms to indicate something is  difficult and explain your choices:  Čeština je jazyk težký jako olovo pro nečechy, ale lehký jako pírko pro Čechy.",
+      "expectedAnswer": "Czech is as heavy as lead for non-Czechs and as light as a feather for Czechs. The response should explain that Czech 'těžký' (heavy) means 'difficult' and 'lehký' (light) means 'easy'.",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "calculus-translation-simple",
+      "title": "Calculus Translation (Simple)",
+      "category": "Multilingual",
+      "keywords": [
+        "idiom",
+        "czech",
+        "english",
+        "calculus",
+        "culture"
+      ],
+      "description": "Combining knowledge about idioms with culture. The model should take into account that Czech does not have a word for 'calculus' as a subject - only differential and integral calculus - it is not taken as a subject in schools. At university level, it is referred to as 'analysis'.",
+      "content": "Translate this sentence into Czech: I never took calculus in high school.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "calculus-translation-detailed",
+      "title": "Calculus Translation (Detailed)",
+      "category": "Multilingual",
+      "keywords": [
+        "idiom",
+        "czech",
+        "english",
+        "calculus",
+        "culture"
+      ],
+      "description": "Same as simple version but asking for explicit reasoning.",
+      "content": "Translate this sentence into Czech: I never took calculus in high school. Provide detailed commentary about your choices and explain why you rejected some options.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "small-model-q1",
+      "title": "Small Model Test - Capital",
+      "category": "Small Models",
+      "keywords": [
+        "small model",
+        "czech republic",
+        "history",
+        "knowledge"
+      ],
+      "description": "A sequence of short prompts to test knowledge, coherence and instruction following of small models. Small models here mean models under 3b parameters. Models of 3b and over can usually maintain coherence in this sequence easily but models under 1.5 billion will struggle.",
+      "content": "What is the capital of the Czech Republic? Answer in one word only.",
+      "expectedAnswer": "Prague",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine"
+        ],
+        "machineJudge": {
+          "type": "regex",
+          "criteria": "^\\s*(Prague|Praha)\\s*\\.?\\s*$",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "small-model-q2",
+      "title": "Small Model Test - First President",
+      "category": "Small Models",
+      "keywords": [
+        "small model",
+        "czech republic",
+        "history",
+        "knowledge"
+      ],
+      "description": "Second question in the small model test sequence.",
+      "content": "Who was the first president of the independent Czechoslovakia?",
+      "expectedAnswer": "Tomáš Garrigue Masaryk",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "Masaryk",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "small-model-q3",
+      "title": "Small Model Test - Successor",
+      "category": "Small Models",
+      "keywords": [
+        "small model",
+        "czech republic",
+        "history",
+        "knowledge"
+      ],
+      "description": "Third question - tests context retention.",
+      "content": "Who succeeded him?",
+      "expectedAnswer": "Edvard Beneš",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "Beneš",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "small-model-q4",
+      "title": "Small Model Test - Changes",
+      "category": "Small Models",
+      "keywords": [
+        "small model",
+        "czech republic",
+        "history",
+        "knowledge"
+      ],
+      "description": "Fourth question - open-ended reasoning about historical changes.",
+      "content": "How has the country changed since then?",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "small-model-multilingual",
+      "title": "Small Model - Czech Parts of Speech",
+      "category": "Small Models",
+      "keywords": [
+        "grammar",
+        "czech",
+        "parts of speech",
+        "multilingual"
+      ],
+      "description": "This prompt tests multilingual performance linked to knowledge. Even models of 14b will struggle with this - even if they can perform relatively well in Czech. Even GPT-4o Mini does not perform consistently well.",
+      "content": "How many parts of speech are there in Czech? Answer in Czech. Make a list with examples.",
+      "expectedAnswer": "10 parts of speech: Podstatná jména (nouns), Přídavná jména (adjectives), Zájmena (pronouns), Číslovky (numerals), Slovesa (verbs), Příslovce (adverbs), Předložky (prepositions), Spojky (conjunctions), Částice (particles), Citoslovce (interjections)",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "wodehouse-rewrite",
+      "title": "Wodehouse Style Transfer - Rewrite",
+      "category": "Creative Writing",
+      "keywords": [
+        "wodehouse",
+        "style transfer",
+        "writing",
+        "humor"
+      ],
+      "description": "Tests ability to write in P.G. Wodehouse's distinctive style.",
+      "content": "Take this text and rewrite it in the style of PG Wodehouse. \n\nLinda was furious. She was running really hard to catch a bus and the bus driver slammed the door shut in her face.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "wodehouse-expand",
+      "title": "Wodehouse Style Transfer - Expand",
+      "category": "Creative Writing",
+      "keywords": [
+        "wodehouse",
+        "style transfer",
+        "writing",
+        "humor"
+      ],
+      "description": "Follow-up to expand the Wodehouse-style text.",
+      "content": "Expand it with the full Wodehouse style narrative elements.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "poetry-translate",
+      "title": "Czech Poetry Translation",
+      "category": "Creative Writing",
+      "keywords": [
+        "poetry",
+        "czech",
+        "rhyming",
+        "translation"
+      ],
+      "description": "Tests ability to translate Czech poetry while maintaining rhyme scheme.",
+      "content": "Translate this into English:\n\n**Večerní píseň**\nKdyž bylo dobře mamince,\nbylo i pěkně v našem bytě.\nHmoždíř, který stal na skříňce,\nzatřpytil se okamžitě,\nskla oken, po nichž před chvilkou\nplakalo ještě bílé jiní,\nsvítila opět po kuchyni,\nkde vonělo to vanilkou.\n\nKdyž zpívala, hned vesele\nspustili ptáci před okny nám.\nMěla-li mráček na čele,\nodletěli hned ptáci jinam.\nZmlkli jsme rázem, ztichl smích.\nI černé kotě, které tlapkou\npohrávalo si se skořápkou,\ndívalo se jí po očích.\n\nKdyž padala již únavou\na večer spát nás odnášela,\ntou rukou drsnou od popela\nstlala nám měkce pod hlavou.\nV hořáku ještě přede plyn\na nad pelestí přechází nám,\npodobaje se pavučinám,\nvelikánský stín maminčin.\n\nDnes už tak šťastně neusínám.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "poetry-rhyme-scheme",
+      "title": "Czech Poetry - Rhyme Scheme",
+      "category": "Creative Writing",
+      "keywords": [
+        "poetry",
+        "czech",
+        "rhyming",
+        "translation"
+      ],
+      "description": "Follow-up asking to replicate the rhyme scheme.",
+      "content": "Replicate the rhyme scheme.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "poetry-write-spring",
+      "title": "Czech Poetry Writing - Spring",
+      "category": "Creative Writing",
+      "keywords": [
+        "poetry",
+        "czech",
+        "rhyming",
+        "creative writing"
+      ],
+      "description": "Tests ability to write original Czech poetry.",
+      "content": "Write a short three stanza poem about spring in Czech. Make sure it rhymes.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "poetry-abab",
+      "title": "Czech Poetry - ABAB Rhyme Scheme",
+      "category": "Creative Writing",
+      "keywords": [
+        "poetry",
+        "czech",
+        "rhyming",
+        "creative writing"
+      ],
+      "description": "Follow-up to change rhyme scheme.",
+      "content": "Now change the rhyme scheme to ABAB.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "poetry-famous-poets",
+      "title": "Czech Poetry - Famous Poets Style",
+      "category": "Creative Writing",
+      "keywords": [
+        "poetry",
+        "czech",
+        "rhyming",
+        "style transfer"
+      ],
+      "description": "Tests knowledge of Czech literary tradition.",
+      "content": "Now rewrite it in the style of the top 5 most famous Czech poets of the 19th and 20th century.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-wineglass",
+      "title": "Image Generation - Wineglass",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "visual",
+        "midjourney",
+        "dalle"
+      ],
+      "description": "Tests image generation prompt interpretation.",
+      "content": "Picture of a wineglass full to the brim with a clock on the wall behind it showing half past three.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-robot-painter",
+      "title": "Image Generation - Robot Painter",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "visual",
+        "robot",
+        "text in image"
+      ],
+      "description": "Tests complex scene composition with text.",
+      "content": "Make a widescreen photorealistic image of a cute and friendly robot painter standing in front of an Oxford library with a canvas with a painting of a futuristic scene. There's a speech bubble above the robot's head that says 'I am a diffusion painter from the future.'",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-painter-no-beard",
+      "title": "Image Generation - Negation Test",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "negation",
+        "visual"
+      ],
+      "description": "Tests understanding of negation in prompts.",
+      "content": "Make a pencil drawing of a painter without a beard.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-prague-statue",
+      "title": "Image Generation - Prague Statue",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "visual",
+        "prague",
+        "people"
+      ],
+      "description": "Tests generation of people with expressions.",
+      "content": "Make a realitic photo of a group of people in front of a Prague statue. They are all laughing uproariously and waving at the camera.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-capek-robot",
+      "title": "Image Generation - Karel Čapek",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "visual",
+        "capek",
+        "robot",
+        "czech text"
+      ],
+      "description": "Tests Czech text generation and cultural knowledge.",
+      "content": "A cartoon of Karel  Čapek shaking hands with a Robot from the future and saying: Aha, tak tohle jsem si nepředstavoval.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-turing-comic",
+      "title": "Image Generation - Turing Comic",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "visual",
+        "comic",
+        "turing",
+        "sequential"
+      ],
+      "description": "Tests multi-panel sequential narrative.",
+      "content": "Make a three panel cartoon. In the first panel a robot is coming to the office that says Alan Turing on it. In the second panel, the robot is facing Alan Turing and the robot is saying \"I'm here to take your test.\" In the third panel, Alan Turing stares in surprise and says \"I was not expecting you until 2000.\"",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-turing-comic-clear",
+      "title": "Image Generation - Turing Comic (Clear)",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "visual",
+        "comic",
+        "turing",
+        "sequential"
+      ],
+      "description": "Less ambiguous version of the Turing comic prompt.",
+      "content": "Make a three panel cartoon. In the first panel a cute and friendly robot is coming to the office. There is a sign with Alan Turing on the door. In the second panel, the robot is facing Alan Turing inside his offiece and the robot is saying \"I'm here to take your test.\" In the third panel, Alan Turing stares in surprise and says \"I was not expecting you until 2000.\"",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "video-robot-library",
+      "title": "Video Generation - Robot in Library",
+      "category": "Generation",
+      "keywords": [
+        "video generation",
+        "visual",
+        "robot",
+        "animation"
+      ],
+      "description": "Tests video generation prompts.",
+      "content": "An cute and friendly robot is walking thorugh an Oxford library picking books from the shelves at random and throwing them in the air.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-venn-diagram",
+      "title": "Image Generation - Venn Diagram",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "visual",
+        "venn diagram",
+        "educational"
+      ],
+      "description": "Tests meta-level reasoning in image generation.",
+      "content": "Make an humorous but educational image of a venn diagram explaining the origin and current use of Venn Diagrams. Think hard but do not do any research.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "image-perceptron-timeline",
+      "title": "Image Generation - Perceptron Timeline",
+      "category": "Generation",
+      "keywords": [
+        "image generation",
+        "visual",
+        "perceptron",
+        "research",
+        "timeline"
+      ],
+      "description": "Tests agentic research combined with image generation.",
+      "content": "Research the history of the perceptron and make an illustrated timeline with key milestones and figures.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "long-context-anachronisms-1",
+      "title": "Long Context - Find Anachronisms",
+      "category": "Long Context",
+      "keywords": [
+        "anachronism",
+        "psmith",
+        "wodehouse",
+        "logic",
+        "long context"
+      ],
+      "description": "Tests ability to identify anachronisms in a long text. Correct answers include: Big Macs (1967), Personal Computer, PanAm flight to La Guardia (1939), Email.",
+      "content": "Find anything that seems out of place.",
+      "expectedAnswer": "Big Macs (Chapter III) - 1967\nPersonal Computer (Chapter IV)\nPanAm flight to La Guardia (Chapter XII) - 1927/1939\nEmail (Chapter XXII)",
+      "attachments": [
+        {
+          "id": "psmith-test",
+          "type": "document",
+          "filename": "PsmithJournalist-test.txt",
+          "path": "/attachments/PsmithJournalist-test.txt",
+          "mimeType": "text/plain"
+        }
+      ],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine",
+          "llm-judge"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "Big Mac,computer,email,PanAm",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "long-context-anachronisms-2",
+      "title": "Long Context - Find All Anachronisms",
+      "category": "Long Context",
+      "keywords": [
+        "anachronism",
+        "psmith",
+        "wodehouse",
+        "logic",
+        "long context"
+      ],
+      "description": "More specific version asking for all anachronisms.",
+      "content": "Find all anachronisms.",
+      "expectedAnswer": "Big Macs (Chapter III) - 1967\nPersonal Computer (Chapter IV)\nPanAm flight to La Guardia (Chapter XII) - 1927/1939\nEmail (Chapter XXII)",
+      "attachments": [
+        {
+          "id": "psmith-test",
+          "type": "document",
+          "filename": "PsmithJournalist-test.txt",
+          "path": "/attachments/PsmithJournalist-test.txt",
+          "mimeType": "text/plain"
+        }
+      ],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine",
+          "llm-judge"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "Big Mac,computer,email,PanAm",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "long-context-retrieval",
+      "title": "Long Context - Information Retrieval",
+      "category": "Long Context",
+      "keywords": [
+        "retrieval",
+        "psmith",
+        "questions",
+        "long context"
+      ],
+      "description": "Tests ability to retrieve specific information from a long text with exact quotes.",
+      "content": "Find answers to all of these questions along with chapter numbers where they occur and the exact quotes that support the answer:\n\n1. Who runs the magazine which is at the centre of the story, who named it and who owns it.\n2. Who is the second character from Wyoming and what does he do?\n3. Who is a prominent cat lover in the story? \n4. What happens at the end of chapter 25?\n5. What were the pleasantries the main character and the owner of the tenements exchanged when the latter came in? Replicate the exchange word for word until the point the introductions are concluded.",
+      "expectedAnswer": "1. Mr Wilberfloss (editor), Cosy Moments (his inspiration), Mr. Benjamin White (proprietor) - Chapter I\n2. Kid Brady - boxer wanting to fight at 133 pounds - Chapter IX\n3. Bat Jarvis (gang-leader, cousin of Master Maloney) - Chapter IV\n4. Mr. Parker forces Psmith into a cab at gunpoint - Chapter 25\n5. [Exact dialogue from text]",
+      "attachments": [
+        {
+          "id": "psmith-full",
+          "type": "document",
+          "filename": "PsmithJournalist-full.md",
+          "path": "/attachments/PsmithJournalist-full.md",
+          "mimeType": "text/markdown"
+        }
+      ],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "long-context-knowledge-check",
+      "title": "Long Context - Knowledge vs Context",
+      "category": "Long Context",
+      "keywords": [
+        "retrieval",
+        "psmith",
+        "knowledge",
+        "context"
+      ],
+      "description": "Check prompt to exclude prior knowledge - model should only use the attached text.",
+      "content": "Based on your knowledge of PG Wodehouse's Psmith, Journalist, find answers to all of these questions along with chapter numbers where they occur and the exact quotes that support the answer:\n\n1. Who runs the magazine which is at the centre of the story, who named it and who owns it.\n2. Which secondary but still important character is from Wyoming and what does he do?\n3. Who is a prominent cat lover in the story? \n4. What happens at the end of chapter 25?\n5. What were the pleasantries the main character and the owner of the tenements exchanged when the latter came in? Replicate the exchange word for word until the point the introductions are concluded.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "vision-czech-joke",
+      "title": "Vision - Czech Joke",
+      "category": "Vision",
+      "keywords": [
+        "vision",
+        "image analysis",
+        "czech joke",
+        "humor"
+      ],
+      "description": "Tests ability to understand a visual joke in Czech.",
+      "content": "Explain this image. What is the joke?",
+      "expectedAnswer": null,
+      "attachments": [
+        {
+          "id": "czechjoke",
+          "type": "image",
+          "filename": "czechjoke.png",
+          "path": "/attachments/czechjoke.png",
+          "mimeType": "image/png"
+        }
+      ],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "vision-concept-map",
+      "title": "Vision - Concept Map to Propositions",
+      "category": "Vision",
+      "keywords": [
+        "vision",
+        "image analysis",
+        "concept map",
+        "propositions"
+      ],
+      "description": "Tests ability to extract propositions from a concept map.",
+      "content": "Convert this concept map to a list of propositions in the format: subject - relation - object",
+      "expectedAnswer": "chunking - facilitated by - rehearsal strategies\nattention - affects - information maintenance\nrehearsal strategies - improve - information maintenance\ncentral executive - processes information from - phonological loop\nchunking - reduces - load\nchunking - improves - information maintenance\ncentral executive - limited by - capacity\ncentral executive - processes information from - visuospatial sketchpad\nauditory input - processed by - phonological loop\nload - decreases - capacity\nload - decreased by - fewer distractions",
+      "attachments": [
+        {
+          "id": "conceptmap",
+          "type": "image",
+          "filename": "conceptmap.png",
+          "path": "/attachments/conceptmap.png",
+          "mimeType": "image/png"
+        }
+      ],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "vision-no-anchors",
+      "title": "Vision - Image Without Semantic Anchors",
+      "category": "Vision",
+      "keywords": [
+        "vision",
+        "image analysis",
+        "abstract"
+      ],
+      "description": "Tests ability to describe an image without obvious semantic anchors.",
+      "content": "Describe this image in detail.",
+      "expectedAnswer": null,
+      "attachments": [
+        {
+          "id": "noanchors",
+          "type": "image",
+          "filename": "imagewithoutanchors.png",
+          "path": "/attachments/imagewithoutanchors.png",
+          "mimeType": "image/png"
+        }
+      ],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "agent-oxford-museums",
+      "title": "Agentic Task - Oxford Museums",
+      "category": "Agents",
+      "keywords": [
+        "agents",
+        "research",
+        "oxford",
+        "tools",
+        "agentic"
+      ],
+      "description": "Tests agentic behavior with research and data compilation.",
+      "content": "Make a list of Oxford museums and galleries that are within 10-15 minute walking distance of Jesus College for conference attendees. Create a table with opening times, description and a link to a google maps with walking directions from Jesus College.",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "agent-culture-shock",
+      "title": "Agentic Research - Culture Shock",
+      "category": "Agents",
+      "keywords": [
+        "agents",
+        "research",
+        "academic",
+        "deep research"
+      ],
+      "description": "Deep Research prompt in an established field. There is no one right way to answer it but an expert in the field can review the results and see whether they are broadly consonant with what is known. We can evaluate the choice of sources - research vs shallow guidance vs personal accounts.",
+      "content": "What are the effects of culture shock on international students' experience of their studies and in particular learning outcomes? Are there any differences between the source and target cultures? What cultures have been most studied and what dimensions of culture have been addressed?",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "agent-local-llms",
+      "title": "Agentic Research - Local LLMs on Mac",
+      "category": "Agents",
+      "keywords": [
+        "agents",
+        "research",
+        "llm",
+        "mac",
+        "hardware"
+      ],
+      "description": "Deep Research prompt in a developing field with uncertain sources. The correct answer will vary with time but the judgement of quality remains.",
+      "content": "Create a list of open language models I can run on a Mac today. Which ones would be best for which configuration and how to best run them. I'm thinking about what is the best I can do for budgets from £500 to £10,000. Which models should I choose for different configurations and what sort of things can I do with them",
+      "expectedAnswer": null,
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2024-12-29T00:00:00.000Z",
+      "updatedAt": "2024-12-29T00:00:00.000Z"
+    },
+    {
+      "id": "f1ei0dk4xst",
+      "title": "Novel sentence",
+      "category": "Creative Writing",
+      "keywords": [],
+      "description": "This tests how different models choose to represent novelty.",
+      "content": "Write a sentence nobody has every said before.",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2025-12-29T00:23:25.388Z",
+      "updatedAt": "2025-12-29T00:23:25.388Z"
     }
   ]
 }

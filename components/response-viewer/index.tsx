@@ -2,11 +2,13 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ViewerToolbar } from "./viewer-toolbar";
 import { PromptSection } from "./prompt-section";
 import { ResponsePanel } from "./response-panel";
 import { useViewerPreferences, getColumnWidths, getMinColumnWidth } from "@/lib/stores/viewer-preferences";
-import type { ViewerResponse, ViewerPrompt, ViewerMetadataToggles, ViewerContentSettings } from "@/lib/types";
+import type { ViewerResponse, ViewerPrompt } from "@/lib/types";
 
 // Resize handle component
 function ResizeHandle({
@@ -100,6 +102,7 @@ export function ResponseViewer({
   const [syncScrollTop, setSyncScrollTop] = useState<number>(0);
   const [activeResizeHandle, setActiveResizeHandle] = useState<number | null>(null);
   const [resizeWidths, setResizeWidths] = useState<number[] | null>(null);
+  const [slideshowIndex, setSlideshowIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -109,12 +112,14 @@ export function ResponseViewer({
     height,
     columnPreset,
     customColumnWidths,
+    slideshowMode,
     metadata,
     content,
     setLayout,
     setHeight,
     setColumnPreset,
     setCustomColumnWidths,
+    setSlideshowMode,
     toggleMetadata,
     toggleContent,
     resetToDefaults,
@@ -123,23 +128,53 @@ export function ResponseViewer({
   // Calculate effective column count and layout
   const effectiveLayout = useMemo(() => {
     const count = responses.length;
-    
+
     if (layout === "single") return { columns: 1, mode: "single" as const };
-    if (layout === "stacked") return { columns: 1, mode: "stacked" as const };
     if (layout === "2-col") return { columns: Math.min(2, count), mode: "grid" as const };
     if (layout === "3-col") return { columns: Math.min(3, count), mode: "grid" as const };
     if (layout === "n-col") {
       // All columns with horizontal scroll, min width = 1/3 viewport
       return { columns: count, mode: "scroll" as const };
     }
-    
+
     return { columns: 2, mode: "grid" as const };
   }, [layout, responses.length]);
+
+  // Calculate slideshow pagination
+  const slideshowConfig = useMemo(() => {
+    const itemsPerPage = effectiveLayout.columns;
+    const totalItems = responses.length;
+
+    // Single column always uses slideshow behavior
+    const isActive = layout === "single" || (slideshowMode && totalItems > itemsPerPage);
+
+    if (!isActive) {
+      return { isActive: false, currentPage: 0, totalPages: 1, itemsPerPage, startIndex: 0, endIndex: totalItems };
+    }
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const currentPage = Math.min(slideshowIndex, totalPages - 1);
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+    return { isActive: true, currentPage, totalPages, itemsPerPage, startIndex, endIndex };
+  }, [layout, slideshowMode, slideshowIndex, effectiveLayout.columns, responses.length]);
+
+  // Get visible responses based on slideshow mode
+  const visibleResponses = useMemo(() => {
+    if (!slideshowConfig.isActive) return responses;
+    return responses.slice(slideshowConfig.startIndex, slideshowConfig.endIndex);
+  }, [responses, slideshowConfig]);
+
+  // Reset slideshow index when responses change
+  useEffect(() => {
+    setSlideshowIndex(0);
+  }, [responses.length]);
 
   // Get current widths (either from dragging or stored)
   const currentWidths = useMemo(() => {
     const { columns, mode } = effectiveLayout;
-    if (mode === "stacked" || mode === "single" || mode === "scroll") {
+    if (mode === "single" || mode === "scroll") {
       return null;
     }
     // During resize, use temporary widths
@@ -153,7 +188,7 @@ export function ResponseViewer({
   const columnWidthStyles = useMemo(() => {
     const { columns, mode } = effectiveLayout;
 
-    if (mode === "stacked" || mode === "single") {
+    if (mode === "single") {
       return { gridTemplateColumns: "1fr" };
     }
 
@@ -165,11 +200,13 @@ export function ResponseViewer({
       };
     }
 
-    const widths = currentWidths || getColumnWidths(columnPreset, columns, customColumnWidths);
+    // For grid mode, use visible columns (may be less in slideshow)
+    const visibleColumns = slideshowConfig.isActive ? visibleResponses.length : columns;
+    const widths = currentWidths || getColumnWidths(columnPreset, visibleColumns, customColumnWidths);
     return {
-      gridTemplateColumns: widths.map(w => `${w}%`).join(" "),
+      gridTemplateColumns: widths.slice(0, visibleColumns).map(w => `${w}%`).join(" "),
     };
-  }, [effectiveLayout, columnPreset, customColumnWidths, currentWidths]);
+  }, [effectiveLayout, columnPreset, customColumnWidths, currentWidths, slideshowConfig.isActive, visibleResponses.length]);
 
   // Handle resize drag
   const handleResizeDrag = useCallback((handleIndex: number, deltaX: number) => {
@@ -209,11 +246,23 @@ export function ResponseViewer({
   // Check if resizing is allowed (only for grid layouts with 2+ columns)
   const canResize = effectiveLayout.mode === "grid" && effectiveLayout.columns >= 2;
 
-  // Handle synchronized scrolling
-  const handleScroll = useCallback((scrollPercent: number, scrollHeight: number) => {
-    if (!content.syncScroll || height !== "viewport") return;
+  // Check if we're in a multi-column layout
+  const isMultiColumn = layout === "2-col" || layout === "3-col" || layout === "n-col";
+
+  // Handle synchronized scrolling (now works regardless of height mode)
+  const handleScroll = useCallback((scrollPercent: number) => {
+    if (!content.syncScroll || !isMultiColumn) return;
     setSyncScrollTop(scrollPercent);
-  }, [content.syncScroll, height]);
+  }, [content.syncScroll, isMultiColumn]);
+
+  // Slideshow navigation handlers
+  const goToPrevPage = useCallback(() => {
+    setSlideshowIndex((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const goToNextPage = useCallback(() => {
+    setSlideshowIndex((prev) => Math.min(slideshowConfig.totalPages - 1, prev + 1));
+  }, [slideshowConfig.totalPages]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -222,14 +271,29 @@ export function ResponseViewer({
         return;
       }
 
+      // Slideshow navigation with arrow keys
+      if (slideshowConfig.isActive) {
+        switch (e.key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            goToPrevPage();
+            return;
+          case "ArrowRight":
+            e.preventDefault();
+            goToNextPage();
+            return;
+        }
+      }
+
+      // Focus navigation (for non-slideshow modes)
       switch (e.key) {
         case "ArrowLeft":
-          setFocusedIndex((prev) => 
+          setFocusedIndex((prev) =>
             prev === null ? 0 : Math.max(0, prev - 1)
           );
           break;
         case "ArrowRight":
-          setFocusedIndex((prev) => 
+          setFocusedIndex((prev) =>
             prev === null ? 0 : Math.min(responses.length - 1, prev + 1)
           );
           break;
@@ -241,7 +305,7 @@ export function ResponseViewer({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [responses.length]);
+  }, [responses.length, slideshowConfig.isActive, goToPrevPage, goToNextPage]);
 
   // Scroll focused panel into view
   useEffect(() => {
@@ -254,12 +318,6 @@ export function ResponseViewer({
     }
   }, [focusedIndex]);
 
-  const containerHeight = height === "viewport" 
-    ? "h-[calc(100vh-16rem)]" 
-    : height === "compact" 
-      ? "" 
-      : "";
-
   return (
     <div ref={containerRef} className={cn("space-y-4", className)}>
       {/* Toolbar */}
@@ -268,12 +326,14 @@ export function ResponseViewer({
           layout={layout}
           height={height}
           columnPreset={columnPreset}
+          slideshowMode={slideshowMode}
           metadata={metadata}
           content={content}
           responseCount={responses.length}
           onLayoutChange={setLayout}
           onHeightChange={setHeight}
           onColumnPresetChange={setColumnPreset}
+          onSlideshowModeChange={setSlideshowMode}
           onMetadataToggle={toggleMetadata}
           onContentToggle={toggleContent}
           onReset={resetToDefaults}
@@ -289,18 +349,47 @@ export function ResponseViewer({
         />
       )}
 
+      {/* Slideshow controls (when active) */}
+      {slideshowConfig.isActive && slideshowConfig.totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 py-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToPrevPage}
+            disabled={slideshowConfig.currentPage === 0}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Prev
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            {slideshowConfig.currentPage + 1} of {slideshowConfig.totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToNextPage}
+            disabled={slideshowConfig.currentPage === slideshowConfig.totalPages - 1}
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            (← → to navigate)
+          </span>
+        </div>
+      )}
+
       {/* Response panels with resize handles */}
       <div className="relative">
         <div
           ref={gridRef}
           className={cn(
             "grid gap-4",
-            containerHeight,
             effectiveLayout.mode === "scroll" && "overflow-x-auto pb-2"
           )}
           style={columnWidthStyles}
         >
-          {responses.map((response, index) => (
+          {visibleResponses.map((response, index) => (
             <ResponsePanel
               key={response.id}
               ref={(el) => { panelRefs.current[index] = el; }}
@@ -309,9 +398,8 @@ export function ResponseViewer({
               isBlind={isBlind}
               isFocused={focusedIndex === index}
               onScroll={handleScroll}
-              syncScrollTop={content.syncScroll ? syncScrollTop : undefined}
+              syncScrollTop={content.syncScroll && isMultiColumn ? syncScrollTop : undefined}
               className={cn(
-                height === "viewport" && "h-full",
                 effectiveLayout.mode === "scroll" && "min-w-[400px]"
               )}
             />
@@ -319,9 +407,9 @@ export function ResponseViewer({
         </div>
 
         {/* Resize handles - rendered as overlay to span full grid height */}
-        {canResize && currentWidths && (
+        {canResize && currentWidths && !slideshowConfig.isActive && (
           <div className="absolute inset-0 pointer-events-none">
-            {currentWidths.slice(0, -1).map((width, index) => {
+            {currentWidths.slice(0, -1).map((_, index) => {
               // Calculate cumulative offset (sum of widths up to and including this column)
               const leftOffset = currentWidths.slice(0, index + 1).reduce((sum, w) => sum + w, 0);
               return (

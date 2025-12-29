@@ -17,21 +17,35 @@
           "label": "Factual accuracy",
           "description": "Is the information provided correct?",
           "type": "scale",
-          "scaleLabels": ["Unknown/Unverifiable", "Contains errors", "Mostly accurate", "Fully accurate"]
+          "scaleLabels": [
+            "Unknown/Unverifiable",
+            "Contains errors",
+            "Mostly accurate",
+            "Fully accurate"
+          ]
         },
         {
           "id": "structure",
           "label": "Well-structured",
           "description": "Is the response organized and easy to follow?",
           "type": "scale",
-          "scaleLabels": ["Disorganized", "Somewhat structured", "Well organized", "Excellent structure"]
+          "scaleLabels": [
+            "Disorganized",
+            "Somewhat structured",
+            "Well organized",
+            "Excellent structure"
+          ]
         },
         {
           "id": "length",
           "label": "Appropriate length",
           "description": "Is the response the right length for the task?",
           "type": "scale",
-          "scaleLabels": ["Too short", "About right", "Too long"]
+          "scaleLabels": [
+            "Too short",
+            "About right",
+            "Too long"
+          ]
         },
         {
           "id": "tone",
@@ -61,21 +75,36 @@
           "label": "Solves the problem",
           "description": "Does the code actually solve what was asked?",
           "type": "scale",
-          "scaleLabels": ["Does not work", "Partially works", "Works correctly", "Works elegantly"]
+          "scaleLabels": [
+            "Does not work",
+            "Partially works",
+            "Works correctly",
+            "Works elegantly"
+          ]
         },
         {
           "id": "edge-cases",
           "label": "Handles edge cases",
           "description": "Which edge cases are handled?",
           "type": "checklist",
-          "checklistItems": ["Empty input", "Invalid input", "Boundary values", "Error handling"]
+          "checklistItems": [
+            "Empty input",
+            "Invalid input",
+            "Boundary values",
+            "Error handling"
+          ]
         },
         {
           "id": "readable",
           "label": "Readable code",
           "description": "Is the code easy to understand?",
           "type": "scale",
-          "scaleLabels": ["Confusing", "Acceptable", "Clean", "Exemplary"]
+          "scaleLabels": [
+            "Confusing",
+            "Acceptable",
+            "Clean",
+            "Exemplary"
+          ]
         },
         {
           "id": "commented",
@@ -99,28 +128,48 @@
           "label": "Matches requested style",
           "description": "Does it match the genre, voice, or style that was asked for?",
           "type": "scale",
-          "scaleLabels": ["Wrong style", "Hints of style", "Good match", "Perfect capture"]
+          "scaleLabels": [
+            "Wrong style",
+            "Hints of style",
+            "Good match",
+            "Perfect capture"
+          ]
         },
         {
           "id": "engaging",
           "label": "Engaging",
           "description": "Is it interesting to read?",
           "type": "scale",
-          "scaleLabels": ["Boring", "Acceptable", "Interesting", "Compelling"]
+          "scaleLabels": [
+            "Boring",
+            "Acceptable",
+            "Interesting",
+            "Compelling"
+          ]
         },
         {
           "id": "technically-competent",
           "label": "Technically competent",
           "description": "Is the prose well-crafted (grammar, flow, word choice)?",
           "type": "scale",
-          "scaleLabels": ["Poor", "Acceptable", "Good", "Excellent"]
+          "scaleLabels": [
+            "Poor",
+            "Acceptable",
+            "Good",
+            "Excellent"
+          ]
         },
         {
           "id": "creative-elements",
           "label": "Creative elements present",
           "description": "What creative elements are included?",
           "type": "checklist",
-          "checklistItems": ["Vivid imagery", "Strong voice", "Originality", "Emotional resonance"]
+          "checklistItems": [
+            "Vivid imagery",
+            "Strong voice",
+            "Originality",
+            "Emotional resonance"
+          ]
         },
         {
           "id": "complete",
@@ -156,7 +205,12 @@
           "label": "All parts addressed",
           "description": "Did it address all parts of a multi-part question?",
           "type": "scale",
-          "scaleLabels": ["Missed most", "Some parts", "Most parts", "All parts"]
+          "scaleLabels": [
+            "Missed most",
+            "Some parts",
+            "Most parts",
+            "All parts"
+          ]
         },
         {
           "id": "no-extras",
@@ -186,6 +240,48 @@
       "isDefault": true,
       "createdAt": "2024-12-27T00:00:00.000Z",
       "updatedAt": "2024-12-27T00:00:00.000Z"
+    },
+    {
+      "id": "y3ria69l3i",
+      "name": "On a scale of 1-10 how well does this response meet the requirements of the prompt?",
+      "items": [],
+      "allowImpressionScore": true,
+      "isDefault": false,
+      "scope": "global",
+      "tags": [],
+      "promptIds": [],
+      "createdAt": "2025-12-28T15:27:23.545Z",
+      "updatedAt": "2025-12-28T15:27:23.545Z"
+    },
+    {
+      "id": "n32xprztsxm",
+      "name": "Instruction following",
+      "description": "How well did the model follow the instructions in the prompt?",
+      "items": [
+        {
+          "id": "u3j0wsip7a",
+          "label": "Added or not",
+          "type": "scale",
+          "description": "",
+          "scaleLabels": [
+            "Poor",
+            "Fair",
+            "Good",
+            "Excellent"
+          ],
+          "checklistItems": [
+            "Item 1",
+            "Item 2"
+          ]
+        }
+      ],
+      "allowImpressionScore": true,
+      "isDefault": false,
+      "scope": "global",
+      "tags": [],
+      "promptIds": [],
+      "createdAt": "2025-12-28T15:27:10.555Z",
+      "updatedAt": "2025-12-28T15:27:10.555Z"
     }
   ]
 }

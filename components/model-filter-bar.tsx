@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,7 +24,7 @@ import {
   type ModelSortOption,
 } from "@/lib/model-metadata";
 import type { Model } from "@/lib/types";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Search, X } from "lucide-react";
 
 interface ModelFilterBarProps {
   models: Model[];
@@ -40,6 +41,7 @@ export function ModelFilterBar({
   showCounts = true,
   className,
 }: ModelFilterBarProps) {
+  const [nameFilter, setNameFilter] = useState("");
   const [sizeFilter, setSizeFilter] = useState<SizeFilterGroup>("all");
   const [reasoningFilter, setReasoningFilter] = useState<ReasoningFilterGroup>("all");
   const [sortBy, setSortBy] = useState<ModelSortOption>("provider");
@@ -84,6 +86,14 @@ export function ModelFilterBar({
   // Apply filters and sorting
   useEffect(() => {
     let filtered = models.filter((model) => {
+      // Name filter (searches displayName and modelId)
+      if (nameFilter) {
+        const search = nameFilter.toLowerCase();
+        const matchesName = model.displayName.toLowerCase().includes(search) ||
+                           model.modelId.toLowerCase().includes(search);
+        if (!matchesName) return false;
+      }
+
       const meta = getEffectiveMetadata(model);
       if (!matchesSizeFilter(meta.sizeClass, sizeFilter)) return false;
       if (!matchesReasoningFilter(meta.reasoningCapability, reasoningFilter)) return false;
@@ -94,10 +104,31 @@ export function ModelFilterBar({
     filtered = sortModels(filtered, sortBy);
 
     onFilterChange(filtered);
-  }, [models, sizeFilter, reasoningFilter, sortBy, onFilterChange]);
+  }, [models, nameFilter, sizeFilter, reasoningFilter, sortBy, onFilterChange]);
 
   return (
     <div className={cn("space-y-2", className)}>
+      {/* Name search */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name..."
+            value={nameFilter}
+            onChange={(e) => setNameFilter(e.target.value)}
+            className="pl-8 h-8"
+          />
+          {nameFilter && (
+            <button
+              onClick={() => setNameFilter("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Size filter row */}
       <div className="flex items-center gap-2 flex-wrap">
         <span className="text-sm text-muted-foreground font-medium">Size:</span>
@@ -164,9 +195,20 @@ export function ModelFilterBar({
       </div>
 
       {/* Active filter summary */}
-      {(sizeFilter !== "all" || reasoningFilter !== "all") && (
+      {(nameFilter || sizeFilter !== "all" || reasoningFilter !== "all") && (
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Active filters:</span>
+          {nameFilter && (
+            <Badge variant="secondary" className="text-xs">
+              "{nameFilter}"
+              <button
+                onClick={() => setNameFilter("")}
+                className="ml-1 hover:text-destructive"
+              >
+                ×
+              </button>
+            </Badge>
+          )}
           {sizeFilter !== "all" && (
             <Badge variant="secondary" className="text-xs">
               {SIZE_FILTER_GROUPS.find((g) => g.value === sizeFilter)?.label}
@@ -191,6 +233,7 @@ export function ModelFilterBar({
           )}
           <button
             onClick={() => {
+              setNameFilter("");
               setSizeFilter("all");
               setReasoningFilter("all");
             }}

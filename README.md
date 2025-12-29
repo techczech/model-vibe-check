@@ -2,7 +2,7 @@
 
 A tool for qualitative LLM evaluation. Run prompts against multiple models, read the responses side-by-side, and decide which ones have the right vibe.
 
-**Version 0.6.0**
+**Version 0.7.0**
 
 ## Philosophy
 
@@ -14,14 +14,12 @@ Most LLM benchmarks reduce model outputs to numbers. But you can't check the vib
 - Use **LLM-as-judge** for automated evaluation
 - Runs are archives — browsing is the primary experience
 
-## What's New in v0.6.0
+## What's New in v0.7.0
 
-- **Resizable Columns**: Drag to resize columns in comparison views
-- **Model Metadata Filtering**: Filter and sort models by size class (Frontier/Flash/Open) and reasoning capability
-- **Collapsible Sidebar**: More screen space for reading responses
-- **Quick Model Selection**: Quickly add all Frontier, Flash, or Reasoning models when creating runs
-- **Improved Response Viewer**: Better markdown toggle, word wrap, and toolbar layout
-- **Evaluations Page**: Dedicated page for managing evaluations
+- **Comprehensive Prompt Library**: 57 evaluation prompts across 11 categories including spatial cognition, multilingual, creative writing, long context, and more
+- **Attachment Support**: Prompts can now reference external files (text and images) for long-context and vision testing
+- **Evaluation Configurations**: Each prompt comes with suggested evaluation methods (human, LLM judge, machine judge)
+- **Expected Answers**: Many prompts include expected answers for automated verification
 
 ## Features
 
@@ -124,15 +122,25 @@ The response viewer supports keyboard navigation:
 - **Escape**: Close dialogs
 - **?**: Show keyboard help
 
-## Sample Prompts
+## Prompt Library
 
-The repository includes 10 sample prompts covering:
+The repository includes 57 evaluation prompts across 11 categories:
 
-- **Spatial Cognition**: Vertical text recognition
-- **Multilingual**: German modal verbs, Czech morphology, Japanese honorifics
-- **Creative Writing**: Wodehouse pastiche
-- **Code Generation**: SVG, mermaid diagrams, regex
-- **Reasoning**: Logic puzzles with misleading context
+| Category | Count | Examples |
+|----------|-------|----------|
+| **Spatial Cognition** | 5 | Vertical text recognition, spatial relationships, SVG understanding |
+| **Coding** | 1 | Code readability analysis |
+| **Linguistics** | 2 | Anaphora resolution, metalanguage |
+| **Writing** | 1 | Long-form academic writing (7000 words) |
+| **Multilingual** | 16 | German poetry, Czech morphology, cultural knowledge, idiom translation |
+| **Small Models** | 5 | Knowledge coherence, multilingual grammar |
+| **Creative Writing** | 6 | Wodehouse pastiche, Czech poetry translation |
+| **Generation** | 10 | Image and video generation prompts |
+| **Long Context** | 4 | Anachronism detection, information retrieval (with attachments) |
+| **Vision** | 3 | Image understanding (requires image attachments) |
+| **Agents** | 4 | Multi-step research tasks |
+
+Many prompts include expected answers and evaluation configurations for automated testing.
 
 Import them from the Prompts page or start fresh with your own.
 
@@ -169,7 +177,8 @@ model-vibe-check/
 │   └── model-metadata.ts  # Model metadata utilities
 ├── hooks/                  # Custom React hooks
 ├── data/                   # User data (gitignored except samples)
-└── attachments/            # Uploaded files
+├── public/attachments/     # Prompt attachments (text, images)
+└── scripts/                # Utility scripts and reference files
 ```
 
 ## Data Storage
@@ -210,6 +219,14 @@ MIT — see [LICENSE](LICENSE)
 Issues and PRs welcome. This is a tool for qualitative evaluation, so suggestions for better ways to read and compare responses are especially appreciated.
 
 ## Changelog
+
+### v0.7.0
+- Added comprehensive prompt library with 57 evaluation prompts
+- Prompts span 11 categories: Spatial Cognition, Coding, Linguistics, Writing, Multilingual, Small Models, Creative Writing, Generation, Long Context, Vision, Agents
+- Added attachment support for prompts (text files, images)
+- Each prompt includes evaluation configuration and many have expected answers
+- Reorganized attachments to `public/attachments/` folder
+- Added `scripts/` folder for utility files
 
 ### v0.6.0
 - Added resizable columns with drag handles in comparison views
