@@ -25,12 +25,23 @@ export async function POST(request: NextRequest) {
         ? p.id 
         : crypto.randomUUID();
 
+      // Convert old format (content) to new format (steps)
+      // If steps already provided, use them; otherwise convert content to single step
+      const steps = p.steps || [{
+        id: "step-1",
+        sequence: 1,
+        content: p.content || "",
+        expectedAnswer: p.expectedAnswer,
+      }];
+
       toAdd.push({
         id,
         title: p.title,
         category: p.category || "Uncategorized",
         keywords: p.keywords || [],
         description: p.description || "",
+        steps,
+        // Keep deprecated fields for backward compat
         content: p.content,
         expectedAnswer: p.expectedAnswer || "",
         attachments: (p.attachments || []).map((a: any) => ({

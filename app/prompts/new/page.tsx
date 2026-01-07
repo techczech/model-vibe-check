@@ -24,8 +24,15 @@ import {
   FileText,
   Image,
   X,
+  Plus,
+  Trash2,
+  GripVertical,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
-import type { Attachment, EvaluationMethod } from "@/lib/types";
+import type { Attachment, EvaluationMethod, MachineJudgeConfig } from "@/lib/types";
+import { MachineJudgeConfigEditor } from "@/components/machine-judge-config";
 
 const CATEGORIES = [
   "Spatial Cognition",
@@ -37,6 +44,7 @@ const CATEGORIES = [
   "Agentic",
   "Long Context",
   "Reasoning",
+  "Multi-turn",
   "Other",
 ];
 
@@ -47,7 +55,14 @@ const EVAL_METHODS: { value: EvaluationMethod; label: string }[] = [
   { value: "pairwise", label: "Pairwise Comparison" },
 ];
 
-const MACHINE_TYPES = ["contains", "regex", "exact", "json-schema", "custom"];
+const MAX_STEPS = 10;
+
+interface StepFormData {
+  id: string;
+  content: string;
+  expectedAnswer: string;
+  expanded: boolean;
+}
 
 export default function NewPromptPage() {
   const router = useRouter();
@@ -61,14 +76,18 @@ export default function NewPromptPage() {
   const [category, setCategory] = useState("Other");
   const [keywords, setKeywords] = useState("");
   const [description, setDescription] = useState("");
-  const [content, setContent] = useState("");
-  const [expectedAnswer, setExpectedAnswer] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [methods, setMethods] = useState<EvaluationMethod[]>(["human"]);
-  const [machineType, setMachineType] = useState("contains");
-  const [machineCriteria, setMachineCriteria] = useState("");
-  const [machineCaseSensitive, setMachineCaseSensitive] = useState(false);
+  const [machineJudge, setMachineJudge] = useState<MachineJudgeConfig | undefined>(undefined);
   const [llmCriteria, setLlmCriteria] = useState("");
+
+  // Steps state - starts with one step
+  const [steps, setSteps] = useState<StepFormData[]>([
+    { id: "step-1", content: "", expectedAnswer: "", expanded: true },
+  ]);
+
+  // Multi-step mode (show step builder UI)
+  const isMultiStep = steps.length > 1;
 
   function toggleMethod(method: EvaluationMethod) {
     if (methods.includes(method)) {
@@ -76,6 +95,57 @@ export default function NewPromptPage() {
     } else {
       setMethods([...methods, method]);
     }
+  }
+
+  // Step management functions
+  function addStep() {
+    if (steps.length >= MAX_STEPS) return;
+    const newStep: StepFormData = {
+      id: `step-${steps.length + 1}`,
+      content: "",
+      expectedAnswer: "",
+      expanded: true,
+    };
+    // Collapse previous steps when adding a new one
+    setSteps([
+      ...steps.map((s) => ({ ...s, expanded: false })),
+      newStep,
+    ]);
+  }
+
+  function removeStep(index: number) {
+    if (steps.length <= 1) return;
+    setSteps(steps.filter((_, i) => i !== index));
+  }
+
+  function updateStep(index: number, field: keyof StepFormData, value: string | boolean) {
+    setSteps(
+      steps.map((step, i) =>
+        i === index ? { ...step, [field]: value } : step
+      )
+    );
+  }
+
+  function toggleStepExpanded(index: number) {
+    setSteps(
+      steps.map((step, i) =>
+        i === index ? { ...step, expanded: !step.expanded } : step
+      )
+    );
+  }
+
+  function moveStep(index: number, direction: "up" | "down") {
+    if (
+      (direction === "up" && index === 0) ||
+      (direction === "down" && index === steps.length - 1)
+    ) {
+      return;
+    }
+
+    const newSteps = [...steps];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    [newSteps[index], newSteps[targetIndex]] = [newSteps[targetIndex], newSteps[index]];
+    setSteps(newSteps);
   }
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -120,7 +190,8 @@ export default function NewPromptPage() {
   }
 
   async function savePrompt() {
-    if (!title || !content) return;
+    const validSteps = steps.filter((s) => s.content.trim());
+    if (!title || validSteps.length === 0) return;
 
     setSaving(true);
     try {
@@ -132,18 +203,20 @@ export default function NewPromptPage() {
           .map((k) => k.trim())
           .filter(Boolean),
         description: description || undefined,
-        content,
-        expectedAnswer: expectedAnswer || undefined,
+        // New steps format
+        steps: validSteps.map((s, i) => ({
+          id: `step-${i + 1}`,
+          sequence: i + 1,
+          content: s.content,
+          expectedAnswer: s.expectedAnswer || undefined,
+        })),
+        // Deprecated fields for backward compat
+        content: validSteps[0]?.content || "",
+        expectedAnswer: validSteps[0]?.expectedAnswer || undefined,
         attachments,
         evaluationConfig: {
           methods,
-          machineJudge: methods.includes("machine")
-            ? {
-                type: machineType,
-                criteria: machineCriteria,
-                caseSensitive: machineCaseSensitive,
-              }
-            : undefined,
+          machineJudge: methods.includes("machine") ? machineJudge : undefined,
           llmJudge: methods.includes("llm-judge") && llmCriteria
             ? { criteria: llmCriteria }
             : undefined,
@@ -167,6 +240,9 @@ export default function NewPromptPage() {
     }
   }
 
+  const validSteps = steps.filter((s) => s.content.trim());
+  const hasContent = validSteps.length > 0;
+
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
@@ -177,9 +253,16 @@ export default function NewPromptPage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold">New Prompt</h1>
+          <div>
+            <h1 className="text-2xl font-bold">New Prompt</h1>
+            {isMultiStep && (
+              <p className="text-sm text-muted-foreground">
+                Multi-turn conversation ({steps.length} steps)
+              </p>
+            )}
+          </div>
         </div>
-        <Button onClick={savePrompt} disabled={saving || !title || !content}>
+        <Button onClick={savePrompt} disabled={saving || !title || !hasContent}>
           {saving ? (
             <>
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -250,32 +333,222 @@ export default function NewPromptPage() {
         </CardContent>
       </Card>
 
-      {/* Prompt Content */}
+      {/* Prompt Content / Steps */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Prompt Content *</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-base">
+              {isMultiStep ? "Conversation Steps" : "Prompt Content *"}
+            </CardTitle>
+            {isMultiStep && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {steps.length} step{steps.length !== 1 ? "s" : ""} · Max {MAX_STEPS}
+              </p>
+            )}
+          </div>
+          {!isMultiStep ? (
+            <Button variant="outline" size="sm" onClick={addStep}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Step
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={addStep}
+              disabled={steps.length >= MAX_STEPS}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Step
+            </Button>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Enter your prompt here..."
-            rows={8}
-            className="font-mono"
-          />
+          {/* Single-step mode: simple textarea */}
+          {!isMultiStep ? (
+            <>
+              <Textarea
+                value={steps[0].content}
+                onChange={(e) => updateStep(0, "content", e.target.value)}
+                placeholder="Enter your prompt here..."
+                rows={8}
+                className="font-mono"
+              />
 
-          <div className="space-y-2">
-            <Label htmlFor="expected">Expected Answer (optional)</Label>
-            <Textarea
-              id="expected"
-              value={expectedAnswer}
-              onChange={(e) => setExpectedAnswer(e.target.value)}
-              placeholder="What's the expected or ideal response?"
-              rows={4}
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="expected">Expected Answer (optional)</Label>
+                <Textarea
+                  id="expected"
+                  value={steps[0].expectedAnswer}
+                  onChange={(e) => updateStep(0, "expectedAnswer", e.target.value)}
+                  placeholder="What's the expected or ideal response?"
+                  rows={4}
+                />
+              </div>
+            </>
+          ) : (
+            /* Multi-step mode: collapsible step builder */
+            <>
+              {steps.map((step, index) => (
+                <div
+                  key={step.id}
+                  className="border rounded-lg overflow-hidden"
+                >
+                  {/* Step Header */}
+                  <div
+                    className="flex items-center gap-2 p-3 bg-muted/50 cursor-pointer"
+                    onClick={() => toggleStepExpanded(index)}
+                  >
+                    <GripVertical className="h-4 w-4 text-muted-foreground" />
+                    <MessageSquare className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-sm">
+                      Step {index + 1}
+                    </span>
+                    {step.content && (
+                      <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+                        {step.content.substring(0, 50)}
+                        {step.content.length > 50 ? "..." : ""}
+                      </span>
+                    )}
+                    <div className="ml-auto flex items-center gap-1">
+                      {/* Move buttons */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveStep(index, "up");
+                        }}
+                        disabled={index === 0}
+                      >
+                        <ChevronUp className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          moveStep(index, "down");
+                        }}
+                        disabled={index === steps.length - 1}
+                      >
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                      {/* Delete button */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-destructive hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeStep(index);
+                        }}
+                        disabled={steps.length <= 1}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                      {/* Expand/Collapse indicator */}
+                      {step.expanded ? (
+                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Step Content (collapsible) */}
+                  {step.expanded && (
+                    <div className="p-4 space-y-4">
+                      <div className="space-y-2">
+                        <Label>User Message *</Label>
+                        <Textarea
+                          value={step.content}
+                          onChange={(e) =>
+                            updateStep(index, "content", e.target.value)
+                          }
+                          placeholder={
+                            index === 0
+                              ? "Enter the initial user message..."
+                              : "Enter the follow-up message..."
+                          }
+                          rows={4}
+                          className="font-mono"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {index === 0
+                            ? "This is the first message in the conversation"
+                            : "The model will see all previous messages before this one"}
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Expected Response (optional)</Label>
+                        <Textarea
+                          value={step.expectedAnswer}
+                          onChange={(e) =>
+                            updateStep(index, "expectedAnswer", e.target.value)
+                          }
+                          placeholder="What should the model ideally respond?"
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Quick add button at bottom */}
+              {steps.length < MAX_STEPS && (
+                <Button
+                  variant="outline"
+                  className="w-full border-dashed"
+                  onClick={addStep}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Another Step
+                </Button>
+              )}
+            </>
+          )}
         </CardContent>
       </Card>
+
+      {/* Conversation Preview (multi-step only) */}
+      {isMultiStep && validSteps.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Conversation Preview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {validSteps.map((step, index) => (
+                <div key={index} className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-xs font-medium text-primary">
+                      {index + 1}
+                    </span>
+                  </div>
+                  <div className="flex-1 p-3 bg-muted rounded-lg">
+                    <p className="text-sm whitespace-pre-wrap">{step.content}</p>
+                  </div>
+                </div>
+              ))}
+              <div className="flex gap-3 opacity-50">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                  <MessageSquare className="h-4 w-4" />
+                </div>
+                <div className="flex-1 p-3 bg-secondary/50 rounded-lg border-dashed border">
+                  <p className="text-sm text-muted-foreground italic">
+                    Model response will appear here...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Attachments */}
       <Card>
@@ -373,54 +646,10 @@ export default function NewPromptPage() {
           {methods.includes("machine") && (
             <div className="p-4 bg-muted rounded-lg space-y-3">
               <p className="text-sm font-medium">Machine Judge Configuration</p>
-              <div className="grid gap-3 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Type</Label>
-                  <Select value={machineType} onValueChange={setMachineType}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {MACHINE_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Case Sensitive</Label>
-                  <Select
-                    value={machineCaseSensitive ? "yes" : "no"}
-                    onValueChange={(v) => setMachineCaseSensitive(v === "yes")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="no">No</SelectItem>
-                      <SelectItem value="yes">Yes</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Criteria</Label>
-                <Textarea
-                  value={machineCriteria}
-                  onChange={(e) => setMachineCriteria(e.target.value)}
-                  placeholder={
-                    machineType === "contains"
-                      ? "word1, word2, word3"
-                      : machineType === "regex"
-                      ? "(pattern1|pattern2)"
-                      : "Enter criteria..."
-                  }
-                  rows={2}
-                  className="font-mono text-sm"
-                />
-              </div>
+              <MachineJudgeConfigEditor
+                config={machineJudge}
+                onChange={setMachineJudge}
+              />
             </div>
           )}
 

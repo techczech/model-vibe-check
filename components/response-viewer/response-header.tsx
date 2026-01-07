@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { 
   Provider, 
@@ -16,6 +17,7 @@ import {
   getReasoningColor,
   formatContextWindow,
 } from "@/lib/model-metadata";
+import { Star } from "lucide-react";
 
 interface ResponseHeaderProps {
   modelName: string;
@@ -29,6 +31,11 @@ interface ResponseHeaderProps {
   promptCategory?: string;
   metadata: ViewerMetadataToggles;
   isBlind?: boolean;
+  galleryAction?: {
+    selected: boolean;
+    disabled?: boolean;
+    onToggle: () => void;
+  };
   className?: string;
 }
 
@@ -60,6 +67,7 @@ export function ResponseHeader({
   promptCategory,
   metadata,
   isBlind = false,
+  galleryAction,
   className,
 }: ResponseHeaderProps) {
   // In blind mode, hide model identity
@@ -104,6 +112,23 @@ export function ResponseHeader({
             >
               {providerLabels[provider]}
             </Badge>
+          )}
+          {galleryAction && (
+            <Button
+              variant={galleryAction.selected ? "secondary" : "ghost"}
+              size="icon"
+              className="h-6 w-6"
+              title={galleryAction.selected ? "Remove from gallery" : "Add to gallery"}
+              onClick={galleryAction.onToggle}
+              disabled={galleryAction.disabled}
+            >
+              <Star
+                className={cn(
+                  "h-3.5 w-3.5",
+                  galleryAction.selected && "fill-current"
+                )}
+              />
+            </Button>
           )}
         </div>
       </div>

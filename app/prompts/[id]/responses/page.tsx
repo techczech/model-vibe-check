@@ -37,6 +37,7 @@ import {
 import { EvaluationForm } from "@/components/evaluation-form";
 import { useToast } from "@/hooks/use-toast";
 import type { Prompt, Model, Run, Rubric, RubricEvaluation, ViewerResponse } from "@/lib/types";
+import { getPromptContent } from "@/lib/types";
 
 function PromptResponsesContent() {
   const params = useParams();
@@ -509,7 +510,7 @@ function PromptResponsesContent() {
               latencyMs: evaluatingResponse.latencyMs ?? 0,
               tokensOutput: evaluatingResponse.tokensOutput ?? 0,
             }}
-            promptContent={prompt.content}
+            promptContent={getPromptContent(prompt)}
             rubric={currentRubric}
             existingEvaluation={existingEval}
             onSubmit={submitEvaluation}

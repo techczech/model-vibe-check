@@ -39,6 +39,7 @@ import {
   type ModelSortOption,
 } from "@/lib/model-metadata";
 import type { Prompt, Model } from "@/lib/types";
+import { isMultiTurnPrompt } from "@/lib/types";
 
 export default function NewRunForm() {
   const router = useRouter();
@@ -147,7 +148,38 @@ export default function NewRunForm() {
     setSelectedModels(newSet);
   }
 
+  function deselectLocalModels() {
+    const newSet = new Set(selectedModels);
+    models.forEach((model) => {
+      if (model.provider === "ollama") {
+        newSet.delete(model.id);
+      }
+    });
+    setSelectedModels(newSet);
+  }
+
+  function selectRemoteModels() {
+    const newSet = new Set(selectedModels);
+    models.forEach((model) => {
+      if (model.provider !== "ollama") {
+        newSet.add(model.id);
+      }
+    });
+    setSelectedModels(newSet);
+  }
+
+  function selectLocalModels() {
+    const newSet = new Set(selectedModels);
+    models.forEach((model) => {
+      if (model.provider === "ollama") {
+        newSet.add(model.id);
+      }
+    });
+    setSelectedModels(newSet);
+  }
+
   async function createRun() {
+    // Need at least prompts plus models
     if (selectedPrompts.size === 0 || selectedModels.size === 0) return;
 
     setCreating(true);
@@ -199,6 +231,8 @@ export default function NewRunForm() {
       reasoning: 0,
       "non-reasoning": 0,
     };
+    let localCount = 0;
+    let remoteCount = 0;
 
     models.forEach((model) => {
       const meta = getEffectiveMetadata(model);
@@ -212,9 +246,15 @@ export default function NewRunForm() {
       } else {
         reasoningCounts["non-reasoning"]++;
       }
+      // Count local vs remote
+      if (model.provider === "ollama") {
+        localCount++;
+      } else {
+        remoteCount++;
+      }
     });
 
-    return { sizeCounts, reasoningCounts };
+    return { sizeCounts, reasoningCounts, localCount, remoteCount };
   }, [models]);
 
   // Filter and sort models
@@ -244,8 +284,15 @@ export default function NewRunForm() {
     return { "All Models": filteredAndSortedModels };
   }, [filteredAndSortedModels, sortBy]);
 
-  const totalCombinations =
-    selectedPrompts.size * selectedModels.size * iterations;
+  // Calculate total steps (including multi-step prompts)
+  const totalSteps = useMemo(() => {
+    return Array.from(selectedPrompts).reduce((sum, promptId) => {
+      const prompt = prompts.find((p) => p.id === promptId);
+      return sum + (prompt?.steps?.length || 1);
+    }, 0);
+  }, [selectedPrompts, prompts]);
+
+  const totalCombinations = totalSteps * selectedModels.size * iterations;
 
   if (loading) {
     return (
@@ -503,6 +550,33 @@ export default function NewRunForm() {
                 >
                   + Reasoning
                 </Button>
+                {/* Separator */}
+                <div className="w-px h-4 bg-border mx-1" />
+                {/* Remote/Local buttons */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-5 px-2 text-xs"
+                  onClick={selectRemoteModels}
+                >
+                  + Remote ({modelFilterCounts.remoteCount})
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-5 px-2 text-xs text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                  onClick={deselectLocalModels}
+                >
+                  − Local ({modelFilterCounts.localCount})
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-5 px-2 text-xs"
+                  onClick={selectLocalModels}
+                >
+                  + Local ({modelFilterCounts.localCount})
+                </Button>
               </div>
             </div>
 
@@ -581,7 +655,9 @@ export default function NewRunForm() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">
-                {selectedPrompts.size} prompts × {selectedModels.size} models ×{" "}
+                {selectedPrompts.size} prompt{selectedPrompts.size !== 1 ? "s" : ""}
+                {totalSteps !== selectedPrompts.size && ` (${totalSteps} steps)`}
+                {" "}× {selectedModels.size} model{selectedModels.size !== 1 ? "s" : ""} ×{" "}
                 {iterations} iteration{iterations !== 1 ? "s" : ""} ={" "}
                 <span className="text-primary">{totalCombinations} results</span>
               </p>

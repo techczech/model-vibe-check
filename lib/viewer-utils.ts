@@ -4,16 +4,17 @@
  * Helper functions for transforming data to ResponseViewer format.
  */
 
-import type { 
-  ViewerResponse, 
-  ViewerPrompt, 
-  Model, 
-  Prompt, 
-  Run, 
+import type {
+  ViewerResponse,
+  ViewerPrompt,
+  Model,
+  Prompt,
+  Run,
   Result,
   Evaluation,
-  Provider 
+  Provider
 } from './types';
+import { getPromptContent, getExpectedAnswer } from './types';
 import { getModelMetadata } from './model-metadata';
 
 interface TransformOptions {
@@ -27,14 +28,16 @@ interface TransformOptions {
  * Transform a prompt to ViewerPrompt format
  */
 export function toViewerPrompt(prompt: Prompt): ViewerPrompt {
+  const content = getPromptContent(prompt);
   // Rough token estimate: ~4 chars per token
-  const tokensEstimate = Math.ceil(prompt.content.length / 4);
-  
+  const tokensEstimate = Math.ceil(content.length / 4);
+
   return {
     id: prompt.id,
     title: prompt.title,
-    content: prompt.content,
-    expectedAnswer: prompt.expectedAnswer,
+    content,
+    steps: prompt.steps,
+    expectedAnswer: getExpectedAnswer(prompt),
     tokensEstimate,
     category: prompt.category,
   };
@@ -255,13 +258,82 @@ export function getLatestResponsePerModel(
   responses: ViewerResponse[]
 ): ViewerResponse[] {
   const latestByModel = new Map<string, ViewerResponse>();
-  
+
   for (const response of responses) {
     const existing = latestByModel.get(response.modelId);
     if (!existing || new Date(response.runDate) > new Date(existing.runDate)) {
       latestByModel.set(response.modelId, response);
     }
   }
-  
+
   return Array.from(latestByModel.values());
+}
+
+/**
+ * Model group with iterations for side-by-side display
+ */
+export interface ModelIterationGroup {
+  modelId: string;
+  modelName: string;
+  provider: Provider;
+  iterations: ViewerResponse[];
+}
+
+/**
+ * Group responses by model with iterations sorted for side-by-side comparison
+ * Returns an array of models, each with their iterations in order
+ */
+export function groupResponsesByModelWithIterations(
+  responses: ViewerResponse[]
+): ModelIterationGroup[] {
+  const groupMap = new Map<string, ModelIterationGroup>();
+
+  for (const response of responses) {
+    let group = groupMap.get(response.modelId);
+    if (!group) {
+      group = {
+        modelId: response.modelId,
+        modelName: response.modelName,
+        provider: response.provider,
+        iterations: [],
+      };
+      groupMap.set(response.modelId, group);
+    }
+    group.iterations.push(response);
+  }
+
+  // Sort iterations within each group by iteration number
+  for (const group of groupMap.values()) {
+    group.iterations.sort((a, b) => a.iteration - b.iteration);
+  }
+
+  // Return groups sorted by model name
+  return Array.from(groupMap.values()).sort((a, b) =>
+    a.modelName.localeCompare(b.modelName)
+  );
+}
+
+/**
+ * Check if responses contain multiple iterations (for showing toggle)
+ */
+export function hasMultipleIterations(responses: ViewerResponse[]): boolean {
+  if (responses.length === 0) return false;
+
+  // Check if any response has totalIterations > 1
+  // OR if there are multiple responses for the same model
+  const iterationsByModel = new Map<string, Set<number>>();
+
+  for (const response of responses) {
+    if (response.totalIterations > 1) return true;
+
+    const iterations = iterationsByModel.get(response.modelId);
+    if (iterations) {
+      iterations.add(response.iteration);
+      if (iterations.size > 1) return true;
+    } else {
+      iterationsByModel.set(response.modelId, new Set([response.iteration]));
+    }
+  }
+
+  return false;
 }

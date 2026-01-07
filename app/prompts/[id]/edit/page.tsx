@@ -29,7 +29,9 @@ import {
   ClipboardCheck,
   ExternalLink,
 } from "lucide-react";
-import type { Prompt, Attachment, EvaluationMethod, Rubric } from "@/lib/types";
+import type { Prompt, Attachment, EvaluationMethod, Rubric, MachineJudgeConfig } from "@/lib/types";
+import { getPromptContent, getExpectedAnswer } from "@/lib/types";
+import { MachineJudgeConfigEditor } from "@/components/machine-judge-config";
 
 const CATEGORIES = [
   "Spatial Cognition",
@@ -50,8 +52,6 @@ const EVAL_METHODS: { value: EvaluationMethod; label: string }[] = [
   { value: "machine", label: "Machine Check" },
   { value: "pairwise", label: "Pairwise Comparison" },
 ];
-
-const MACHINE_TYPES = ["contains", "regex", "exact", "json-schema", "custom"];
 
 export default function EditPromptPage() {
   const params = useParams();
@@ -76,9 +76,7 @@ export default function EditPromptPage() {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [methods, setMethods] = useState<EvaluationMethod[]>(["human"]);
   const [rubricId, setRubricId] = useState<string | undefined>(undefined);
-  const [machineType, setMachineType] = useState("contains");
-  const [machineCriteria, setMachineCriteria] = useState("");
-  const [machineCaseSensitive, setMachineCaseSensitive] = useState(false);
+  const [machineJudge, setMachineJudge] = useState<MachineJudgeConfig | undefined>(undefined);
   const [llmCriteria, setLlmCriteria] = useState("");
 
   useEffect(() => {
@@ -109,18 +107,14 @@ export default function EditPromptPage() {
         setCategory(prompt.category);
         setKeywords(prompt.keywords?.join(", ") || "");
         setDescription(prompt.description || "");
-        setContent(prompt.content);
-        setExpectedAnswer(prompt.expectedAnswer || "");
+        setContent(getPromptContent(prompt));
+        setExpectedAnswer(getExpectedAnswer(prompt) || "");
         setAttachments(prompt.attachments || []);
         setMethods(prompt.evaluationConfig?.methods || ["human"]);
         setRubricId(prompt.rubricId);
 
         if (prompt.evaluationConfig?.machineJudge) {
-          setMachineType(prompt.evaluationConfig.machineJudge.type);
-          setMachineCriteria(prompt.evaluationConfig.machineJudge.criteria);
-          setMachineCaseSensitive(
-            prompt.evaluationConfig.machineJudge.caseSensitive || false
-          );
+          setMachineJudge(prompt.evaluationConfig.machineJudge);
         }
 
         if (prompt.evaluationConfig?.llmJudge?.criteria) {
@@ -203,13 +197,7 @@ export default function EditPromptPage() {
         rubricId: rubricId || undefined,
         evaluationConfig: {
           methods,
-          machineJudge: methods.includes("machine")
-            ? {
-                type: machineType as any,
-                criteria: machineCriteria,
-                caseSensitive: machineCaseSensitive,
-              }
-            : undefined,
+          machineJudge: methods.includes("machine") ? machineJudge : undefined,
           llmJudge: methods.includes("llm-judge") && llmCriteria
             ? { criteria: llmCriteria }
             : undefined,
@@ -509,54 +497,10 @@ export default function EditPromptPage() {
           {methods.includes("machine") && (
             <div className="p-4 bg-muted rounded-lg space-y-3">
               <p className="text-sm font-medium">Machine Judge Configuration</p>
-              <div className="grid gap-3 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Type</Label>
-                  <Select value={machineType} onValueChange={setMachineType}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {MACHINE_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Case Sensitive</Label>
-                  <Select
-                    value={machineCaseSensitive ? "yes" : "no"}
-                    onValueChange={(v) => setMachineCaseSensitive(v === "yes")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="no">No</SelectItem>
-                      <SelectItem value="yes">Yes</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Criteria</Label>
-                <Textarea
-                  value={machineCriteria}
-                  onChange={(e) => setMachineCriteria(e.target.value)}
-                  placeholder={
-                    machineType === "contains"
-                      ? "word1, word2, word3"
-                      : machineType === "regex"
-                      ? "(pattern1|pattern2)"
-                      : "Enter criteria..."
-                  }
-                  rows={2}
-                  className="font-mono text-sm"
-                />
-              </div>
+              <MachineJudgeConfigEditor
+                config={machineJudge}
+                onChange={setMachineJudge}
+              />
             </div>
           )}
 

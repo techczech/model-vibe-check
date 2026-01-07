@@ -25,11 +25,14 @@ import {
   RotateCcw,
   GalleryHorizontal,
   ScrollText,
+  Layers,
+  TableProperties,
 } from "lucide-react";
 import type {
   ViewerLayoutMode,
   ViewerHeightMode,
   ColumnPreset,
+  IterationViewMode,
   ViewerMetadataToggles,
   ViewerContentSettings
 } from "@/lib/types";
@@ -39,6 +42,8 @@ interface ViewerToolbarProps {
   height: ViewerHeightMode;
   columnPreset: ColumnPreset;
   slideshowMode: boolean;
+  iterationMode: IterationViewMode;
+  hasMultipleIterations: boolean;
   metadata: ViewerMetadataToggles;
   content: ViewerContentSettings;
   responseCount: number;
@@ -46,6 +51,7 @@ interface ViewerToolbarProps {
   onHeightChange: (height: ViewerHeightMode) => void;
   onColumnPresetChange: (preset: ColumnPreset) => void;
   onSlideshowModeChange: (enabled: boolean) => void;
+  onIterationModeChange: (mode: IterationViewMode) => void;
   onMetadataToggle: (key: keyof ViewerMetadataToggles) => void;
   onContentToggle: (key: keyof ViewerContentSettings) => void;
   onReset: () => void;
@@ -57,6 +63,8 @@ export function ViewerToolbar({
   height,
   columnPreset,
   slideshowMode,
+  iterationMode,
+  hasMultipleIterations,
   metadata,
   content,
   responseCount,
@@ -64,6 +72,7 @@ export function ViewerToolbar({
   onHeightChange,
   onColumnPresetChange,
   onSlideshowModeChange,
+  onIterationModeChange,
   onMetadataToggle,
   onContentToggle,
   onReset,
@@ -139,6 +148,30 @@ export function ViewerToolbar({
             title="Scroll all"
           >
             <ScrollText className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
+      {/* Iteration mode toggle (show when there are multiple iterations) */}
+      {hasMultipleIterations && (
+        <div className="flex items-center border rounded-md bg-background">
+          <Button
+            variant={iterationMode === "carousel" ? "secondary" : "ghost"}
+            size="sm"
+            className="h-8 px-2 rounded-r-none"
+            onClick={() => onIterationModeChange("carousel")}
+            title="Carousel: One iteration at a time"
+          >
+            <Layers className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={iterationMode === "side-by-side" ? "secondary" : "ghost"}
+            size="sm"
+            className="h-8 px-2 rounded-l-none"
+            onClick={() => onIterationModeChange("side-by-side")}
+            title="Side-by-side: All iterations visible"
+          >
+            <TableProperties className="h-4 w-4" />
           </Button>
         </div>
       )}

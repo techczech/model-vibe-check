@@ -23,6 +23,7 @@ import {
   Eye,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { getPromptContent, getExpectedAnswer, isMultiTurnPrompt } from "@/lib/types";
 
 const methodIcons = {
   human: User,
@@ -77,6 +78,12 @@ export default async function PromptDetailPage({
             <h1 className="text-2xl font-bold">{prompt.title}</h1>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline">{prompt.category}</Badge>
+              {isMultiTurnPrompt(prompt) && (
+                <Badge variant="secondary">
+                  <MessageSquare className="h-3 w-3 mr-1" />
+                  {prompt.steps?.length || 1} steps
+                </Badge>
+              )}
               {prompt.attachments.length > 0 && (
                 <Badge variant="secondary">
                   <Paperclip className="h-3 w-3 mr-1" />
@@ -139,24 +146,73 @@ export default async function PromptDetailPage({
           {/* Prompt Content */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Prompt</CardTitle>
+              <CardTitle className="text-base">
+                {isMultiTurnPrompt(prompt) ? "Conversation Steps" : "Prompt"}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <pre className="whitespace-pre-wrap text-sm bg-muted p-4 rounded-lg overflow-x-auto">
-                {prompt.content}
-              </pre>
+              {isMultiTurnPrompt(prompt) && prompt.steps ? (
+                // Multi-step: show conversation format
+                <div className="space-y-4">
+                  {prompt.steps.map((step, index) => (
+                    <div key={step.id} className="space-y-2">
+                      {/* Step header */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-xs font-medium text-primary">
+                            {index + 1}
+                          </span>
+                        </div>
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {index === 0 ? "Initial message" : `Follow-up ${index}`}
+                        </span>
+                      </div>
+
+                      {/* Step content */}
+                      <pre className="whitespace-pre-wrap text-sm bg-muted p-4 rounded-lg overflow-x-auto ml-9">
+                        {step.content}
+                      </pre>
+
+                      {/* Step expected answer */}
+                      {step.expectedAnswer && (
+                        <div className="ml-9">
+                          <p className="text-xs text-muted-foreground mb-1">Expected response:</p>
+                          <pre className="whitespace-pre-wrap text-sm bg-green-50 p-3 rounded-lg overflow-x-auto border border-green-200 dark:bg-green-950 dark:border-green-800">
+                            {step.expectedAnswer}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Model response placeholder */}
+                  <div className="flex items-center gap-2 opacity-50">
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-secondary flex items-center justify-center">
+                      <MessageSquare className="h-3.5 w-3.5" />
+                    </div>
+                    <span className="text-sm text-muted-foreground italic">
+                      Model responds to each step...
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                // Single-step: simple display
+                <pre className="whitespace-pre-wrap text-sm bg-muted p-4 rounded-lg overflow-x-auto">
+                  {getPromptContent(prompt)}
+                </pre>
+              )}
             </CardContent>
           </Card>
 
-          {/* Expected Answer */}
-          {prompt.expectedAnswer && (
+          {/* Expected Answer (for single-step prompts only) */}
+          {!isMultiTurnPrompt(prompt) && getExpectedAnswer(prompt) && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Expected Answer</CardTitle>
               </CardHeader>
               <CardContent>
-                <pre className="whitespace-pre-wrap text-sm bg-green-50 p-4 rounded-lg overflow-x-auto border border-green-200">
-                  {prompt.expectedAnswer}
+                <pre className="whitespace-pre-wrap text-sm bg-green-50 p-4 rounded-lg overflow-x-auto border border-green-200 dark:bg-green-950 dark:border-green-800">
+                  {getExpectedAnswer(prompt)}
                 </pre>
               </CardContent>
             </Card>

@@ -1,9 +1,10 @@
 import { promises as fs } from "fs";
 import path from "path";
-import type { Prompt, Model, Run, Settings, Rubric, RubricEvaluation } from "./types";
+import type { Prompt, Model, Run, Settings, Rubric, RubricEvaluation, PromptSequence, GallerySelection } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const RUNS_DIR = path.join(DATA_DIR, "runs");
+const GALLERY_FILE = path.join(DATA_DIR, "gallery.json");
 
 // Ensure directories exist
 async function ensureDir(dir: string) {
@@ -65,6 +66,44 @@ export async function savePrompt(prompt: Prompt): Promise<void> {
 export async function deletePrompt(id: string): Promise<void> {
   const prompts = await getPrompts();
   await savePrompts(prompts.filter((p) => p.id !== id));
+}
+
+// Prompt Sequences (multi-turn conversations)
+export async function getSequences(): Promise<PromptSequence[]> {
+  const data = await readJsonFile<{ sequences: PromptSequence[] }>(
+    path.join(DATA_DIR, "sequences.json"),
+    { sequences: [] }
+  );
+  return data.sequences;
+}
+
+export async function saveSequences(sequences: PromptSequence[]): Promise<void> {
+  await writeJsonFile(path.join(DATA_DIR, "sequences.json"), {
+    version: "1.0",
+    exportedAt: new Date().toISOString(),
+    sequences,
+  });
+}
+
+export async function getSequence(id: string): Promise<PromptSequence | null> {
+  const sequences = await getSequences();
+  return sequences.find((s) => s.id === id) || null;
+}
+
+export async function saveSequence(sequence: PromptSequence): Promise<void> {
+  const sequences = await getSequences();
+  const index = sequences.findIndex((s) => s.id === sequence.id);
+  if (index >= 0) {
+    sequences[index] = sequence;
+  } else {
+    sequences.push(sequence);
+  }
+  await saveSequences(sequences);
+}
+
+export async function deleteSequence(id: string): Promise<void> {
+  const sequences = await getSequences();
+  await saveSequences(sequences.filter((s) => s.id !== id));
 }
 
 // Models
@@ -149,6 +188,25 @@ export async function getSettings(): Promise<Settings> {
 
 export async function saveSettings(settings: Settings): Promise<void> {
   await writeJsonFile(path.join(DATA_DIR, "settings.json"), settings);
+}
+
+// Gallery selections
+export async function getGallerySelections(): Promise<GallerySelection[]> {
+  const data = await readJsonFile<{ selections: GallerySelection[] }>(
+    GALLERY_FILE,
+    { selections: [] }
+  );
+  return data.selections;
+}
+
+export async function saveGallerySelections(
+  selections: GallerySelection[]
+): Promise<void> {
+  await writeJsonFile(GALLERY_FILE, {
+    version: "1.0",
+    updatedAt: new Date().toISOString(),
+    selections,
+  });
 }
 
 // Categories (derived from prompts)

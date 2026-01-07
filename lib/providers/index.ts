@@ -14,23 +14,42 @@ export interface ExecutionResult {
   error?: string;
 }
 
+// Message types for multi-turn conversations
+export interface ConversationMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+const ATTACHMENTS_ROOT = path.resolve(process.cwd(), "attachments");
+
+function resolveAttachmentPath(attachment: Attachment): string | null {
+  const absolutePath = path.resolve(process.cwd(), attachment.path);
+  const relativePath = path.relative(ATTACHMENTS_ROOT, absolutePath);
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+    console.warn(`Attachment path outside attachments directory: ${attachment.path}`);
+    return null;
+  }
+  return absolutePath;
+}
+
 // Read attachment content
 async function readAttachment(attachment: Attachment): Promise<string | null> {
   try {
-    const filePath = path.join(process.cwd(), attachment.path);
-    
+    const filePath = resolveAttachmentPath(attachment);
+    if (!filePath) return null;
+
     if (attachment.type === "text" || attachment.type === "document") {
       const content = await fs.readFile(filePath, "utf-8");
       return content;
     }
-    
+
     if (attachment.type === "image") {
       const buffer = await fs.readFile(filePath);
       const base64 = buffer.toString("base64");
       const mimeType = attachment.mimeType || "image/png";
       return `data:${mimeType};base64,${base64}`;
     }
-    
+
     return null;
   } catch (error) {
     console.error(`Failed to read attachment ${attachment.path}:`, error);
@@ -164,6 +183,173 @@ export async function executePrompt(
     response: "",
     latencyMs: Date.now() - startTime,
     error: lastError?.message || "Unknown error",
+  };
+}
+
+/**
+ * Execute a multi-turn conversation with a model
+ * Messages are sent as a conversation history to maintain context
+ */
+export async function executeConversation(
+  messages: ConversationMessage[],
+  model: Model,
+  settings: Settings,
+  retries: number = DEFAULT_RETRIES
+): Promise<ExecutionResult> {
+  const startTime = Date.now();
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      switch (model.provider) {
+        case "ollama":
+          return await executeOllamaConversation(messages, model, settings);
+        case "openai":
+          return await executeOpenAIConversation(messages, model, settings);
+        case "google":
+          return await executeGoogleConversation(messages, model, settings);
+        case "openrouter":
+          return await executeOpenRouterConversation(messages, model, settings);
+        default:
+          throw new Error(`Unknown provider: ${model.provider}`);
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+
+      if (attempt < retries && isRetryableError(error)) {
+        const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
+        console.log(`Retry ${attempt + 1}/${retries} for ${model.displayName} after ${delay}ms: ${lastError.message}`);
+        await sleep(delay);
+        continue;
+      }
+      break;
+    }
+  }
+
+  return {
+    response: "",
+    latencyMs: Date.now() - startTime,
+    error: lastError?.message || "Unknown error",
+  };
+}
+
+async function executeOllamaConversation(
+  messages: ConversationMessage[],
+  model: Model,
+  settings: Settings
+): Promise<ExecutionResult> {
+  const ollama = new Ollama({ host: settings.ollamaBaseUrl });
+  const startTime = Date.now();
+
+  const response = await ollama.chat({
+    model: model.modelId,
+    messages: messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    })),
+    options: {
+      temperature: model.config.temperature ?? settings.defaults.temperature,
+    },
+  });
+
+  return {
+    response: response.message.content,
+    latencyMs: Date.now() - startTime,
+    tokensInput: response.prompt_eval_count,
+    tokensOutput: response.eval_count,
+  };
+}
+
+async function executeOpenAIConversation(
+  messages: ConversationMessage[],
+  model: Model,
+  settings: Settings
+): Promise<ExecutionResult> {
+  if (!settings.apiKeys.openai) {
+    throw new Error("OpenAI API key not configured");
+  }
+
+  const openai = createOpenAI({ apiKey: settings.apiKeys.openai });
+  const startTime = Date.now();
+
+  const result = await generateText({
+    model: openai(model.modelId),
+    messages: messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    })),
+    temperature: model.config.temperature ?? settings.defaults.temperature,
+    maxTokens: model.config.maxOutputTokens,
+  });
+
+  return {
+    response: result.text,
+    latencyMs: Date.now() - startTime,
+    tokensInput: result.usage?.promptTokens,
+    tokensOutput: result.usage?.completionTokens,
+  };
+}
+
+async function executeGoogleConversation(
+  messages: ConversationMessage[],
+  model: Model,
+  settings: Settings
+): Promise<ExecutionResult> {
+  if (!settings.apiKeys.google) {
+    throw new Error("Google API key not configured");
+  }
+
+  const google = createGoogleGenerativeAI({ apiKey: settings.apiKeys.google });
+  const startTime = Date.now();
+
+  const result = await generateText({
+    model: google(model.modelId),
+    messages: messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    })),
+    temperature: model.config.temperature ?? settings.defaults.temperature,
+    maxTokens: model.config.maxOutputTokens,
+  });
+
+  return {
+    response: result.text,
+    latencyMs: Date.now() - startTime,
+    tokensInput: result.usage?.promptTokens,
+    tokensOutput: result.usage?.completionTokens,
+  };
+}
+
+async function executeOpenRouterConversation(
+  messages: ConversationMessage[],
+  model: Model,
+  settings: Settings
+): Promise<ExecutionResult> {
+  if (!settings.apiKeys.openrouter) {
+    throw new Error("OpenRouter API key not configured");
+  }
+
+  const openrouter = createOpenAI({
+    apiKey: settings.apiKeys.openrouter,
+    baseURL: "https://openrouter.ai/api/v1",
+  });
+  const startTime = Date.now();
+
+  const result = await generateText({
+    model: openrouter(model.modelId),
+    messages: messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    })),
+    temperature: model.config.temperature ?? settings.defaults.temperature,
+    maxTokens: model.config.maxOutputTokens,
+  });
+
+  return {
+    response: result.text,
+    latencyMs: Date.now() - startTime,
+    tokensInput: result.usage?.promptTokens,
+    tokensOutput: result.usage?.completionTokens,
   };
 }
 

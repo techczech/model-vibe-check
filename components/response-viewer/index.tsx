@@ -8,6 +8,7 @@ import { ViewerToolbar } from "./viewer-toolbar";
 import { PromptSection } from "./prompt-section";
 import { ResponsePanel } from "./response-panel";
 import { useViewerPreferences, getColumnWidths, getMinColumnWidth } from "@/lib/stores/viewer-preferences";
+import { hasMultipleIterations, groupResponsesByModelWithIterations } from "@/lib/viewer-utils";
 import type { ViewerResponse, ViewerPrompt } from "@/lib/types";
 
 // Resize handle component
@@ -103,6 +104,7 @@ export function ResponseViewer({
   const [activeResizeHandle, setActiveResizeHandle] = useState<number | null>(null);
   const [resizeWidths, setResizeWidths] = useState<number[] | null>(null);
   const [slideshowIndex, setSlideshowIndex] = useState(0);
+  const [currentIteration, setCurrentIteration] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -113,6 +115,7 @@ export function ResponseViewer({
     columnPreset,
     customColumnWidths,
     slideshowMode,
+    iterationMode,
     metadata,
     content,
     setLayout,
@@ -120,10 +123,43 @@ export function ResponseViewer({
     setColumnPreset,
     setCustomColumnWidths,
     setSlideshowMode,
+    setIterationMode,
     toggleMetadata,
     toggleContent,
     resetToDefaults,
   } = preferences;
+
+  // Check if responses have multiple iterations
+  const hasIterations = useMemo(
+    () => hasMultipleIterations(responses),
+    [responses]
+  );
+
+  // Group responses by model for side-by-side iteration view
+  const modelIterationGroups = useMemo(
+    () => groupResponsesByModelWithIterations(responses),
+    [responses]
+  );
+
+  // Calculate max iterations and get unique iteration numbers
+  const iterationInfo = useMemo(() => {
+    if (responses.length === 0) return { maxIterations: 0, uniqueIterations: [] };
+    const iterations = [...new Set(responses.map(r => r.iteration))].sort((a, b) => a - b);
+    return { maxIterations: iterations.length, uniqueIterations: iterations };
+  }, [responses]);
+
+  // Get responses filtered to current iteration (for carousel mode)
+  const carouselResponses = useMemo(() => {
+    if (!hasIterations || iterationMode !== 'carousel') return responses;
+    const targetIteration = iterationInfo.uniqueIterations[currentIteration] ?? 0;
+    // Get one response per model for the current iteration
+    return responses.filter(r => r.iteration === targetIteration);
+  }, [responses, hasIterations, iterationMode, currentIteration, iterationInfo.uniqueIterations]);
+
+  // Reset iteration index when responses change
+  useEffect(() => {
+    setCurrentIteration(0);
+  }, [responses]);
 
   // Calculate effective column count and layout
   const effectiveLayout = useMemo(() => {
@@ -264,11 +300,34 @@ export function ResponseViewer({
     setSlideshowIndex((prev) => Math.min(slideshowConfig.totalPages - 1, prev + 1));
   }, [slideshowConfig.totalPages]);
 
+  // Iteration navigation handlers (for carousel mode)
+  const goToPrevIteration = useCallback(() => {
+    setCurrentIteration((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const goToNextIteration = useCallback(() => {
+    setCurrentIteration((prev) => Math.min(iterationInfo.maxIterations - 1, prev + 1));
+  }, [iterationInfo.maxIterations]);
+
   // Keyboard navigation
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
+      }
+
+      // Iteration navigation with up/down in carousel mode
+      if (hasIterations && iterationMode === 'carousel' && iterationInfo.maxIterations > 1) {
+        switch (e.key) {
+          case "ArrowUp":
+            e.preventDefault();
+            goToPrevIteration();
+            return;
+          case "ArrowDown":
+            e.preventDefault();
+            goToNextIteration();
+            return;
+        }
       }
 
       // Slideshow navigation with arrow keys
@@ -305,7 +364,7 @@ export function ResponseViewer({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [responses.length, slideshowConfig.isActive, goToPrevPage, goToNextPage]);
+  }, [responses.length, slideshowConfig.isActive, goToPrevPage, goToNextPage, hasIterations, iterationMode, iterationInfo.maxIterations, goToPrevIteration, goToNextIteration]);
 
   // Scroll focused panel into view
   useEffect(() => {
@@ -327,6 +386,8 @@ export function ResponseViewer({
           height={height}
           columnPreset={columnPreset}
           slideshowMode={slideshowMode}
+          iterationMode={iterationMode}
+          hasMultipleIterations={hasIterations}
           metadata={metadata}
           content={content}
           responseCount={responses.length}
@@ -334,6 +395,7 @@ export function ResponseViewer({
           onHeightChange={setHeight}
           onColumnPresetChange={setColumnPreset}
           onSlideshowModeChange={setSlideshowMode}
+          onIterationModeChange={setIterationMode}
           onMetadataToggle={toggleMetadata}
           onContentToggle={toggleContent}
           onReset={resetToDefaults}
@@ -379,56 +441,122 @@ export function ResponseViewer({
         </div>
       )}
 
-      {/* Response panels with resize handles */}
-      <div className="relative">
+      {/* Iteration navigation (for carousel mode with multiple iterations) */}
+      {hasIterations && iterationMode === 'carousel' && iterationInfo.maxIterations > 1 && (
+        <div className="flex items-center justify-center gap-4 py-2 bg-muted/30 rounded-lg">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToPrevIteration}
+            disabled={currentIteration === 0}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Prev
+          </Button>
+          <span className="text-sm font-medium">
+            Iteration {currentIteration + 1} of {iterationInfo.maxIterations}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToNextIteration}
+            disabled={currentIteration >= iterationInfo.maxIterations - 1}
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            (↑ ↓ to navigate)
+          </span>
+        </div>
+      )}
+
+      {/* Response panels - Stacked iteration view (models as columns, iterations stacked vertically) */}
+      {hasIterations && iterationMode === "side-by-side" ? (
         <div
-          ref={gridRef}
-          className={cn(
-            "grid gap-4",
-            effectiveLayout.mode === "scroll" && "overflow-x-auto pb-2"
-          )}
-          style={columnWidthStyles}
+          className="grid gap-4 overflow-x-auto pb-2"
+          style={{
+            gridTemplateColumns: `repeat(${modelIterationGroups.length}, minmax(300px, 1fr))`
+          }}
         >
-          {visibleResponses.map((response, index) => (
-            <ResponsePanel
-              key={response.id}
-              ref={(el) => { panelRefs.current[index] = el; }}
-              response={response}
-              preferences={preferences}
-              isBlind={isBlind}
-              isFocused={focusedIndex === index}
-              onScroll={handleScroll}
-              syncScrollTop={content.syncScroll && isMultiColumn ? syncScrollTop : undefined}
-              className={cn(
-                effectiveLayout.mode === "scroll" && "min-w-[400px]"
-              )}
-            />
+          {modelIterationGroups.map((group) => (
+            <div key={group.modelId} className="space-y-3">
+              {/* Model header */}
+              <div className="sticky top-0 bg-background/95 backdrop-blur-sm px-2 py-1 border-b">
+                <span className="font-medium text-sm">{group.modelName}</span>
+                <span className="text-xs text-muted-foreground ml-2">
+                  ({group.iterations.length} iter.)
+                </span>
+              </div>
+              {/* Iterations stacked vertically */}
+              <div className="space-y-3">
+                {group.iterations.map((response) => (
+                  <ResponsePanel
+                    key={response.id}
+                    response={response}
+                    preferences={preferences}
+                    isBlind={isBlind}
+                    isFocused={false}
+                    onScroll={handleScroll}
+                    syncScrollTop={content.syncScroll ? syncScrollTop : undefined}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
-
-        {/* Resize handles - rendered as overlay to span full grid height */}
-        {canResize && currentWidths && !slideshowConfig.isActive && (
-          <div className="absolute inset-0 pointer-events-none">
-            {currentWidths.slice(0, -1).map((_, index) => {
-              // Calculate cumulative offset (sum of widths up to and including this column)
-              const leftOffset = currentWidths.slice(0, index + 1).reduce((sum, w) => sum + w, 0);
-              return (
-                <div
-                  key={`resize-${index}`}
-                  className="absolute top-0 bottom-0 pointer-events-auto"
-                  style={{ left: `calc(${leftOffset}% - 4px)` }}
-                >
-                  <ResizeHandle
-                    onDrag={(delta) => handleResizeDrag(index, delta)}
-                    onDragEnd={handleResizeEnd}
-                    isActive={activeResizeHandle === index}
-                  />
-                </div>
-              );
-            })}
+      ) : (
+        /* Standard grid view - uses carouselResponses when in carousel mode with iterations */
+        <div className="relative">
+          <div
+            ref={gridRef}
+            className={cn(
+              "grid gap-4",
+              effectiveLayout.mode === "scroll" && "overflow-x-auto pb-2"
+            )}
+            style={columnWidthStyles}
+          >
+            {(hasIterations && iterationMode === 'carousel' ? carouselResponses : visibleResponses).map((response, index) => (
+              <ResponsePanel
+                key={response.id}
+                ref={(el) => { panelRefs.current[index] = el; }}
+                response={response}
+                preferences={preferences}
+                isBlind={isBlind}
+                isFocused={focusedIndex === index}
+                onScroll={handleScroll}
+                syncScrollTop={content.syncScroll && isMultiColumn ? syncScrollTop : undefined}
+                className={cn(
+                  effectiveLayout.mode === "scroll" && "min-w-[400px]"
+                )}
+              />
+            ))}
           </div>
-        )}
-      </div>
+
+          {/* Resize handles - rendered as overlay to span full grid height */}
+          {canResize && currentWidths && !slideshowConfig.isActive && (
+            <div className="absolute inset-0 pointer-events-none">
+              {currentWidths.slice(0, -1).map((_, index) => {
+                // Calculate cumulative offset (sum of widths up to and including this column)
+                const leftOffset = currentWidths.slice(0, index + 1).reduce((sum, w) => sum + w, 0);
+                return (
+                  <div
+                    key={`resize-${index}`}
+                    className="absolute top-0 bottom-0 pointer-events-auto"
+                    style={{ left: `calc(${leftOffset}% - 4px)` }}
+                  >
+                    <ResizeHandle
+                      onDrag={(delta) => handleResizeDrag(index, delta)}
+                      onDragEnd={handleResizeEnd}
+                      isActive={activeResizeHandle === index}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Empty state */}
       {responses.length === 0 && (
