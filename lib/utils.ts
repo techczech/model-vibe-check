@@ -80,8 +80,9 @@ export function truncate(str: string, length: number): string {
   return str.slice(0, length - 3) + "...";
 }
 
-export function generateId(): string {
-  return Math.random().toString(36).substring(2, 15);
+export function generateId(prefix?: string): string {
+  const id = Math.random().toString(36).substring(2, 15);
+  return prefix ? `${prefix}-${id}` : id;
 }
 
 export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {

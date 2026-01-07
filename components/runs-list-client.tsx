@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Plus, Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Play, Plus, Clock, CheckCircle, XCircle, Loader2, Square } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { formatDate, formatDuration } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import {
@@ -42,6 +43,11 @@ const statusConfig = {
     variant: "destructive" as const,
     label: "Failed",
   },
+  cancelled: {
+    icon: Square,
+    variant: "warning" as const,
+    label: "Cancelled",
+  },
 };
 
 type RunStatus = keyof typeof statusConfig;
@@ -67,6 +73,7 @@ export function RunsListClient({ runs, prompts, models }: RunsListClientProps) {
       running: 0,
       completed: 0,
       failed: 0,
+      cancelled: 0,
     };
 
     const sizeCounts: Record<SizeFilterGroup, number> = {
@@ -320,10 +327,22 @@ export function RunsListClient({ runs, prompts, models }: RunsListClientProps) {
                               run.status === "running" && "animate-spin",
                               run.status === "completed" && "text-green-500",
                               run.status === "failed" && "text-red-500",
-                              run.status !== "completed" && run.status !== "failed" && "text-muted-foreground"
+                              run.status === "cancelled" && "text-yellow-500",
+                              run.status !== "completed" && run.status !== "failed" && run.status !== "cancelled" && "text-muted-foreground"
                             )}
                           />
                           <Badge variant={status.variant}>{status.label}</Badge>
+                          {run.status === "running" && (
+                            <div className="flex items-center gap-2 min-w-[100px]">
+                              <Progress
+                                value={(run.results.length / (run.promptIds.length * run.modelIds.length * run.iterations)) * 100}
+                                className="h-1.5 flex-1"
+                              />
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                {run.results.length}/{run.promptIds.length * run.modelIds.length * run.iterations}
+                              </span>
+                            </div>
+                          )}
                         </div>
                         <div>
                           <p className="font-medium">{run.name}</p>

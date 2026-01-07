@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "exportedAt": "2025-12-29T00:23:25.389Z",
+  "exportedAt": "2025-12-31T08:11:04.097Z",
   "prompts": [
     {
       "id": "vertical-text-1",
@@ -23,7 +23,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nT   t   i   s   m\nh   e   t   e   e\ni   x       c   s\ns   t   o   r   s\n        n   e   a\n    h   e   t   g\n    a           e\n    s            \n\n    i            \n    n            ",
+          "expectedAnswer": "This, text, has, in, it, one, secret, message"
+        }
+      ]
     },
     {
       "id": "vertical-text-2",
@@ -46,7 +54,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nV t m s L\ne e a e L\nr x k n M\nt t e s s\ni   s e\nc\na   n t\nl   o o",
+          "expectedAnswer": "Vertical, text, makes, sense, to, LLMs"
+        }
+      ]
     },
     {
       "id": "vertical-text-3",
@@ -69,7 +85,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nI  t  e  d  t  t  t  l  g  m  L  M  t  t\nf  h  n  i  h  e  h  o  e  o  a  o  o  h\n   i  o  s  e  x  i  n  t  r  r  d     i\ny  s  u  c  r  t  s  g  s  e  g  e  b  s\no     g  o  e     .  e        e  l  e  .\nu  c  h  v     h     r  i  c            \n   a     e  i  i  A     n  c  L  b  b   \nl  r  y  r  s  d  s  a  c  h  a  u  e   \no  e  o        d     n  r  a  n  t  s   \no  f  u  t  a  e  i  d  e  l  g     t   \nk  u     h  n  n  t     a  l  u  o      \n   l  w  a           l  s  e  a  3  a   \na  l  i  t  a  i  g  o  i  n  g     t   \nt  y  l     c  n  e  n  n  g        s   \n      l     t     t  g  g  i  e  e      \n            u     s  e  l  n  m  e      \n            a        r  y  g  s  m      \n            l              f            \n                     i     o            \n                     t     r            \n                                        \n                           a            \n                           n            \n                           y            ",
+          "expectedAnswer": "If you look at this carefully you will enough discover that there is this text hidden in it. As it gets longer and longer it increasingly more challenging Large Language Models to be best at this."
+        }
+      ]
     },
     {
       "id": "spatial-relationships",
@@ -91,7 +115,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Come up with contexts in which the sentence The cathedral is in front of the statue makes sense."
+        }
+      ]
     },
     {
       "id": "svg-bicycle",
@@ -119,7 +150,14 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make an SVG of a bicyle."
+        }
+      ]
     },
     {
       "id": "readability-tool",
@@ -148,7 +186,14 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a detailed, visually interesting readability analysis tool."
+        }
+      ]
     },
     {
       "id": "anaphora-single",
@@ -171,7 +216,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a table of all the pronouns in this sentence matched to what noun they refer to: Natasha was afraid that her mother would be worried and that's why she didn't tell her about her accident."
+        }
+      ]
     },
     {
       "id": "anaphora-extended",
@@ -194,7 +246,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a table of all the pronouns in this text matched to what noun they refer to (for possessive pronouns include the noun and for subject or objects include the predicate in the table to make it easier to read): \n\nNatasha was afraid that her mother would be worried and that's why she didn't tell her about her accident. Her reaction, after she eventually told her about it, convinced her she had been right to wait because she was inconsolable until she promised her she would never drive in the dark again."
+        }
+      ]
     },
     {
       "id": "academic-paper-7000",
@@ -223,7 +282,14 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Write a full 7,000 word paper in the academic style including references about the dangers of placing the Earth's strategic icecream stockpile in the Sahara. Yes, this is a parody but I want high level of verisimilitude including length."
+        }
+      ]
     },
     {
       "id": "german-rilke",
@@ -252,7 +318,15 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Translate the title of the Rilke poem:  Du mußt das Leben nicht verstehen",
+          "expectedAnswer": "You do not have to understand life (NOT 'You must not understand life')"
+        }
+      ]
     },
     {
       "id": "czech-metalanguage-cs",
@@ -275,7 +349,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Napiš 10 vět, které ilustrují různá použití slova totiž."
+        }
+      ]
     },
     {
       "id": "czech-metalanguage-en",
@@ -298,7 +379,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Write 10 sentences illustrating the use of the word totiž."
+        }
+      ]
     },
     {
       "id": "czech-morphology-short-cs",
@@ -323,7 +411,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Napiš krátký příběh o jablku, kde každá další věta použije slovo jablko v jiném pádě. Začni prvním a skonči sedmým."
+        }
+      ]
     },
     {
       "id": "czech-morphology-short-en",
@@ -348,7 +443,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Write a short story about an apple in Czech, where each following sentence uses the word apple in a different grammatical case. Start with the first case and end with the seventh case."
+        }
+      ]
     },
     {
       "id": "czech-morphology-long-cs",
@@ -372,7 +474,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2025-12-29T00:12:37.226Z"
+      "updatedAt": "2025-12-29T00:12:37.226Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Napiš krátký příběh o jablku, kde každá další věta použije slovo jablko v jiném pádě. Začni prvním a skonči sedmým. Začni tím, že vypíšeš všechny pády a formy slova jablko. Potom napiš příběh v jednom odstavci."
+        }
+      ]
     },
     {
       "id": "czech-morphology-long-en",
@@ -397,7 +506,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Write a short story about an apple, where each following sentence uses the word apple in a different grammatical case. Start with the first case and end with the seventh case. Begin by listing all the cases and forms of the word apple. Then write the story in one paragraph."
+        }
+      ]
     },
     {
       "id": "prague-towers-cs",
@@ -427,7 +543,15 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Kolik je v Praze věží?",
+          "expectedAnswer": "Should mention 'Praha stověžatá' (hundred-towered Prague)"
+        }
+      ]
     },
     {
       "id": "prague-spires-en",
@@ -450,7 +574,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "How many spires are there in Prague?",
+          "expectedAnswer": "Should mention that Prague is called the 'City of a Hundred Spires'"
+        }
+      ]
     },
     {
       "id": "prague-towers-en",
@@ -473,7 +605,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "How many towers are there in Prague?",
+          "expectedAnswer": "Should mention that Prague is called the 'City of a Hundred Spires/Towers'"
+        }
+      ]
     },
     {
       "id": "prague-nickname-cs",
@@ -501,7 +641,15 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Jak se přezdívá Praze?",
+          "expectedAnswer": "Praha stověžatá (hundred-towered Prague)"
+        }
+      ]
     },
     {
       "id": "prague-nickname-en",
@@ -523,7 +671,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "What is Prague's nickname?",
+          "expectedAnswer": "City of a Hundred Spires/Towers, Golden City, etc."
+        }
+      ]
     },
     {
       "id": "idiom-heavy-light",
@@ -546,7 +702,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Translate this sentence into English with the appropriate English idioms taking into account how both languages use idioms to indicate something is  difficult and explain your choices:  Čeština je jazyk težký jako olovo pro nečechy, ale lehký jako pírko pro Čechy.",
+          "expectedAnswer": "Czech is as heavy as lead for non-Czechs and as light as a feather for Czechs. The response should explain that Czech 'těžký' (heavy) means 'difficult' and 'lehký' (light) means 'easy'."
+        }
+      ]
     },
     {
       "id": "calculus-translation-simple",
@@ -570,7 +734,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Translate this sentence into Czech: I never took calculus in high school."
+        }
+      ]
     },
     {
       "id": "calculus-translation-detailed",
@@ -594,7 +765,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Translate this sentence into Czech: I never took calculus in high school. Provide detailed commentary about your choices and explain why you rejected some options."
+        }
+      ]
     },
     {
       "id": "small-model-q1",
@@ -622,7 +800,15 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "What is the capital of the Czech Republic? Answer in one word only.",
+          "expectedAnswer": "Prague"
+        }
+      ]
     },
     {
       "id": "small-model-q2",
@@ -650,7 +836,15 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Who was the first president of the independent Czechoslovakia?",
+          "expectedAnswer": "Tomáš Garrigue Masaryk"
+        }
+      ]
     },
     {
       "id": "small-model-q3",
@@ -678,7 +872,15 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Who succeeded him?",
+          "expectedAnswer": "Edvard Beneš"
+        }
+      ]
     },
     {
       "id": "small-model-q4",
@@ -701,7 +903,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "How has the country changed since then?"
+        }
+      ]
     },
     {
       "id": "small-model-multilingual",
@@ -724,7 +933,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "How many parts of speech are there in Czech? Answer in Czech. Make a list with examples.",
+          "expectedAnswer": "10 parts of speech: Podstatná jména (nouns), Přídavná jména (adjectives), Zájmena (pronouns), Číslovky (numerals), Slovesa (verbs), Příslovce (adverbs), Předložky (prepositions), Spojky (conjunctions), Částice (particles), Citoslovce (interjections)"
+        }
+      ]
     },
     {
       "id": "wodehouse-rewrite",
@@ -747,7 +964,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Take this text and rewrite it in the style of PG Wodehouse. \n\nLinda was furious. She was running really hard to catch a bus and the bus driver slammed the door shut in her face."
+        }
+      ]
     },
     {
       "id": "wodehouse-expand",
@@ -770,7 +994,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Expand it with the full Wodehouse style narrative elements."
+        }
+      ]
     },
     {
       "id": "poetry-translate",
@@ -793,7 +1024,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Translate this into English:\n\n**Večerní píseň**\nKdyž bylo dobře mamince,\nbylo i pěkně v našem bytě.\nHmoždíř, který stal na skříňce,\nzatřpytil se okamžitě,\nskla oken, po nichž před chvilkou\nplakalo ještě bílé jiní,\nsvítila opět po kuchyni,\nkde vonělo to vanilkou.\n\nKdyž zpívala, hned vesele\nspustili ptáci před okny nám.\nMěla-li mráček na čele,\nodletěli hned ptáci jinam.\nZmlkli jsme rázem, ztichl smích.\nI černé kotě, které tlapkou\npohrávalo si se skořápkou,\ndívalo se jí po očích.\n\nKdyž padala již únavou\na večer spát nás odnášela,\ntou rukou drsnou od popela\nstlala nám měkce pod hlavou.\nV hořáku ještě přede plyn\na nad pelestí přechází nám,\npodobaje se pavučinám,\nvelikánský stín maminčin.\n\nDnes už tak šťastně neusínám."
+        }
+      ]
     },
     {
       "id": "poetry-rhyme-scheme",
@@ -816,7 +1054,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Replicate the rhyme scheme."
+        }
+      ]
     },
     {
       "id": "poetry-write-spring",
@@ -839,7 +1084,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Write a short three stanza poem about spring in Czech. Make sure it rhymes."
+        }
+      ]
     },
     {
       "id": "poetry-abab",
@@ -862,7 +1114,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Now change the rhyme scheme to ABAB."
+        }
+      ]
     },
     {
       "id": "poetry-famous-poets",
@@ -885,7 +1144,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Now rewrite it in the style of the top 5 most famous Czech poets of the 19th and 20th century."
+        }
+      ]
     },
     {
       "id": "image-wineglass",
@@ -907,7 +1173,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Picture of a wineglass full to the brim with a clock on the wall behind it showing half past three."
+        }
+      ]
     },
     {
       "id": "image-robot-painter",
@@ -929,7 +1202,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a widescreen photorealistic image of a cute and friendly robot painter standing in front of an Oxford library with a canvas with a painting of a futuristic scene. There's a speech bubble above the robot's head that says 'I am a diffusion painter from the future.'"
+        }
+      ]
     },
     {
       "id": "image-painter-no-beard",
@@ -950,7 +1230,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a pencil drawing of a painter without a beard."
+        }
+      ]
     },
     {
       "id": "image-prague-statue",
@@ -972,7 +1259,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a realitic photo of a group of people in front of a Prague statue. They are all laughing uproariously and waving at the camera."
+        }
+      ]
     },
     {
       "id": "image-capek-robot",
@@ -995,7 +1289,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "A cartoon of Karel  Čapek shaking hands with a Robot from the future and saying: Aha, tak tohle jsem si nepředstavoval."
+        }
+      ]
     },
     {
       "id": "image-turing-comic",
@@ -1018,7 +1319,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a three panel cartoon. In the first panel a robot is coming to the office that says Alan Turing on it. In the second panel, the robot is facing Alan Turing and the robot is saying \"I'm here to take your test.\" In the third panel, Alan Turing stares in surprise and says \"I was not expecting you until 2000.\""
+        }
+      ]
     },
     {
       "id": "image-turing-comic-clear",
@@ -1041,7 +1349,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a three panel cartoon. In the first panel a cute and friendly robot is coming to the office. There is a sign with Alan Turing on the door. In the second panel, the robot is facing Alan Turing inside his offiece and the robot is saying \"I'm here to take your test.\" In the third panel, Alan Turing stares in surprise and says \"I was not expecting you until 2000.\""
+        }
+      ]
     },
     {
       "id": "video-robot-library",
@@ -1063,7 +1378,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "An cute and friendly robot is walking thorugh an Oxford library picking books from the shelves at random and throwing them in the air."
+        }
+      ]
     },
     {
       "id": "image-venn-diagram",
@@ -1085,7 +1407,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make an humorous but educational image of a venn diagram explaining the origin and current use of Venn Diagrams. Think hard but do not do any research."
+        }
+      ]
     },
     {
       "id": "image-perceptron-timeline",
@@ -1108,7 +1437,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Research the history of the perceptron and make an illustrated timeline with key milestones and figures."
+        }
+      ]
     },
     {
       "id": "long-context-anachronisms-1",
@@ -1146,7 +1482,15 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Find anything that seems out of place.",
+          "expectedAnswer": "Big Macs (Chapter III) - 1967\nPersonal Computer (Chapter IV)\nPanAm flight to La Guardia (Chapter XII) - 1927/1939\nEmail (Chapter XXII)"
+        }
+      ]
     },
     {
       "id": "long-context-anachronisms-2",
@@ -1184,7 +1528,15 @@
         }
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Find all anachronisms.",
+          "expectedAnswer": "Big Macs (Chapter III) - 1967\nPersonal Computer (Chapter IV)\nPanAm flight to La Guardia (Chapter XII) - 1927/1939\nEmail (Chapter XXII)"
+        }
+      ]
     },
     {
       "id": "long-context-retrieval",
@@ -1215,7 +1567,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Find answers to all of these questions along with chapter numbers where they occur and the exact quotes that support the answer:\n\n1. Who runs the magazine which is at the centre of the story, who named it and who owns it.\n2. Who is the second character from Wyoming and what does he do?\n3. Who is a prominent cat lover in the story? \n4. What happens at the end of chapter 25?\n5. What were the pleasantries the main character and the owner of the tenements exchanged when the latter came in? Replicate the exchange word for word until the point the introductions are concluded.",
+          "expectedAnswer": "1. Mr Wilberfloss (editor), Cosy Moments (his inspiration), Mr. Benjamin White (proprietor) - Chapter I\n2. Kid Brady - boxer wanting to fight at 133 pounds - Chapter IX\n3. Bat Jarvis (gang-leader, cousin of Master Maloney) - Chapter IV\n4. Mr. Parker forces Psmith into a cab at gunpoint - Chapter 25\n5. [Exact dialogue from text]"
+        }
+      ]
     },
     {
       "id": "long-context-knowledge-check",
@@ -1238,7 +1598,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Based on your knowledge of PG Wodehouse's Psmith, Journalist, find answers to all of these questions along with chapter numbers where they occur and the exact quotes that support the answer:\n\n1. Who runs the magazine which is at the centre of the story, who named it and who owns it.\n2. Which secondary but still important character is from Wyoming and what does he do?\n3. Who is a prominent cat lover in the story? \n4. What happens at the end of chapter 25?\n5. What were the pleasantries the main character and the owner of the tenements exchanged when the latter came in? Replicate the exchange word for word until the point the introductions are concluded."
+        }
+      ]
     },
     {
       "id": "vision-czech-joke",
@@ -1269,7 +1636,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Explain this image. What is the joke?"
+        }
+      ]
     },
     {
       "id": "vision-concept-map",
@@ -1300,7 +1674,15 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Convert this concept map to a list of propositions in the format: subject - relation - object",
+          "expectedAnswer": "chunking - facilitated by - rehearsal strategies\nattention - affects - information maintenance\nrehearsal strategies - improve - information maintenance\ncentral executive - processes information from - phonological loop\nchunking - reduces - load\nchunking - improves - information maintenance\ncentral executive - limited by - capacity\ncentral executive - processes information from - visuospatial sketchpad\nauditory input - processed by - phonological loop\nload - decreases - capacity\nload - decreased by - fewer distractions"
+        }
+      ]
     },
     {
       "id": "vision-no-anchors",
@@ -1330,7 +1712,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Describe this image in detail."
+        }
+      ]
     },
     {
       "id": "agent-oxford-museums",
@@ -1354,7 +1743,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Make a list of Oxford museums and galleries that are within 10-15 minute walking distance of Jesus College for conference attendees. Create a table with opening times, description and a link to a google maps with walking directions from Jesus College."
+        }
+      ]
     },
     {
       "id": "agent-culture-shock",
@@ -1377,7 +1773,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "What are the effects of culture shock on international students' experience of their studies and in particular learning outcomes? Are there any differences between the source and target cultures? What cultures have been most studied and what dimensions of culture have been addressed?"
+        }
+      ]
     },
     {
       "id": "agent-local-llms",
@@ -1401,7 +1804,14 @@
         ]
       },
       "createdAt": "2024-12-29T00:00:00.000Z",
-      "updatedAt": "2024-12-29T00:00:00.000Z"
+      "updatedAt": "2024-12-29T00:00:00.000Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Create a list of open language models I can run on a Mac today. Which ones would be best for which configuration and how to best run them. I'm thinking about what is the best I can do for budgets from £500 to £10,000. Which models should I choose for different configurations and what sort of things can I do with them"
+        }
+      ]
     },
     {
       "id": "f1ei0dk4xst",
@@ -1417,7 +1827,41 @@
         ]
       },
       "createdAt": "2025-12-29T00:23:25.388Z",
-      "updatedAt": "2025-12-29T00:23:25.388Z"
+      "updatedAt": "2025-12-29T00:23:25.388Z",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Write a sentence nobody has every said before."
+        }
+      ]
+    },
+    {
+      "id": "rmivrmctl7d",
+      "title": "Wodehouse Text Rewrite Sequence",
+      "category": "Creative Writing",
+      "keywords": [],
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Take this text and rewrite it in the style of PG Wodehouse. \n\nLinda was furious. She was running really hard to catch a bus and the bus driver slammed the door shut in her face."
+        },
+        {
+          "id": "step-2",
+          "sequence": 2,
+          "content": "Expand it with the full Wodehouse style narrative elements."
+        }
+      ],
+      "content": "Take this text and rewrite it in the style of PG Wodehouse. \n\nLinda was furious. She was running really hard to catch a bus and the bus driver slammed the door shut in her face.",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2025-12-31T08:11:04.095Z",
+      "updatedAt": "2025-12-31T08:11:04.095Z"
     }
   ]
 }

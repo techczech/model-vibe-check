@@ -11,6 +11,7 @@ import { executePrompt } from "@/lib/providers";
 import { buildJudgePrompt, parseJudgeResponse } from "@/lib/llm-judge";
 import { generateId } from "@/lib/utils";
 import type { RubricEvaluation } from "@/lib/types";
+import { getPromptContent, getExpectedAnswer } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
@@ -75,10 +76,10 @@ export async function POST(request: Request) {
 
     // Build the judge prompt
     const judgePrompt = buildJudgePrompt(
-      prompt.content,
+      getPromptContent(prompt),
       foundResult.response,
       rubric,
-      prompt.expectedAnswer
+      getExpectedAnswer(prompt)
     );
 
     // Execute the judge

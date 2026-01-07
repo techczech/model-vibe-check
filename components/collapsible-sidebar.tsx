@@ -28,6 +28,7 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Vibe Check", href: "/vibe-check", icon: Sparkles },
   { name: "Prompts", href: "/prompts", icon: FileText },
+  // Sequences removed - now part of Prompts (multi-step prompts)
   { name: "Models", href: "/models", icon: Cpu },
   { name: "Runs", href: "/runs", icon: Play },
   { name: "Evaluations", href: "/evaluations", icon: ClipboardCheck },

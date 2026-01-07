@@ -31,14 +31,25 @@ export async function POST(request: Request) {
 
     // Handle single prompt creation (from edit page)
     const promptData = body.prompt || body;
-    
+
     const now = new Date().toISOString();
+
+    // Convert old format (content) to new format (steps) if needed
+    const steps = promptData.steps || [{
+      id: "step-1",
+      sequence: 1,
+      content: promptData.content || "",
+      expectedAnswer: promptData.expectedAnswer,
+    }];
+
     const prompt: Prompt = {
       id: promptData.id || generateId(),
       title: promptData.title,
       category: promptData.category || "Other",
       keywords: promptData.keywords || [],
       description: promptData.description,
+      steps,
+      // Keep deprecated fields for backward compat
       content: promptData.content,
       expectedAnswer: promptData.expectedAnswer,
       attachments: promptData.attachments || [],
@@ -77,12 +88,23 @@ export async function PUT(request: Request) {
     const existing = existingPrompts.find((p) => p.id === promptData.id);
 
     const now = new Date().toISOString();
+
+    // Convert old format (content) to new format (steps) if needed
+    const steps = promptData.steps || [{
+      id: "step-1",
+      sequence: 1,
+      content: promptData.content || "",
+      expectedAnswer: promptData.expectedAnswer,
+    }];
+
     const prompt: Prompt = {
       id: promptData.id,
       title: promptData.title,
       category: promptData.category || "Other",
       keywords: promptData.keywords || [],
       description: promptData.description,
+      steps,
+      // Keep deprecated fields for backward compat
       content: promptData.content,
       expectedAnswer: promptData.expectedAnswer,
       attachments: promptData.attachments || [],

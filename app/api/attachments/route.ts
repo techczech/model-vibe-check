@@ -5,6 +5,16 @@ import { generateId } from "@/lib/utils";
 import type { Attachment } from "@/lib/types";
 
 const ATTACHMENTS_DIR = path.join(process.cwd(), "attachments");
+const ATTACHMENTS_ROOT = path.resolve(ATTACHMENTS_DIR);
+
+function resolveAttachmentPath(filePath: string): string | null {
+  const absolutePath = path.resolve(process.cwd(), filePath);
+  const relativePath = path.relative(ATTACHMENTS_ROOT, absolutePath);
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+    return null;
+  }
+  return absolutePath;
+}
 
 // Ensure attachment directories exist
 async function ensureAttachmentDirs() {
@@ -93,8 +103,8 @@ export async function DELETE(request: Request) {
     }
 
     // Security: ensure path is within attachments directory
-    const absolutePath = path.join(process.cwd(), filePath);
-    if (!absolutePath.startsWith(ATTACHMENTS_DIR)) {
+    const absolutePath = resolveAttachmentPath(filePath);
+    if (!absolutePath) {
       return NextResponse.json({ error: "Invalid path" }, { status: 400 });
     }
 

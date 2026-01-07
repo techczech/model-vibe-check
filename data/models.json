@@ -13,7 +13,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-26T21:17:59.838Z"
+      "createdAt": "2025-12-26T21:17:59.838Z",
+      "sizeClass": "flash",
+      "reasoningCapability": "none"
     },
     {
       "id": "openai-gpt-4o-1766786792292",
@@ -28,7 +30,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-26T22:06:32.292Z"
+      "createdAt": "2025-12-26T22:06:32.292Z",
+      "sizeClass": "frontier",
+      "reasoningCapability": "none"
     },
     {
       "id": "ollama-gemma3:4b-1766786826774",
@@ -43,7 +47,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-26T22:07:06.774Z"
+      "createdAt": "2025-12-26T22:07:06.774Z",
+      "reasoningCapability": "none",
+      "sizeClass": "3-7b"
     },
     {
       "id": "ollama-qwen3:4b-1766786834461",
@@ -58,7 +64,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-26T22:07:14.461Z"
+      "createdAt": "2025-12-26T22:07:14.461Z",
+      "sizeClass": "3-7b",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "ollama-minimax-m2:cloud-1766856350478",
@@ -73,7 +81,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:25:50.478Z"
+      "createdAt": "2025-12-27T17:25:50.478Z",
+      "sizeClass": "200b+",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "ollama-qwen3:8b-1766856350480",
@@ -88,7 +98,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:25:50.480Z"
+      "createdAt": "2025-12-27T17:25:50.480Z",
+      "sizeClass": "3-7b",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "ollama-gemma3:270m-1766856350480",
@@ -103,7 +115,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:25:50.480Z"
+      "createdAt": "2025-12-27T17:25:50.480Z",
+      "sizeClass": "sub-1b",
+      "reasoningCapability": "none"
     },
     {
       "id": "openai-gpt-5.2-chat-latest-1766856399945",
@@ -118,7 +132,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:26:39.945Z"
+      "createdAt": "2025-12-27T17:26:39.945Z",
+      "sizeClass": "frontier",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "openai-gpt-5.1-chat-latest-1766856399945",
@@ -133,7 +149,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:26:39.945Z"
+      "createdAt": "2025-12-27T17:26:39.945Z",
+      "sizeClass": "frontier",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "openai-gpt-5-nano-1766856399945",
@@ -148,7 +166,8 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:26:39.945Z"
+      "createdAt": "2025-12-27T17:26:39.945Z",
+      "sizeClass": "lite"
     },
     {
       "id": "openai-gpt-5-mini-1766856399945",
@@ -163,7 +182,8 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:26:39.945Z"
+      "createdAt": "2025-12-27T17:26:39.945Z",
+      "sizeClass": "flash"
     },
     {
       "id": "openai-gpt-5-chat-latest-1766856399945",
@@ -178,7 +198,8 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:26:39.945Z"
+      "createdAt": "2025-12-27T17:26:39.945Z",
+      "sizeClass": "frontier"
     },
     {
       "id": "google-gemini-2.5-flash-1766856594726",
@@ -193,7 +214,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:29:54.726Z"
+      "createdAt": "2025-12-27T17:29:54.726Z",
+      "sizeClass": "flash",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "google-gemini-2.0-flash-1766856594726",
@@ -208,7 +231,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:29:54.726Z"
+      "createdAt": "2025-12-27T17:29:54.726Z",
+      "sizeClass": "flash",
+      "reasoningCapability": "none"
     },
     {
       "id": "google-gemini-2.0-flash-lite-1766856594726",
@@ -223,7 +248,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:29:54.726Z"
+      "createdAt": "2025-12-27T17:29:54.726Z",
+      "sizeClass": "lite",
+      "reasoningCapability": "none"
     },
     {
       "id": "google-gemini-2.5-flash-lite-1766856594726",
@@ -238,7 +265,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:29:54.726Z"
+      "createdAt": "2025-12-27T17:29:54.726Z",
+      "sizeClass": "lite",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "google-gemini-3-flash-preview-1766856594726",
@@ -253,7 +282,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:29:54.726Z"
+      "createdAt": "2025-12-27T17:29:54.726Z",
+      "sizeClass": "flash",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "openrouter-openai-gpt-oss-120b:free-1766856690108",
@@ -268,7 +299,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "reasoningCapability": "hybrid",
+      "sizeClass": "100-200b"
     },
     {
       "id": "openrouter-openai-gpt-oss-20b:free-1766856690108",
@@ -283,7 +316,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "sizeClass": "14-34b",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "openrouter-google-gemma-3-27b-it:free-1766856690108",
@@ -298,7 +333,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "sizeClass": "14-34b",
+      "reasoningCapability": "none"
     },
     {
       "id": "openrouter-meta-llama-llama-3.2-3b-instruct:free-1766856690108",
@@ -313,7 +350,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "sizeClass": "1-3b",
+      "reasoningCapability": "none"
     },
     {
       "id": "openrouter-meta-llama-llama-3.3-70b-instruct:free-1766856690108",
@@ -328,7 +367,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "sizeClass": "35-70b",
+      "reasoningCapability": "none"
     },
     {
       "id": "openrouter-allenai-olmo-3.1-32b-think:free-1766856690108",
@@ -343,7 +384,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "reasoningCapability": "hybrid",
+      "sizeClass": "70-100b"
     },
     {
       "id": "openrouter-deepseek-deepseek-r1-0528:free-1766856690108",
@@ -358,7 +401,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "sizeClass": "200b+",
+      "reasoningCapability": "reasoning"
     },
     {
       "id": "openrouter-qwen-qwen3-4b:free-1766856690108",
@@ -373,7 +418,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "sizeClass": "3-7b",
+      "reasoningCapability": "hybrid"
     },
     {
       "id": "openrouter-z-ai-glm-4.5-air:free-1766856690108",
@@ -388,7 +435,9 @@
         "maxOutputTokens": 4096
       },
       "isActive": true,
-      "createdAt": "2025-12-27T17:31:30.108Z"
+      "createdAt": "2025-12-27T17:31:30.108Z",
+      "reasoningCapability": "hybrid",
+      "sizeClass": "100-200b"
     }
   ]
 }

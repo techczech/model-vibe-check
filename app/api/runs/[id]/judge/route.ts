@@ -3,6 +3,7 @@ import { getRun, saveRun, getPrompt, getSettings } from "@/lib/storage";
 import { evaluateLLMJudge } from "@/lib/evaluation";
 import { generateId } from "@/lib/utils";
 import type { Evaluation } from "@/lib/types";
+import { getPromptContent } from "@/lib/types";
 
 export async function POST(
   request: Request,
@@ -54,7 +55,7 @@ export async function POST(
         }
 
         const llmResult = await evaluateLLMJudge(
-          prompt.content,
+          getPromptContent(prompt),
           result.response,
           prompt.evaluationConfig.llmJudge,
           settings,

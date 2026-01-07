@@ -12,6 +12,15 @@ export async function GET(
     if (!run) {
       return NextResponse.json({ error: "Run not found" }, { status: 404 });
     }
+
+    // Detect orphaned cancelled runs: if status is "running" but cancelRequested is true,
+    // the execution loop died before marking as cancelled (e.g., server restart)
+    if (run.status === "running" && run.cancelRequested) {
+      run.status = "cancelled";
+      run.completedAt = run.cancelledAt || new Date().toISOString();
+      await saveRun(run);
+    }
+
     return NextResponse.json({ run });
   } catch (error) {
     console.error("Error fetching run:", error);

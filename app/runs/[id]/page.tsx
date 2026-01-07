@@ -26,11 +26,14 @@ import {
   GitCompare,
   ClipboardCheck,
   Bot,
+  Square,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { formatDate } from "@/lib/utils";
 import { ResponseViewer } from "@/components/response-viewer";
 import { toViewerPrompt, getResponsesForPrompt } from "@/lib/viewer-utils";
-import type { Run, Prompt, Model, ViewerResponse } from "@/lib/types";
+import { ConversationThread, groupSequenceResults } from "@/components/conversation-thread";
+import type { Run, Prompt, Model, ViewerResponse, PromptSequence } from "@/lib/types";
 
 export default function RunDetailPage() {
   const params = useParams();
@@ -39,11 +42,14 @@ export default function RunDetailPage() {
   const [run, setRun] = useState<Run | null>(null);
   const [prompts, setPrompts] = useState<Record<string, Prompt>>({});
   const [models, setModels] = useState<Record<string, Model>>({});
+  const [sequences, setSequences] = useState<Record<string, PromptSequence>>({});
   const [allPrompts, setAllPrompts] = useState<Prompt[]>([]);
   const [allModels, setAllModels] = useState<Model[]>([]);
+  const [allSequences, setAllSequences] = useState<PromptSequence[]>([]);
   const [allRuns, setAllRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   
   // Expanded prompt for inline viewing
   const [expandedPromptId, setExpandedPromptId] = useState<string | null>(null);
@@ -56,22 +62,26 @@ export default function RunDetailPage() {
       const runData = await runRes.json();
       setRun(runData.run || runData);
 
-      // Load prompts and models for display names
-      const [promptsRes, modelsRes, runsRes] = await Promise.all([
+      // Load prompts, models, sequences for display names
+      const [promptsRes, modelsRes, sequencesRes, runsRes] = await Promise.all([
         fetch("/api/prompts"),
         fetch("/api/models"),
+        fetch("/api/sequences"),
         fetch("/api/runs"),
       ]);
       const promptsData = await promptsRes.json();
       const modelsData = await modelsRes.json();
+      const sequencesData = await sequencesRes.json();
       const runsData = await runsRes.json();
 
       const promptsList = promptsData.prompts || [];
       const modelsList = modelsData.models || [];
+      const sequencesList = sequencesData.sequences || [];
       const runsList = runsData.runs || [];
 
       setAllPrompts(promptsList);
       setAllModels(modelsList);
+      setAllSequences(sequencesList);
       setAllRuns(runsList);
 
       // Index by ID
@@ -86,6 +96,12 @@ export default function RunDetailPage() {
         modelIndex[m.id] = m;
       });
       setModels(modelIndex);
+
+      const sequenceIndex: Record<string, PromptSequence> = {};
+      sequencesList.forEach((s: PromptSequence) => {
+        sequenceIndex[s.id] = s;
+      });
+      setSequences(sequenceIndex);
     } catch (error) {
       console.error("Failed to load data:", error);
     } finally {
@@ -136,6 +152,23 @@ export default function RunDetailPage() {
     } finally {
       setExecuting(false);
       loadData();
+    }
+  }
+
+  async function cancelRun() {
+    setCancelling(true);
+    try {
+      const res = await fetch(`/api/runs/${runId}/cancel`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.success) {
+        loadData();
+      }
+    } catch (error) {
+      console.error("Cancel failed:", error);
+    } finally {
+      setCancelling(false);
     }
   }
 
@@ -216,11 +249,16 @@ export default function RunDetailPage() {
               ? "destructive"
               : run.status === "running"
               ? "secondary"
+              : run.status === "cancelled"
+              ? "warning"
               : "outline"
           }
         >
           {run.status === "running" && (
             <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+          )}
+          {run.status === "cancelled" && (
+            <Square className="h-3 w-3 mr-1" />
           )}
           {run.status}
         </Badge>
@@ -288,6 +326,27 @@ export default function RunDetailPage() {
               <p className="text-sm text-muted-foreground">Evaluations</p>
             </div>
           </div>
+          {run.status === "running" && (
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex items-center gap-2 mb-2">
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                <span className="text-sm font-medium">Execution Progress</span>
+                {errorCount > 0 && (
+                  <Badge variant="destructive" className="text-xs">
+                    {errorCount} error{errorCount !== 1 ? "s" : ""}
+                  </Badge>
+                )}
+              </div>
+              <Progress
+                value={(completedCount / totalCombinations) * 100}
+                className="h-3"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>{completedCount} of {totalCombinations} responses</span>
+                <span>{Math.round((completedCount / totalCombinations) * 100)}%</span>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -312,9 +371,48 @@ export default function RunDetailPage() {
                 </Button>
               )}
               {run.status === "running" && (
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  {completedCount} of {totalCombinations} complete
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 flex-1 max-w-md">
+                    <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
+                    <div className="flex-1 space-y-1">
+                      <Progress
+                        value={(completedCount / totalCombinations) * 100}
+                        className="h-2"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>{completedCount} of {totalCombinations} complete</span>
+                        <span>{Math.round((completedCount / totalCombinations) * 100)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                  {errorCount > 0 && (
+                    <Badge variant="destructive" className="text-xs">
+                      {errorCount} error{errorCount !== 1 ? "s" : ""}
+                    </Badge>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={cancelRun}
+                    disabled={cancelling || run.cancelRequested}
+                  >
+                    {cancelling ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Cancelling...
+                      </>
+                    ) : run.cancelRequested ? (
+                      <>
+                        <Square className="h-4 w-4 mr-2" />
+                        Stopping...
+                      </>
+                    ) : (
+                      <>
+                        <Square className="h-4 w-4 mr-2" />
+                        Cancel
+                      </>
+                    )}
+                  </Button>
                 </div>
               )}
             </div>
@@ -341,6 +439,59 @@ export default function RunDetailPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Errors Section */}
+      {errorCount > 0 && (
+        <Card className="border-destructive/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2 text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              Errors ({errorCount})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {run.results
+                .filter((r) => r.error)
+                .slice(0, 20)
+                .map((result) => {
+                  const model = models[result.modelId];
+                  const prompt = prompts[result.promptId];
+                  return (
+                    <div
+                      key={result.id}
+                      className="text-sm p-2 bg-destructive/5 rounded border border-destructive/20"
+                    >
+                      <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                        <span className="font-medium">
+                          {model?.displayName || result.modelId}
+                        </span>
+                        <span>•</span>
+                        <span className="truncate">
+                          {prompt?.title || result.promptId}
+                        </span>
+                        {run.iterations > 1 && (
+                          <>
+                            <span>•</span>
+                            <span>Iteration {result.iteration + 1}</span>
+                          </>
+                        )}
+                      </div>
+                      <p className="text-destructive text-xs font-mono">
+                        {result.error}
+                      </p>
+                    </div>
+                  );
+                })}
+              {errorCount > 20 && (
+                <p className="text-xs text-muted-foreground text-center pt-2">
+                  ... and {errorCount - 20} more errors
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Browse Responses */}
       {run.results.length > 0 && (
@@ -461,6 +612,49 @@ export default function RunDetailPage() {
               })}
             </CardContent>
           </Card>
+
+          {/* Sequences in this Run */}
+          {run.sequenceIds && run.sequenceIds.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  Sequences in this Run
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {(() => {
+                  // Get sequence results grouped by sequence/model/iteration
+                  const sequenceResults = run.results.filter((r) => r.sequenceId);
+                  const grouped = groupSequenceResults(
+                    sequenceResults,
+                    allSequences,
+                    run.evaluations,
+                    (modelId) => models[modelId]?.displayName || modelId
+                  );
+
+                  if (grouped.length === 0) {
+                    return (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        No sequence results yet
+                      </p>
+                    );
+                  }
+
+                  return grouped.map((group, idx) => (
+                    <ConversationThread
+                      key={`${group.sequence.id}-${group.modelId}-${group.iteration}-${idx}`}
+                      sequence={group.sequence}
+                      results={group.results}
+                      evaluations={group.evaluations}
+                      modelName={group.modelName}
+                      defaultExpanded={grouped.length <= 3}
+                    />
+                  ));
+                })()}
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
 

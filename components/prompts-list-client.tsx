@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { truncate } from "@/lib/utils";
 import type { Prompt } from "@/lib/types";
+import { getPromptContent } from "@/lib/types";
 import type { PromptStats } from "@/lib/storage";
 
 interface PromptsListClientProps {
@@ -84,7 +85,7 @@ export function PromptsListClient({
       result = result.filter(
         (p) =>
           p.title.toLowerCase().includes(q) ||
-          p.content.toLowerCase().includes(q) ||
+          getPromptContent(p).toLowerCase().includes(q) ||
           p.keywords.some((k) => k.toLowerCase().includes(q))
       );
     }
@@ -474,7 +475,7 @@ export function PromptsListClient({
                         </CardHeader>
                         <CardContent>
                           <p className="text-sm text-muted-foreground mb-3">
-                            {truncate(prompt.description || prompt.content, 100)}
+                            {truncate(prompt.description || getPromptContent(prompt), 100)}
                           </p>
                           <div className="flex flex-wrap gap-1">
                             {prompt.keywords.slice(0, 4).map((kw) => (
