@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getRun, saveRun, getPrompt, getSettings } from "@/lib/storage";
+import { getRun, saveRun, getPrompt, getRuntimeSettings } from "@/lib/storage";
 import { evaluateLLMJudge } from "@/lib/evaluation";
 import { generateId } from "@/lib/utils";
 import type { Evaluation } from "@/lib/types";
@@ -17,7 +17,7 @@ export async function POST(
       return NextResponse.json({ error: "Run not found" }, { status: 404 });
     }
 
-    const settings = await getSettings();
+    const settings = await getRuntimeSettings();
     const body = await request.json().catch(() => ({}));
     const judgeModel = body.judgeModel || settings.defaults.llmJudgeModel;
 

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { getRun, saveRun, getPrompt, getModel, getSettings, getPrompts, getModels, getSequences } from "@/lib/storage";
+import { getRun, saveRun, getPrompt, getModel, getRuntimeSettings, getPrompts, getModels, getSequences } from "@/lib/storage";
 import { executePrompt, executeConversation, ConversationMessage } from "@/lib/providers";
 import { evaluateMachine } from "@/lib/evaluation";
 import { generateId } from "@/lib/utils";
 import type { Result, Evaluation, Prompt, Model, Settings, PromptSequence } from "@/lib/types";
-import { getPromptContent } from "@/lib/types";
+import { getPromptContent, isMultiTurnPrompt } from "@/lib/types";
 
 // Default concurrency - can be adjusted based on rate limits
 const DEFAULT_CONCURRENCY = 3;
@@ -25,6 +25,14 @@ interface SequenceTask {
   model: Model;
 }
 
+interface PromptConversationTask {
+  promptId: string;
+  modelId: string;
+  iteration: number;
+  prompt: Prompt;
+  model: Model;
+}
+
 interface TaskResult {
   result: Result;
   evaluation?: Evaluation;
@@ -34,6 +42,8 @@ interface SequenceTaskResult {
   results: Result[];
   evaluations: Evaluation[];
 }
+
+type ConversationSource = Pick<Prompt | PromptSequence, "steps" | "evaluationConfig">;
 
 // Process a single task
 async function processTask(
@@ -105,36 +115,36 @@ async function processTask(
   }
 }
 
-// Process a multi-turn sequence task
-async function processSequenceTask(
-  task: SequenceTask,
+async function processConversationSource(
+  source: ConversationSource,
+  resultPromptId: string,
+  model: Model,
+  modelId: string,
+  iteration: number,
   runId: string,
-  settings: Settings
+  settings: Settings,
+  sequenceId?: string
 ): Promise<SequenceTaskResult> {
-  const { sequence, model, modelId, iteration, sequenceId } = task;
   const results: Result[] = [];
   const evaluations: Evaluation[] = [];
   const conversationHistory: ConversationMessage[] = [];
 
-  for (let stepIndex = 0; stepIndex < sequence.steps.length; stepIndex++) {
-    const step = sequence.steps[stepIndex];
+  for (let stepIndex = 0; stepIndex < source.steps.length; stepIndex++) {
+    const step = source.steps[stepIndex];
     const resultId = generateId();
 
     try {
-      // Add user message to history
       conversationHistory.push({
         role: "user",
         content: step.content,
       });
 
-      // Execute with conversation history
       const execution = await executeConversation(
         conversationHistory,
         model,
         settings
       );
 
-      // Add assistant response to history
       if (!execution.error) {
         conversationHistory.push({
           role: "assistant",
@@ -145,7 +155,7 @@ async function processSequenceTask(
       const result: Result = {
         id: resultId,
         runId,
-        promptId: `${sequenceId}:step-${stepIndex}`, // Use composite ID for step
+        promptId: resultPromptId,
         modelId,
         iteration,
         response: execution.response,
@@ -154,13 +164,12 @@ async function processSequenceTask(
         tokensOutput: execution.tokensOutput,
         error: execution.error,
         createdAt: new Date().toISOString(),
-        sequenceId,
         stepIndex,
+        ...(sequenceId ? { sequenceId } : {}),
       };
       results.push(result);
 
-      // Auto-run machine judge if configured for this step
-      const evalConfig = step.evaluationConfig || sequence.evaluationConfig;
+      const evalConfig = step.evaluationConfig || source.evaluationConfig;
       if (
         !execution.error &&
         evalConfig.methods.includes("machine") &&
@@ -182,7 +191,6 @@ async function processSequenceTask(
         });
       }
 
-      // If there was an error, stop the sequence
       if (execution.error) {
         break;
       }
@@ -190,22 +198,58 @@ async function processSequenceTask(
       const result: Result = {
         id: resultId,
         runId,
-        promptId: `${sequenceId}:step-${stepIndex}`,
+        promptId: resultPromptId,
         modelId,
         iteration,
         response: "",
         latencyMs: 0,
         error: error instanceof Error ? error.message : "Unknown error",
         createdAt: new Date().toISOString(),
-        sequenceId,
         stepIndex,
+        ...(sequenceId ? { sequenceId } : {}),
       };
       results.push(result);
-      break; // Stop sequence on error
+      break;
     }
   }
 
   return { results, evaluations };
+}
+
+async function processPromptConversationTask(
+  task: PromptConversationTask,
+  runId: string,
+  settings: Settings
+): Promise<SequenceTaskResult> {
+  const { prompt, model, modelId, promptId, iteration } = task;
+  return processConversationSource(
+    prompt,
+    promptId,
+    model,
+    modelId,
+    iteration,
+    runId,
+    settings
+  );
+}
+
+// Process a legacy multi-turn sequence task
+async function processSequenceTask(
+  task: SequenceTask,
+  runId: string,
+  settings: Settings
+): Promise<SequenceTaskResult> {
+  const { sequence, model, modelId, iteration, sequenceId } = task;
+  return processConversationSource(
+    sequence,
+    sequenceId,
+    model,
+    modelId,
+    iteration,
+    runId,
+    settings,
+    sequenceId
+  );
 }
 
 // Process tasks with concurrency limit and cancellation support
@@ -282,7 +326,7 @@ export async function POST(
 
     // Load all data upfront
     const [settings, allPrompts, allModels, allSequences] = await Promise.all([
-      getSettings(),
+      getRuntimeSettings(),
       getPrompts(),
       getModels(),
       getSequences(),
@@ -293,8 +337,9 @@ export async function POST(
     const modelMap = new Map(allModels.map((m) => [m.id, m]));
     const sequenceMap = new Map(allSequences.map((s) => [s.id, s]));
 
-    // Build task list for regular prompts
+    // Build task list for regular prompts and prompt-native conversations
     const tasks: Task[] = [];
+    const promptConversationTasks: PromptConversationTask[] = [];
     for (const promptId of run.promptIds) {
       const prompt = promptMap.get(promptId);
       if (!prompt) {
@@ -310,7 +355,11 @@ export async function POST(
         }
 
         for (let iteration = 0; iteration < run.iterations; iteration++) {
-          tasks.push({ promptId, modelId, iteration, prompt, model });
+          if (isMultiTurnPrompt(prompt)) {
+            promptConversationTasks.push({ promptId, modelId, iteration, prompt, model });
+          } else {
+            tasks.push({ promptId, modelId, iteration, prompt, model });
+          }
         }
       }
     }
@@ -337,7 +386,7 @@ export async function POST(
       }
     }
 
-    if (tasks.length === 0 && sequenceTasks.length === 0) {
+    if (tasks.length === 0 && promptConversationTasks.length === 0 && sequenceTasks.length === 0) {
       return NextResponse.json(
         { error: "No valid prompt/model combinations found" },
         { status: 400 }
@@ -399,6 +448,36 @@ export async function POST(
       cancelled = tasksCancelled;
     }
 
+    // Process multi-step prompts as conversations.
+    if (promptConversationTasks.length > 0 && !cancelled) {
+      const { results: promptConversationResults, cancelled: promptsCancelled } = await processWithConcurrency(
+        promptConversationTasks,
+        concurrency,
+        (task) => processPromptConversationTask(task, run.id, settings),
+        async (completed, total, currentResults) => {
+          const now = Date.now();
+          if (now - lastSaveTime > SAVE_INTERVAL_MS) {
+            lastSaveTime = now;
+            const completedPromptResults = currentResults.filter(Boolean);
+            run.results = [
+              ...allResults,
+              ...completedPromptResults.flatMap((r) => r.results),
+            ];
+            run.evaluations = [
+              ...allEvaluations,
+              ...completedPromptResults.flatMap((r) => r.evaluations),
+            ];
+            await saveRun(run);
+          }
+        },
+        checkCancellation
+      );
+
+      allResults.push(...promptConversationResults.flatMap((r) => r.results));
+      allEvaluations.push(...promptConversationResults.flatMap((r) => r.evaluations));
+      cancelled = cancelled || promptsCancelled;
+    }
+
     // Process sequence tasks (can run in parallel, but each sequence runs sequentially)
     if (sequenceTasks.length > 0 && !cancelled) {
       const { results: seqResults, cancelled: seqCancelled } = await processWithConcurrency(
@@ -449,6 +528,10 @@ export async function POST(
     await saveRun(run);
 
     // Calculate total step count for sequences
+    const totalPromptConversationSteps = promptConversationTasks.reduce(
+      (sum, task) => sum + task.prompt.steps.length,
+      0
+    );
     const totalSequenceSteps = sequenceTasks.reduce(
       (sum, task) => sum + task.sequence.steps.length,
       0
@@ -458,8 +541,10 @@ export async function POST(
       success: true,
       run,
       summary: {
-        total: tasks.length + totalSequenceSteps,
+        total: tasks.length + totalPromptConversationSteps + totalSequenceSteps,
         prompts: tasks.length,
+        promptConversations: promptConversationTasks.length,
+        promptConversationSteps: totalPromptConversationSteps,
         sequences: sequenceTasks.length,
         sequenceSteps: totalSequenceSteps,
         completed: run.results.length,
@@ -499,7 +584,18 @@ export async function GET(
     return NextResponse.json({ error: "Run not found" }, { status: 404 });
   }
 
-  const totalCombinations = run.promptIds.length * run.modelIds.length * run.iterations;
+  const [allPrompts, allSequences] = await Promise.all([getPrompts(), getSequences()]);
+  const promptMap = new Map(allPrompts.map((p) => [p.id, p]));
+  const sequenceMap = new Map(allSequences.map((s) => [s.id, s]));
+  const promptStepCount = run.promptIds.reduce((sum, promptId) => {
+    const prompt = promptMap.get(promptId);
+    return sum + (prompt?.steps?.length || 1) * run.modelIds.length * run.iterations;
+  }, 0);
+  const sequenceStepCount = (run.sequenceIds || []).reduce((sum, sequenceId) => {
+    const sequence = sequenceMap.get(sequenceId);
+    return sum + (sequence?.steps?.length || 1) * run.modelIds.length * run.iterations;
+  }, 0);
+  const totalCombinations = promptStepCount + sequenceStepCount;
 
   return NextResponse.json({
     status: run.status,

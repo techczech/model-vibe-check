@@ -33,6 +33,10 @@ const MACHINE_TYPES = [
   { value: "arithmetic-benchmark", label: "Arithmetic Benchmark", description: "Generate N math problems, check accuracy" },
 ] as const;
 
+function createBenchmarkSeed(prefix: string): string {
+  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
 interface MachineJudgeConfigProps {
   config: MachineJudgeConfig | undefined;
   onChange: (config: MachineJudgeConfig) => void;
@@ -92,6 +96,7 @@ export function MachineJudgeConfigEditor({
         maxLength: 12,
         charType: "mixed",
         caseSensitive: false,
+        seed: createBenchmarkSeed("string-reversal"),
         passThreshold: 80,
       };
     } else if (type === "arithmetic-benchmark") {
@@ -101,6 +106,7 @@ export function MachineJudgeConfigEditor({
         minOperand: 1,
         maxOperand: 99,
         complexity: "simple",
+        seed: createBenchmarkSeed("arithmetic"),
         passThreshold: 80,
       };
     }
@@ -766,6 +772,7 @@ function StringReversalBenchmarkConfig({
     maxLength: 12,
     charType: "mixed" as const,
     caseSensitive: false,
+    seed: "string-reversal-preview",
     passThreshold: 80,
   };
 
@@ -785,6 +792,7 @@ function StringReversalBenchmarkConfig({
       minLength: benchmarkConfig.minLength,
       maxLength: benchmarkConfig.maxLength,
       charType: benchmarkConfig.charType,
+      seed: benchmarkConfig.seed,
     }, 3);
     setPreviewCases(cases);
   }
@@ -874,6 +882,29 @@ function StringReversalBenchmarkConfig({
       </div>
 
       <div className="space-y-3">
+        <Label>Seed</Label>
+        <div className="flex gap-2">
+          <Input
+            value={benchmarkConfig.seed || ""}
+            onChange={(e) => updateBenchmarkConfig({ seed: e.target.value })}
+            placeholder="Seed for reproducible cases"
+            disabled={disabled}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => updateBenchmarkConfig({ seed: createBenchmarkSeed("string-reversal") })}
+            disabled={disabled}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Keep this seed with archived results to regenerate the same test cases.
+        </p>
+      </div>
+
+      <div className="space-y-3">
         <Label>Pass Threshold: {benchmarkConfig.passThreshold}%</Label>
         <Slider
           value={[benchmarkConfig.passThreshold]}
@@ -932,6 +963,7 @@ function ArithmeticBenchmarkConfig({
     minOperand: 1,
     maxOperand: 99,
     complexity: "simple" as const,
+    seed: "arithmetic-preview",
     passThreshold: 80,
   };
 
@@ -963,6 +995,7 @@ function ArithmeticBenchmarkConfig({
       minOperand: benchmarkConfig.minOperand,
       maxOperand: benchmarkConfig.maxOperand,
       complexity: benchmarkConfig.complexity,
+      seed: benchmarkConfig.seed,
     }, 3);
     setPreviewCases(cases);
   }
@@ -1059,6 +1092,29 @@ function ArithmeticBenchmarkConfig({
             disabled={disabled}
           />
         </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label>Seed</Label>
+        <div className="flex gap-2">
+          <Input
+            value={benchmarkConfig.seed || ""}
+            onChange={(e) => updateBenchmarkConfig({ seed: e.target.value })}
+            placeholder="Seed for reproducible cases"
+            disabled={disabled}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => updateBenchmarkConfig({ seed: createBenchmarkSeed("arithmetic") })}
+            disabled={disabled}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Keep this seed with archived results to regenerate the same test cases.
+        </p>
       </div>
 
       <div className="space-y-3">

@@ -186,6 +186,19 @@ export async function getSettings(): Promise<Settings> {
   });
 }
 
+export async function getRuntimeSettings(): Promise<Settings> {
+  const settings = await getSettings();
+  return {
+    ...settings,
+    apiKeys: {
+      ...settings.apiKeys,
+      openai: settings.apiKeys.openai || process.env.OPENAI_API_KEY,
+      google: settings.apiKeys.google || process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY,
+      openrouter: settings.apiKeys.openrouter || process.env.OPENROUTER_API_KEY,
+    },
+  };
+}
+
 export async function saveSettings(settings: Settings): Promise<void> {
   await writeJsonFile(path.join(DATA_DIR, "settings.json"), settings);
 }
