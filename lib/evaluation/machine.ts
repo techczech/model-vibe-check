@@ -443,6 +443,7 @@ function evaluateStringReversalBenchmark(
     minLength: cfg.minLength,
     maxLength: cfg.maxLength,
     charType: cfg.charType,
+    seed: cfg.seed,
   });
 
   // Check each reversal in the response
@@ -486,6 +487,7 @@ function evaluateArithmeticBenchmark(
     minOperand: cfg.minOperand,
     maxOperand: cfg.maxOperand,
     complexity: cfg.complexity,
+    seed: cfg.seed,
   });
 
   // Extract all numbers from the response

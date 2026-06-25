@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "exportedAt": "2025-12-31T08:11:04.097Z",
+  "exportedAt": "2026-04-25T14:38:47.996Z",
   "prompts": [
     {
       "id": "vertical-text-1",
@@ -1862,6 +1862,171 @@
       },
       "createdAt": "2025-12-31T08:11:04.095Z",
       "updatedAt": "2025-12-31T08:11:04.095Z"
+    },
+    {
+      "id": "mvc-baseline-arithmetic-fixed-cases",
+      "title": "Arithmetic Fixed Cases",
+      "category": "Computable",
+      "keywords": [
+        "arithmetic",
+        "format",
+        "machine-checkable"
+      ],
+      "description": "Small computable baseline for checking arithmetic reliability and output discipline.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Solve these arithmetic problems. Return only a Markdown table with columns Problem and Answer.\n\n1. 47 * 23\n2. 918 - 476\n3. (18 + 27) * 4\n4. 144 / 12",
+          "expectedAnswer": "1081, 442, 180, 12"
+        }
+      ],
+      "content": "Solve these arithmetic problems. Return only a Markdown table with columns Problem and Answer.\n\n1. 47 * 23\n2. 918 - 476\n3. (18 + 27) * 4\n4. 144 / 12",
+      "expectedAnswer": "1081, 442, 180, 12",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "1081,442,180,12",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2026-04-25T14:38:47.996Z",
+      "updatedAt": "2026-04-25T14:38:47.996Z"
+    },
+    {
+      "id": "mvc-baseline-czech-case-analysis",
+      "title": "Czech Case Analysis",
+      "category": "Multilingual",
+      "keywords": [
+        "czech",
+        "grammar",
+        "case",
+        "linguistics"
+      ],
+      "description": "Tests multilingual grammatical analysis in a language with visible case marking.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "In the Czech sentence \"Viděl jsem malého chlapce s červeným kolem u školy\", identify each noun phrase, its grammatical case, and the evidence for that case. Answer as a compact Markdown table.",
+          "expectedAnswer": "malého chlapce: accusative; s červeným kolem: instrumental; u školy: genitive"
+        }
+      ],
+      "content": "In the Czech sentence \"Viděl jsem malého chlapce s červeným kolem u školy\", identify each noun phrase, its grammatical case, and the evidence for that case. Answer as a compact Markdown table.",
+      "expectedAnswer": "malého chlapce: accusative; s červeným kolem: instrumental; u školy: genitive",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "machine"
+        ],
+        "machineJudge": {
+          "type": "contains",
+          "criteria": "accusative,instrumental,genitive",
+          "caseSensitive": false
+        }
+      },
+      "createdAt": "2026-04-25T14:38:47.996Z",
+      "updatedAt": "2026-04-25T14:38:47.996Z"
+    },
+    {
+      "id": "mvc-baseline-idiom-heavy-light",
+      "title": "Heavy and Light Idiom Translation",
+      "category": "Multilingual",
+      "keywords": [
+        "czech",
+        "translation",
+        "idiom",
+        "metaphor"
+      ],
+      "description": "Tests whether a model notices metaphor and avoids word-by-word transfer.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Translate the following into Czech in two versions: first literally, then idiomatically. Explain briefly why the idiomatic version is better.\n\n\"He made light of a heavy responsibility.\""
+        }
+      ],
+      "content": "Translate the following into Czech in two versions: first literally, then idiomatically. Explain briefly why the idiomatic version is better.\n\n\"He made light of a heavy responsibility.\"",
+      "expectedAnswer": "",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2026-04-25T14:38:47.996Z",
+      "updatedAt": "2026-04-25T14:38:47.996Z"
+    },
+    {
+      "id": "mvc-baseline-image-wineglass-clock",
+      "title": "Image Generation - Wineglass and Clock",
+      "category": "Generation",
+      "keywords": [
+        "image-generation",
+        "spatial",
+        "objects",
+        "comparison"
+      ],
+      "description": "Generalised image-generation comparison prompt inspired by the `gpt-image-2-capabilities` gallery.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Generate a visually precise image of a transparent wineglass standing beside an analog clock. The scene should make the spatial relationship between the glass and the clock unambiguous, with realistic lighting and no text labels."
+        }
+      ],
+      "content": "Generate a visually precise image of a transparent wineglass standing beside an analog clock. The scene should make the spatial relationship between the glass and the clock unambiguous, with realistic lighting and no text labels.",
+      "expectedAnswer": "",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2026-04-25T14:38:47.996Z",
+      "updatedAt": "2026-04-25T14:38:47.996Z"
+    },
+    {
+      "id": "mvc-baseline-two-turn-constraint-shift",
+      "title": "Two Turn Constraint Shift",
+      "category": "Multi-turn",
+      "keywords": [
+        "conversation",
+        "revision",
+        "constraint-following"
+      ],
+      "description": "Tests whether the model can revise a previous answer when the user adds a stricter constraint.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Explain why evaluating model outputs only with aggregate scores can be misleading. Keep it under 120 words."
+        },
+        {
+          "id": "step-2",
+          "sequence": 2,
+          "content": "Now rewrite that explanation as exactly two bullet points, each under 12 words."
+        }
+      ],
+      "content": "Explain why evaluating model outputs only with aggregate scores can be misleading. Keep it under 120 words.",
+      "expectedAnswer": "",
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2026-04-25T14:38:47.996Z",
+      "updatedAt": "2026-04-25T14:38:47.996Z"
     }
   ]
 }

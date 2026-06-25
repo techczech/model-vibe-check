@@ -121,6 +121,7 @@ export interface MachineJudgeConfig {
     maxLength: number;           // Max string length (2-50)
     charType: 'random' | 'words' | 'mixed';
     caseSensitive?: boolean;
+    seed?: string;                // Optional deterministic seed for reproducible test cases
     passThreshold: number;       // 0-100%, percentage required to pass
   };
   arithmeticBenchmarkConfig?: {
@@ -129,6 +130,7 @@ export interface MachineJudgeConfig {
     minOperand: number;          // Min value for operands (1-999)
     maxOperand: number;          // Max value for operands (1-999)
     complexity: 'simple' | 'moderate' | 'complex';
+    seed?: string;                // Optional deterministic seed for reproducible test cases
     passThreshold: number;       // 0-100%, percentage required to pass
   };
 }
