@@ -1,0 +1,213 @@
+{
+ "models": [
+  {
+   "tag": "gemma4:e2b",
+   "family": "Gemma 4",
+   "generation": "4",
+   "size_label": "E2B",
+   "params_b": 2,
+   "role": "ladder"
+  },
+  {
+   "tag": "gemma4:e4b",
+   "family": "Gemma 4",
+   "generation": "4",
+   "size_label": "E4B",
+   "params_b": 4,
+   "role": "ladder"
+  },
+  {
+   "tag": "gemma4:12b",
+   "family": "Gemma 4",
+   "generation": "4",
+   "size_label": "12B",
+   "params_b": 12,
+   "role": "ladder"
+  },
+  {
+   "tag": "gemma4:26b-a4b",
+   "family": "Gemma 4",
+   "generation": "4",
+   "size_label": "26B-A4B",
+   "params_b": 26,
+   "role": "ladder"
+  },
+  {
+   "tag": "gemma4:31b",
+   "family": "Gemma 4",
+   "generation": "4",
+   "size_label": "31B",
+   "params_b": 31,
+   "role": "ladder"
+  },
+  {
+   "tag": "qwen3.5:0.8b",
+   "family": "Qwen 3.5",
+   "generation": "3.5",
+   "size_label": "0.8B",
+   "params_b": 0.8,
+   "role": "ladder"
+  },
+  {
+   "tag": "qwen3.5:2b",
+   "family": "Qwen 3.5",
+   "generation": "3.5",
+   "size_label": "2B",
+   "params_b": 2,
+   "role": "ladder"
+  },
+  {
+   "tag": "qwen3.5:4b",
+   "family": "Qwen 3.5",
+   "generation": "3.5",
+   "size_label": "4B",
+   "params_b": 4,
+   "role": "ladder"
+  },
+  {
+   "tag": "qwen3.5:9b",
+   "family": "Qwen 3.5",
+   "generation": "3.5",
+   "size_label": "9B",
+   "params_b": 9,
+   "role": "ladder"
+  },
+  {
+   "tag": "qwen3.5:27b",
+   "family": "Qwen 3.5",
+   "generation": "3.5",
+   "size_label": "27B",
+   "params_b": 27,
+   "role": "ladder"
+  },
+  {
+   "tag": "qwen3.5:35b-a3b",
+   "family": "Qwen 3.5",
+   "generation": "3.5",
+   "size_label": "35B-A3B",
+   "params_b": 35,
+   "role": "ladder"
+  },
+  {
+   "tag": "qwen3:1.7b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "1.7B",
+   "params_b": 1.7,
+   "role": "other"
+  },
+  {
+   "tag": "qwen3:4b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "4B",
+   "params_b": 4,
+   "role": "other"
+  },
+  {
+   "tag": "qwen3:8b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "other"
+  },
+  {
+   "tag": "qwen3:14b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "14B",
+   "params_b": 14,
+   "role": "other"
+  },
+  {
+   "tag": "qwen3:30b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "30B",
+   "params_b": 30,
+   "role": "other"
+  },
+  {
+   "tag": "qwen3.6:27b",
+   "family": "Qwen 3.6",
+   "generation": "3.6",
+   "size_label": "27B",
+   "params_b": 27,
+   "role": "other"
+  },
+  {
+   "tag": "qwen3.6:35b-a3b",
+   "family": "Qwen 3.6",
+   "generation": "3.6",
+   "size_label": "35B-A3B",
+   "params_b": 35,
+   "role": "other"
+  },
+  {
+   "tag": "qwen3.8:27b-mtp-q4_K_M",
+   "family": "Qwen 3.8",
+   "generation": "3.8",
+   "size_label": "27B",
+   "params_b": 27,
+   "role": "other"
+  },
+  {
+   "tag": "granite4:350m",
+   "family": "Granite 4",
+   "generation": "4",
+   "size_label": "350M",
+   "params_b": 0.35,
+   "role": "other"
+  },
+  {
+   "tag": "granite4:1b",
+   "family": "Granite 4",
+   "generation": "4",
+   "size_label": "1B",
+   "params_b": 1,
+   "role": "other"
+  },
+  {
+   "tag": "granite4:3b",
+   "family": "Granite 4",
+   "generation": "4",
+   "size_label": "3B",
+   "params_b": 3,
+   "role": "other"
+  },
+  {
+   "tag": "granite4.2:8b",
+   "family": "Granite 4.2",
+   "generation": "4.2",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "other"
+  },
+  {
+   "tag": "granite3.3:8b",
+   "family": "Granite 3.3",
+   "generation": "3.3",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "other"
+  },
+  {
+   "tag": "ministral-3:8b",
+   "family": "Ministral 3",
+   "generation": "3",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "other"
+  },
+  {
+   "tag": "lfm2.5:8b",
+   "family": "LFM 2.5",
+   "generation": "2.5",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "other"
+  }
+ ],
+ "judge_model": "gemma4:31b"
+}

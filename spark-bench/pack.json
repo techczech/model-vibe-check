@@ -1,0 +1,474 @@
+{
+ "pack_version": 2,
+ "seed": 20261101,
+ "items": [
+  {
+   "id": "vertical-1",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nT   t   i   s   m\nh   e   t   e   e\ni   x       c   s\ns   t   o   r   s\n        n   e   a\n    h   e   t   g\n    a           e\n    s            \n\n    i            \n    n            "
+   ],
+   "expected_words": [
+    "This",
+    "text",
+    "has",
+    "in",
+    "it",
+    "one",
+    "secret",
+    "message"
+   ],
+   "stride": 4,
+   "source_expected_answer": "This, text, has, in, it, one, secret, message",
+   "source_id": "vertical-text-1"
+  },
+  {
+   "id": "vertical-2",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nV t m s L\ne e a e L\nr x k n M\nt t e s s\ni   s e\nc\na   n t\nl   o o"
+   ],
+   "expected_words": [
+    "Vertical",
+    "text",
+    "makes",
+    "no",
+    "sense",
+    "to",
+    "LLMs"
+   ],
+   "stride": 2,
+   "source_expected_answer": "Vertical, text, makes, sense, to, LLMs",
+   "source_id": "vertical-text-2"
+  },
+  {
+   "id": "vertical-3",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nI  t  e  d  t  t  t  l  g  m  L  M  t  t\nf  h  n  i  h  e  h  o  e  o  a  o  o  h\n   i  o  s  e  x  i  n  t  r  r  d     i\ny  s  u  c  r  t  s  g  s  e  g  e  b  s\no     g  o  e     .  e        e  l  e  .\nu  c  h  v     h     r  i  c            \n   a     e  i  i  A     n  c  L  b  b   \nl  r  y  r  s  d  s  a  c  h  a  u  e   \no  e  o        d     n  r  a  n  t  s   \no  f  u  t  a  e  i  d  e  l  g     t   \nk  u     h  n  n  t     a  l  u  o      \n   l  w  a           l  s  e  a  3  a   \na  l  i  t  a  i  g  o  i  n  g     t   \nt  y  l     c  n  e  n  n  g        s   \n      l     t     t  g  g  i  e  e      \n            u     s  e  l  n  m  e      \n            a        r  y  g  s  m      \n            l              f            \n                     i     o            \n                     t     r            \n                                        \n                           a            \n                           n            \n                           y            "
+   ],
+   "expected_words": [
+    "If",
+    "you",
+    "look",
+    "at",
+    "this",
+    "carefully",
+    "enough",
+    "you",
+    "will",
+    "discover",
+    "that",
+    "there",
+    "is",
+    "an",
+    "actual",
+    "text",
+    "hidden",
+    "in",
+    "this.",
+    "As",
+    "it",
+    "gets",
+    "longer",
+    "and",
+    "longer",
+    "it",
+    "gets",
+    "increasingly",
+    "more",
+    "cchallengingfor",
+    "any",
+    "Large",
+    "Languag",
+    "ems",
+    "Model",
+    "but",
+    "o3",
+    "eem",
+    "to",
+    "be",
+    "best",
+    "ats",
+    "this."
+   ],
+   "stride": 3,
+   "source_expected_answer": "If you look at this carefully you will enough discover that there is this text hidden in it. As it gets longer and longer it increasingly more challenging Large Language Models to be best at this.",
+   "source_id": "vertical-text-3",
+   "score_first_n": 31,
+   "partial_scoring": "first 31 words; legacy grid ragged after 'Large'"
+  },
+  {
+   "id": "vertical-gen-01",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nw s h p c n w f\ni i a a l i i l\nn l p p o g n o\nd v p e u h t w\no e y r d t e e\nw r         r r"
+   ],
+   "expected_words": [
+    "window",
+    "silver",
+    "happy",
+    "paper",
+    "cloud",
+    "night",
+    "winter",
+    "flower"
+   ],
+   "stride": 2
+  },
+  {
+   "id": "vertical-gen-02",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nm b h b g\na r o r r\nr i u e e\nk d s a e\ne g e d n\nt e"
+   ],
+   "expected_words": [
+    "market",
+    "bridge",
+    "house",
+    "bread",
+    "green"
+   ],
+   "stride": 2
+  },
+  {
+   "id": "vertical-gen-03",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nm g r\na r i\nr e v\nk e e\ne n r\nt"
+   ],
+   "expected_words": [
+    "market",
+    "green",
+    "river"
+   ],
+   "stride": 2
+  },
+  {
+   "id": "vertical-gen-04",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\ns g m y r\nt r u e i\no e s l v\nn e i l e\ne n c o r\n      w"
+   ],
+   "expected_words": [
+    "stone",
+    "green",
+    "music",
+    "yellow",
+    "river"
+   ],
+   "stride": 2
+  },
+  {
+   "id": "vertical-gen-05",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\ny h p s\ne e o u\nl a c m\nl r k m\no t e e\nw   t r"
+   ],
+   "expected_words": [
+    "yellow",
+    "heart",
+    "pocket",
+    "summer"
+   ],
+   "stride": 2
+  },
+  {
+   "id": "vertical-gen-06",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nm l s c\ni a t a\nr d o n\nr d n d\no e e l\nr r   e"
+   ],
+   "expected_words": [
+    "mirror",
+    "ladder",
+    "stone",
+    "candle"
+   ],
+   "stride": 2
+  },
+  {
+   "id": "vertical-gen-long",
+   "test": "vertical",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\ns t m p h w g s p m w l w c l a h h r b g o g f p\nu a i o e a r t a u i i i a a p o a o r r r a l l\nm b r c a t e o p s n g n n d p u p c e e a r o a\nm l r k r e e r e i t h d d d l s p k a e n d w n\ne e o e t r n y r c e t o l e e e y e d n g e e e\nr   r t             r   w e r       t     e n r t"
+   ],
+   "expected_words": [
+    "summer",
+    "table",
+    "mirror",
+    "pocket",
+    "heart",
+    "water",
+    "green",
+    "story",
+    "paper",
+    "music",
+    "winter",
+    "light",
+    "window",
+    "candle",
+    "ladder",
+    "apple",
+    "house",
+    "happy",
+    "rocket",
+    "bread",
+    "green",
+    "orange",
+    "garden",
+    "flower",
+    "planet"
+   ],
+   "stride": 2
+  },
+  {
+   "id": "reverse-01",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: never"
+   ],
+   "input": "never",
+   "expected": "reven"
+  },
+  {
+   "id": "reverse-02",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: suxwawdve"
+   ],
+   "input": "suxwawdve",
+   "expected": "evdwawxus"
+  },
+  {
+   "id": "reverse-03",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: late for dinn"
+   ],
+   "input": "late for dinn",
+   "expected": "nnid rof etal"
+  },
+  {
+   "id": "reverse-04",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: yrespgpofgzqbfujmq"
+   ],
+   "input": "yrespgpofgzqbfujmq",
+   "expected": "qmjufbqzgfopgpsery"
+  },
+  {
+   "id": "reverse-05",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: silent night pocket fo"
+   ],
+   "input": "silent night pocket fo",
+   "expected": "of tekcop thgin tnelis"
+  },
+  {
+   "id": "reverse-06",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: ijwkasjlzlpnfbmvlgyyrrneou"
+   ],
+   "input": "ijwkasjlzlpnfbmvlgyyrrneou",
+   "expected": "uoenrryyglvmbfnplzljsakwji"
+  },
+  {
+   "id": "reverse-07",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: the quick brown fox music"
+   ],
+   "input": "the quick brown fox music",
+   "expected": "cisum xof nworb kciuq eht"
+  },
+  {
+   "id": "reverse-08",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: bfqvcuupwqfuctjikdpswfsftaymkfbsqz"
+   ],
+   "input": "bfqvcuupwqfuctjikdpswfsftaymkfbsqz",
+   "expected": "zqsbfkmyatfsfwspdkijtcufqwpuucvqfb"
+  },
+  {
+   "id": "reverse-09",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: silent night water"
+   ],
+   "input": "silent night water",
+   "expected": "retaw thgin tnelis"
+  },
+  {
+   "id": "reverse-10",
+   "test": "reverse",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: winoopqeecubamgbmbaqwzxoceuprluuruzwidrd"
+   ],
+   "input": "winoopqeecubamgbmbaqwzxoceuprluuruzwidrd",
+   "expected": "drdiwzuruulrpuecoxzwqabmbgmabuceeqpooniw"
+  },
+  {
+   "id": "novel-sentence-en",
+   "test": "novel-sentence",
+   "lang": "en",
+   "scoring": "judge",
+   "turns": [
+    "Write a sentence nobody has ever said before."
+   ]
+  },
+  {
+   "id": "novel-sentence-cs",
+   "test": "novel-sentence",
+   "lang": "cs",
+   "scoring": "judge",
+   "turns": [
+    "Napiš větu, kterou ještě nikdo nikdy neřekl."
+   ]
+  },
+  {
+   "id": "rilke-en",
+   "test": "rilke",
+   "lang": "de",
+   "scoring": "hybrid",
+   "turns": [
+    "Translate the title of the Rilke poem:  Du mußt das Leben nicht verstehen"
+   ],
+   "source_id": "german-rilke"
+  },
+  {
+   "id": "rilke-cs",
+   "test": "rilke",
+   "lang": "cs",
+   "scoring": "hybrid",
+   "turns": [
+    "Přelož do češtiny název Rilkovy básně: Du mußt das Leben nicht verstehen"
+   ]
+  },
+  {
+   "id": "coherence-en",
+   "test": "coherence",
+   "lang": "en",
+   "scoring": "hybrid",
+   "turns": [
+    "What is the capital of the Czech Republic? Answer in one word only.",
+    "Who was the first president of the independent Czechoslovakia?",
+    "Who succeeded him?",
+    "How has the country changed since then?"
+   ]
+  },
+  {
+   "id": "coherence-cs",
+   "test": "coherence",
+   "lang": "cs",
+   "scoring": "hybrid",
+   "turns": [
+    "Jaké je hlavní město České republiky? Odpověz jedním slovem.",
+    "Kdo byl prvním prezidentem samostatného Československa?",
+    "Kdo byl jeho nástupcem?",
+    "Jak se země od té doby změnila?"
+   ]
+  },
+  {
+   "id": "pos-en",
+   "test": "pos",
+   "lang": "en",
+   "scoring": "judge",
+   "turns": [
+    "How many parts of speech are there in Czech? Answer in Czech. Make a list with examples."
+   ],
+   "source_id": "small-model-multilingual"
+  },
+  {
+   "id": "pos-cs",
+   "test": "pos",
+   "lang": "cs",
+   "scoring": "judge",
+   "turns": [
+    "Kolik je v češtině slovních druhů? Udělej seznam s příklady."
+   ]
+  },
+  {
+   "id": "totiz-en",
+   "test": "totiz",
+   "lang": "en",
+   "scoring": "judge",
+   "turns": [
+    "Write 10 sentences illustrating the use of the word totiž."
+   ],
+   "source_id": "czech-metalanguage-en"
+  },
+  {
+   "id": "totiz-cs",
+   "test": "totiz",
+   "lang": "cs",
+   "scoring": "judge",
+   "turns": [
+    "Napiš 10 vět, které ilustrují různá použití slova totiž."
+   ],
+   "source_id": "czech-metalanguage-cs"
+  },
+  {
+   "id": "revival-en",
+   "test": "revival",
+   "lang": "en",
+   "scoring": "hybrid",
+   "turns": [
+    "What are the key figures of the Czech National Revival?"
+   ]
+  },
+  {
+   "id": "revival-cs",
+   "test": "revival",
+   "lang": "cs",
+   "scoring": "hybrid",
+   "turns": [
+    "Jaké jsou hlavní postavy českého národního obrození?"
+   ]
+  }
+ ]
+}
