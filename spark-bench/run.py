@@ -294,6 +294,7 @@ def main():
     ap.add_argument("--items", help="comma-separated item ids or globs")
     ap.add_argument("--phase", choices=["gen", "judge", "lookup", "all"], default="all")
     ap.add_argument("--no-lookup", action="store_true", help="judge pass: do not hit Wikipedia (use cached lookups only)")
+    ap.add_argument("--think", help="comma-separated think modes to run: on,off,na (default all)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     run_id = a.run_id or "spark-" + datetime.datetime.now().strftime("%Y%m%d-%H%M")
@@ -337,6 +338,8 @@ def main():
     plan = []
     for m in models:
         for think in (["on", "off"] if "thinking" in m["capabilities"] else ["na"]):
+            if a.think and think not in a.think.split(","):
+                continue
             for it in items:
                 plan.append((m, think, it))
     todo = [p for p in plan if not (os.path.exists(os.path.join(od, fname(p[0]["tag"], p[1], p[2]["id"]))) and
