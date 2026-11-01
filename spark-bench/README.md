@@ -29,6 +29,8 @@ The judge pass looks up off-checklist revival names on Wikipedia (`wikipedia-loo
 against the run folder synced back (needs no Ollama), rsync `wikipedia-lookups.json` to the Spark, and run the judge pass with `--no-lookup`.
 Judge pass uses `gemma4:31b` and ends by writing `runs/<run-id>/scores.jsonl`.
 
+`./run-full.sh <run-id> --wait-pull <logfile>` runs the first pass, waits until the pull log contains `PULL-DONE`, then runs the second pass and judge.
+
 ## Report
 
     python3 report.py runs/<run-id>        # writes runs/<run-id>/results.html

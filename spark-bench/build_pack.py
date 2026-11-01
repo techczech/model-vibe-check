@@ -4,7 +4,7 @@ import json, random, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SEED = 20261101
-PACK_VERSION = 2
+PACK_VERSION = 3
 INSTR = "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\n"
 
 WORDS = ("river stone cloud paper garden window yellow silver market bridge candle forest "
@@ -15,6 +15,47 @@ PHRASES = ["good morning", "the quick brown fox", "open the window", "reverse th
            "hello world", "small language model", "a cup of tea", "never say never",
            "rain in spain", "vertical text", "coffee break", "silent night",
            "stay curious", "late for dinner", "blue sky thinking"]
+
+
+VERT_SIZES = [1, 2, 3, 4, 6, 8, 12, 16, 24]
+VERT_TEXT = {
+    1: "river",
+    2: "good morning",
+    3: "the old bridge",
+    4: "the cat sat quietly",
+    6: "we walked along the quiet river",
+    8: "the old lighthouse keeper watched ships pass slowly",
+    12: "on a cold winter morning the baker opened her shop before sunrise",
+    16: "when the market closed the children ran home through the narrow streets to eat warm bread",
+    24: ("every evening the old man sat by the window and read the newspaper while his wife "
+         "made tea in the small yellow kitchen downstairs"),
+}
+REV_SIZES = [3, 5, 8, 12, 16, 24, 32, 48, 64]
+REAL_POOL = ("a an as at be by do go he if in is it me my no of on or so to up we the and for not but you all can her was one our "
+             "out day get has him his how man new now old see two way who boy did its let put say she too use "
+             "river stone cloud paper garden window yellow silver market bridge candle forest orange pencil winter summer "
+             "button flower island mirror ladder pocket rocket planet music happy table chair house water light green "
+             "story dream bread apple night world heart morning coffee never quick brown small language").split()
+
+
+def real_string(rng, n):
+    """Real English words joined by spaces, exactly n characters, ending on a word boundary where possible."""
+    for _ in range(5000):
+        out, left = [], n
+        while left > 0:
+            fit = [w for w in REAL_POOL if len(w) == left or len(w) + 2 <= left]
+            if not fit:
+                break
+            w = rng.choice(fit)
+            out.append(w)
+            left -= len(w) + (1 if left > len(w) else 0)
+        if left == 0:
+            return " ".join(out)
+    # fallback: exact length by trimming letters
+    s = ""
+    while len(s) < n:
+        s += rng.choice(REAL_POOL) + " "
+    return s[:n].rstrip() if s[:n].rstrip() and len(s[:n].rstrip()) == n else s[:n - 1] + "e"
 
 
 def derive_columns(text, stride):
@@ -63,35 +104,25 @@ def main():
             source_expected_answer=p.get("expectedAnswer"), source_id=p["id"], **extra)
 
     rng = random.Random(SEED)
-    # 2. generated vertical
-    for i in range(1, 7):
-        k = rng.randint(3, 8)
-        ws = rng.sample(WORDS, k)
+    # 2. vertical size ladder: fixed sensible phrases, every column spaced the same (stride 2)
+    for n in VERT_SIZES:
+        ws = VERT_TEXT[n].split()
+        assert len(ws) == n, (n, len(ws))
         grid = layout(ws, 2)
-        add("vertical-gen-%02d" % i, "vertical", "en", "auto", [INSTR + grid],
-            expected_words=ws, stride=2)
+        assert derive_columns(grid, 2) == ws, "grid read-back mismatch at size %d" % n
+        add("vertical-n%02d" % n, "vertical-ladder", "en", "auto", [INSTR + grid],
+            expected_words=ws, stride=2, size=n)
 
-    long_ws = rng.sample(WORDS, 25)
-    add("vertical-gen-long", "vertical", "en", "auto", [INSTR + layout(long_ws, 2)],
-        expected_words=long_ws, stride=2)
-
-    # 3. reverse
+    # 3. reversal ladder: w = real words (exact length), r = random letters
     letters = "abcdefghijklmnopqrstuvwxyz"
-    lengths = [5, 9, 13, 18, 22, 26, 30, 34, 37, 40]
-    for i in range(1, 11):
-        n = lengths[i - 1]
-        if i % 2:  # real words/phrases
-            s = rng.choice(PHRASES)
-            while len(s) < n and rng.random() < 0.6:
-                s += " " + rng.choice(WORDS)
-            s = s[:n].rstrip()
-            if len(s) < 5:
-                s = "stay curious"
-        else:
-            s = "".join(rng.choice(letters) for _ in range(n))
-        add("reverse-%02d" % i, "reverse", "en", "auto",
-            ["Reverse this string exactly, character by character. Reply with the reversed string only, "
-             "no explanation: " + s], input=s, expected=s[::-1])
+    for n in REV_SIZES:
+        w = real_string(rng, n)
+        assert len(w) == n, (n, w)
+        r = "".join(rng.choice(letters) for _ in range(n))
+        for pre, s_ in (("w", w), ("r", r)):
+            add("reverse-%s%02d" % (pre, n), "reverse-" + pre, "en", "auto",
+                ["Reverse this string exactly, character by character. Reply with the reversed string only, "
+                 "no explanation: " + s_], input=s_, expected=s_[::-1], size=n)
 
     # 4-9 judged
     add("novel-sentence-en", "novel-sentence", "en", "judge", ["Write a sentence nobody has ever said before."])
@@ -117,6 +148,10 @@ def main():
         json.dump(pack, f, ensure_ascii=False, indent=1)
     for it in items[:3]:
         print(it["id"], it["expected_words"], "| source:", it["source_expected_answer"])
+    print([i for i in items if i["id"] == "vertical-n04"][0]["turns"][0])
+    for i in items:
+        if i["id"].startswith("reverse-w"):
+            print(i["id"], repr(i["input"]))
     print(len(items), "items")
 
 

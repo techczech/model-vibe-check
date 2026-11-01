@@ -137,3 +137,5 @@ Store revision id, URL, retrieval date and phase per person.
 
 - Split pages per test type; phase-2 older models; Sonnet spot-check of ~15% of judgements
   (Opus dispatches after the run); publication on semanticmachines.fyi.
+- Separate follow-up test (Dominik, 2026-11-01): the reversal and vertical-text ladders with tool use
+  allowed (e.g. a code tool), compared against the no-tool results.

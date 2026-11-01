@@ -1,5 +1,5 @@
 {
- "pack_version": 2,
+ "pack_version": 3,
  "seed": 20261101,
  "items": [
   {
@@ -105,252 +105,413 @@
    "partial_scoring": "first 31 words; legacy grid ragged after 'Large'"
   },
   {
-   "id": "vertical-gen-01",
-   "test": "vertical",
+   "id": "vertical-n01",
+   "test": "vertical-ladder",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nw s h p c n w f\ni i a a l i i l\nn l p p o g n o\nd v p e u h t w\no e y r d t e e\nw r         r r"
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nr\ni\nv\ne\nr"
    ],
    "expected_words": [
-    "window",
-    "silver",
-    "happy",
-    "paper",
-    "cloud",
-    "night",
-    "winter",
-    "flower"
-   ],
-   "stride": 2
-  },
-  {
-   "id": "vertical-gen-02",
-   "test": "vertical",
-   "lang": "en",
-   "scoring": "auto",
-   "turns": [
-    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nm b h b g\na r o r r\nr i u e e\nk d s a e\ne g e d n\nt e"
-   ],
-   "expected_words": [
-    "market",
-    "bridge",
-    "house",
-    "bread",
-    "green"
-   ],
-   "stride": 2
-  },
-  {
-   "id": "vertical-gen-03",
-   "test": "vertical",
-   "lang": "en",
-   "scoring": "auto",
-   "turns": [
-    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nm g r\na r i\nr e v\nk e e\ne n r\nt"
-   ],
-   "expected_words": [
-    "market",
-    "green",
     "river"
    ],
-   "stride": 2
+   "stride": 2,
+   "size": 1
   },
   {
-   "id": "vertical-gen-04",
-   "test": "vertical",
+   "id": "vertical-n02",
+   "test": "vertical-ladder",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\ns g m y r\nt r u e i\no e s l v\nn e i l e\ne n c o r\n      w"
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\ng m\no o\no r\nd n\n  i\n  n\n  g"
    ],
    "expected_words": [
-    "stone",
-    "green",
-    "music",
-    "yellow",
+    "good",
+    "morning"
+   ],
+   "stride": 2,
+   "size": 2
+  },
+  {
+   "id": "vertical-n03",
+   "test": "vertical-ladder",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nt o b\nh l r\ne d i\n    d\n    g\n    e"
+   ],
+   "expected_words": [
+    "the",
+    "old",
+    "bridge"
+   ],
+   "stride": 2,
+   "size": 3
+  },
+  {
+   "id": "vertical-n04",
+   "test": "vertical-ladder",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nt c s q\nh a a u\ne t t i\n      e\n      t\n      l\n      y"
+   ],
+   "expected_words": [
+    "the",
+    "cat",
+    "sat",
+    "quietly"
+   ],
+   "stride": 2,
+   "size": 4
+  },
+  {
+   "id": "vertical-n06",
+   "test": "vertical-ladder",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nw w a t q r\ne a l h u i\n  l o e i v\n  k n   e e\n  e g   t r\n  d"
+   ],
+   "expected_words": [
+    "we",
+    "walked",
+    "along",
+    "the",
+    "quiet",
     "river"
    ],
-   "stride": 2
+   "stride": 2,
+   "size": 6
   },
   {
-   "id": "vertical-gen-05",
-   "test": "vertical",
+   "id": "vertical-n08",
+   "test": "vertical-ladder",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\ny h p s\ne e o u\nl a c m\nl r k m\no t e e\nw   t r"
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nt o l k w s p s\nh l i e a h a l\ne d g e t i s o\n    h p c p s w\n    t e h s   l\n    h r e     y\n    o   d\n    u\n    s\n    e"
    ],
    "expected_words": [
-    "yellow",
-    "heart",
-    "pocket",
-    "summer"
+    "the",
+    "old",
+    "lighthouse",
+    "keeper",
+    "watched",
+    "ships",
+    "pass",
+    "slowly"
    ],
-   "stride": 2
+   "stride": 2,
+   "size": 8
   },
   {
-   "id": "vertical-gen-06",
-   "test": "vertical",
+   "id": "vertical-n12",
+   "test": "vertical-ladder",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nm l s c\ni a t a\nr d o n\nr d n d\no e e l\nr r   e"
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\no a c w m t b o h s b s\nn   o i o h a p e h e u\n    l n r e k e r o f n\n    d t n   e n   p o r\n      e i   r e     r i\n      r n     d     e s\n        g             e"
    ],
    "expected_words": [
-    "mirror",
-    "ladder",
-    "stone",
-    "candle"
-   ],
-   "stride": 2
-  },
-  {
-   "id": "vertical-gen-long",
-   "test": "vertical",
-   "lang": "en",
-   "scoring": "auto",
-   "turns": [
-    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\ns t m p h w g s p m w l w c l a h h r b g o g f p\nu a i o e a r t a u i i i a a p o a o r r r a l l\nm b r c a t e o p s n g n n d p u p c e e a r o a\nm l r k r e e r e i t h d d d l s p k a e n d w n\ne e o e t r n y r c e t o l e e e y e d n g e e e\nr   r t             r   w e r       t     e n r t"
-   ],
-   "expected_words": [
-    "summer",
-    "table",
-    "mirror",
-    "pocket",
-    "heart",
-    "water",
-    "green",
-    "story",
-    "paper",
-    "music",
+    "on",
+    "a",
+    "cold",
     "winter",
-    "light",
+    "morning",
+    "the",
+    "baker",
+    "opened",
+    "her",
+    "shop",
+    "before",
+    "sunrise"
+   ],
+   "stride": 2,
+   "size": 12
+  },
+  {
+   "id": "vertical-n16",
+   "test": "vertical-ladder",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\nw t m c t c r h t t n s t e w b\nh h a l h h a o h h a t o a a r\ne e r o e i n m r e r r   t r e\nn   k s   l   e o   r e     m a\n    e e   d     u   o e       d\n    t d   r     g   w t\n          e     h     s\n          n"
+   ],
+   "expected_words": [
+    "when",
+    "the",
+    "market",
+    "closed",
+    "the",
+    "children",
+    "ran",
+    "home",
+    "through",
+    "the",
+    "narrow",
+    "streets",
+    "to",
+    "eat",
+    "warm",
+    "bread"
+   ],
+   "stride": 2,
+   "size": 16
+  },
+  {
+   "id": "vertical-n24",
+   "test": "vertical-ladder",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Read the following text and tell me what words are formed when reading each column from top to bottom:\n\ne e t o m s b t w a r t n w h w m t i t s y k d\nv v h l a a y h i n e h e h i i a e n h m e i o\ne e e d n t   e n d a e w i s f d a   e a l t w\nr n             d   d   s l   e e       l l c n\ny i             o       p e             l o h s\n  n             w       a                 w e t\n  g                     p                   n a\n                        e                     i\n                        r                     r\n                                              s"
+   ],
+   "expected_words": [
+    "every",
+    "evening",
+    "the",
+    "old",
+    "man",
+    "sat",
+    "by",
+    "the",
     "window",
-    "candle",
-    "ladder",
-    "apple",
-    "house",
-    "happy",
-    "rocket",
-    "bread",
-    "green",
-    "orange",
-    "garden",
-    "flower",
-    "planet"
+    "and",
+    "read",
+    "the",
+    "newspaper",
+    "while",
+    "his",
+    "wife",
+    "made",
+    "tea",
+    "in",
+    "the",
+    "small",
+    "yellow",
+    "kitchen",
+    "downstairs"
    ],
-   "stride": 2
+   "stride": 2,
+   "size": 24
   },
   {
-   "id": "reverse-01",
-   "test": "reverse",
+   "id": "reverse-w03",
+   "test": "reverse-w",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: never"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: but"
    ],
-   "input": "never",
-   "expected": "reven"
+   "input": "but",
+   "expected": "tub",
+   "size": 3
   },
   {
-   "id": "reverse-02",
-   "test": "reverse",
+   "id": "reverse-r03",
+   "test": "reverse-r",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: suxwawdve"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: dmb"
    ],
-   "input": "suxwawdve",
-   "expected": "evdwawxus"
+   "input": "dmb",
+   "expected": "bmd",
+   "size": 3
   },
   {
-   "id": "reverse-03",
-   "test": "reverse",
+   "id": "reverse-w05",
+   "test": "reverse-w",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: late for dinn"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: by as"
    ],
-   "input": "late for dinn",
-   "expected": "nnid rof etal"
+   "input": "by as",
+   "expected": "sa yb",
+   "size": 5
   },
   {
-   "id": "reverse-04",
-   "test": "reverse",
+   "id": "reverse-r05",
+   "test": "reverse-r",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: yrespgpofgzqbfujmq"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: uhike"
    ],
-   "input": "yrespgpofgzqbfujmq",
-   "expected": "qmjufbqzgfopgpsery"
+   "input": "uhike",
+   "expected": "ekihu",
+   "size": 5
   },
   {
-   "id": "reverse-05",
-   "test": "reverse",
+   "id": "reverse-w08",
+   "test": "reverse-w",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: silent night pocket fo"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: or too a"
    ],
-   "input": "silent night pocket fo",
-   "expected": "of tekcop thgin tnelis"
+   "input": "or too a",
+   "expected": "a oot ro",
+   "size": 8
   },
   {
-   "id": "reverse-06",
-   "test": "reverse",
+   "id": "reverse-r08",
+   "test": "reverse-r",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: ijwkasjlzlpnfbmvlgyyrrneou"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: cetalapm"
    ],
-   "input": "ijwkasjlzlpnfbmvlgyyrrneou",
-   "expected": "uoenrryyglvmbfnplzljsakwji"
+   "input": "cetalapm",
+   "expected": "mpalatec",
+   "size": 8
   },
   {
-   "id": "reverse-07",
-   "test": "reverse",
+   "id": "reverse-w12",
+   "test": "reverse-w",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: the quick brown fox music"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: me garden an"
    ],
-   "input": "the quick brown fox music",
-   "expected": "cisum xof nworb kciuq eht"
+   "input": "me garden an",
+   "expected": "na nedrag em",
+   "size": 12
   },
   {
-   "id": "reverse-08",
-   "test": "reverse",
+   "id": "reverse-r12",
+   "test": "reverse-r",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: bfqvcuupwqfuctjikdpswfsftaymkfbsqz"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: fvzdukhfjkya"
    ],
-   "input": "bfqvcuupwqfuctjikdpswfsftaymkfbsqz",
-   "expected": "zqsbfkmyatfsfwspdkijtcufqwpuucvqfb"
+   "input": "fvzdukhfjkya",
+   "expected": "aykjfhkudzvf",
+   "size": 12
   },
   {
-   "id": "reverse-09",
-   "test": "reverse",
+   "id": "reverse-w16",
+   "test": "reverse-w",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: silent night water"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: to heart can way"
    ],
-   "input": "silent night water",
-   "expected": "retaw thgin tnelis"
+   "input": "to heart can way",
+   "expected": "yaw nac traeh ot",
+   "size": 16
   },
   {
-   "id": "reverse-10",
-   "test": "reverse",
+   "id": "reverse-r16",
+   "test": "reverse-r",
    "lang": "en",
    "scoring": "auto",
    "turns": [
-    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: winoopqeecubamgbmbaqwzxoceuprluuruzwidrd"
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: jkhonqbtboofkupz"
    ],
-   "input": "winoopqeecubamgbmbaqwzxoceuprluuruzwidrd",
-   "expected": "drdiwzuruulrpuecoxzwqabmbgmabuceeqpooniw"
+   "input": "jkhonqbtboofkupz",
+   "expected": "zpukfoobtbqnohkj",
+   "size": 16
+  },
+  {
+   "id": "reverse-w24",
+   "test": "reverse-w",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: the garden story use you"
+   ],
+   "input": "the garden story use you",
+   "expected": "uoy esu yrots nedrag eht",
+   "size": 24
+  },
+  {
+   "id": "reverse-r24",
+   "test": "reverse-r",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: mevrzppsuxwawdveyrespgpo"
+   ],
+   "input": "mevrzppsuxwawdveyrespgpo",
+   "expected": "opgpseryevdwawxusppzrvem",
+   "size": 24
+  },
+  {
+   "id": "reverse-w32",
+   "test": "reverse-w",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: we but never market be up day me"
+   ],
+   "input": "we but never market be up day me",
+   "expected": "em yad pu eb tekram reven tub ew",
+   "size": 32
+  },
+  {
+   "id": "reverse-r32",
+   "test": "reverse-r",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: qwnwyukbdfijwkasjlzlpnfbmvlgyyrr"
+   ],
+   "input": "qwnwyukbdfijwkasjlzlpnfbmvlgyyrr",
+   "expected": "rryyglvmbfnplzljsakwjifdbkuywnwq",
+   "size": 32
+  },
+  {
+   "id": "reverse-w48",
+   "test": "reverse-w",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: say of she music my window silver yellow chair a"
+   ],
+   "input": "say of she music my window silver yellow chair a",
+   "expected": "a riahc wolley revlis wodniw ym cisum ehs fo yas",
+   "size": 48
+  },
+  {
+   "id": "reverse-r48",
+   "test": "reverse-r",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: fqvcuupwqfuctjikdpswfsftaymkfbsqzxrzotpwinoopqee"
+   ],
+   "input": "fqvcuupwqfuctjikdpswfsftaymkfbsqzxrzotpwinoopqee",
+   "expected": "eeqpooniwptozrxzqsbfkmyatfsfwspdkijtcufqwpuucvqf",
+   "size": 48
+  },
+  {
+   "id": "reverse-w64",
+   "test": "reverse-w",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: he planet be at way for be boy be a market water brown apple did"
+   ],
+   "input": "he planet be at way for be boy be a market water brown apple did",
+   "expected": "did elppa nworb retaw tekram a eb yob eb rof yaw ta eb tenalp eh",
+   "size": 64
+  },
+  {
+   "id": "reverse-r64",
+   "test": "reverse-r",
+   "lang": "en",
+   "scoring": "auto",
+   "turns": [
+    "Reverse this string exactly, character by character. Reply with the reversed string only, no explanation: ceuprluuruzwidrdxmhczhjtpuafgbexbpmlfbpimznaizqbqkjuxbffxlssuqtd"
+   ],
+   "input": "ceuprluuruzwidrdxmhczhjtpuafgbexbpmlfbpimznaizqbqkjuxbffxlssuqtd",
+   "expected": "dtqusslxffbxujkqbqzianzmipbflmpbxebgfauptjhzchmxdrdiwzuruulrpuec",
+   "size": 64
   },
   {
    "id": "novel-sentence-en",

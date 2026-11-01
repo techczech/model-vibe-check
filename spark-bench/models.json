@@ -6,7 +6,9 @@
    "generation": "4",
    "size_label": "E2B",
    "params_b": 2,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 2
   },
   {
    "tag": "gemma4:e4b",
@@ -14,7 +16,9 @@
    "generation": "4",
    "size_label": "E4B",
    "params_b": 4,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 4
   },
   {
    "tag": "gemma4:12b",
@@ -22,7 +26,9 @@
    "generation": "4",
    "size_label": "12B",
    "params_b": 12,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 12
   },
   {
    "tag": "gemma4:26b-a4b",
@@ -30,7 +36,9 @@
    "generation": "4",
    "size_label": "26B-A4B",
    "params_b": 26,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "moe",
+   "active_params_b": 4
   },
   {
    "tag": "gemma4:31b",
@@ -38,7 +46,9 @@
    "generation": "4",
    "size_label": "31B",
    "params_b": 31,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 31
   },
   {
    "tag": "qwen3.5:0.8b",
@@ -46,7 +56,9 @@
    "generation": "3.5",
    "size_label": "0.8B",
    "params_b": 0.8,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 0.8
   },
   {
    "tag": "qwen3.5:2b",
@@ -54,7 +66,9 @@
    "generation": "3.5",
    "size_label": "2B",
    "params_b": 2,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 2
   },
   {
    "tag": "qwen3.5:4b",
@@ -62,7 +76,9 @@
    "generation": "3.5",
    "size_label": "4B",
    "params_b": 4,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 4
   },
   {
    "tag": "qwen3.5:9b",
@@ -70,7 +86,9 @@
    "generation": "3.5",
    "size_label": "9B",
    "params_b": 9,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 9
   },
   {
    "tag": "qwen3.5:27b",
@@ -78,7 +96,9 @@
    "generation": "3.5",
    "size_label": "27B",
    "params_b": 27,
-   "role": "ladder"
+   "role": "ladder",
+   "arch": "dense",
+   "active_params_b": 27
   },
   {
    "tag": "qwen3.5:35b-a3b",
@@ -86,71 +106,9 @@
    "generation": "3.5",
    "size_label": "35B-A3B",
    "params_b": 35,
-   "role": "ladder"
-  },
-  {
-   "tag": "qwen3:1.7b",
-   "family": "Qwen 3",
-   "generation": "3",
-   "size_label": "1.7B",
-   "params_b": 1.7,
-   "role": "other"
-  },
-  {
-   "tag": "qwen3:4b",
-   "family": "Qwen 3",
-   "generation": "3",
-   "size_label": "4B",
-   "params_b": 4,
-   "role": "other"
-  },
-  {
-   "tag": "qwen3:8b",
-   "family": "Qwen 3",
-   "generation": "3",
-   "size_label": "8B",
-   "params_b": 8,
-   "role": "other"
-  },
-  {
-   "tag": "qwen3:14b",
-   "family": "Qwen 3",
-   "generation": "3",
-   "size_label": "14B",
-   "params_b": 14,
-   "role": "other"
-  },
-  {
-   "tag": "qwen3:30b",
-   "family": "Qwen 3",
-   "generation": "3",
-   "size_label": "30B",
-   "params_b": 30,
-   "role": "other"
-  },
-  {
-   "tag": "qwen3.6:27b",
-   "family": "Qwen 3.6",
-   "generation": "3.6",
-   "size_label": "27B",
-   "params_b": 27,
-   "role": "other"
-  },
-  {
-   "tag": "qwen3.6:35b-a3b",
-   "family": "Qwen 3.6",
-   "generation": "3.6",
-   "size_label": "35B-A3B",
-   "params_b": 35,
-   "role": "other"
-  },
-  {
-   "tag": "qwen3.8:27b-mtp-q4_K_M",
-   "family": "Qwen 3.8",
-   "generation": "3.8",
-   "size_label": "27B",
-   "params_b": 27,
-   "role": "other"
+   "role": "ladder",
+   "arch": "moe",
+   "active_params_b": 3
   },
   {
    "tag": "granite4:350m",
@@ -158,7 +116,9 @@
    "generation": "4",
    "size_label": "350M",
    "params_b": 0.35,
-   "role": "other"
+   "role": "other",
+   "arch": "dense",
+   "active_params_b": 0.35
   },
   {
    "tag": "granite4:1b",
@@ -166,7 +126,9 @@
    "generation": "4",
    "size_label": "1B",
    "params_b": 1,
-   "role": "other"
+   "role": "other",
+   "arch": "dense",
+   "active_params_b": 1
   },
   {
    "tag": "granite4:3b",
@@ -174,7 +136,29 @@
    "generation": "4",
    "size_label": "3B",
    "params_b": 3,
-   "role": "other"
+   "role": "other",
+   "arch": "dense",
+   "active_params_b": 3
+  },
+  {
+   "tag": "granite4:tiny-h",
+   "family": "Granite 4",
+   "generation": "4",
+   "size_label": "7B-A1B",
+   "params_b": 7,
+   "role": "other",
+   "arch": "moe",
+   "active_params_b": 1
+  },
+  {
+   "tag": "granite4:small-h",
+   "family": "Granite 4",
+   "generation": "4",
+   "size_label": "32B-A9B",
+   "params_b": 32,
+   "role": "other",
+   "arch": "moe",
+   "active_params_b": 9
   },
   {
    "tag": "granite4.2:8b",
@@ -182,23 +166,9 @@
    "generation": "4.2",
    "size_label": "8B",
    "params_b": 8,
-   "role": "other"
-  },
-  {
-   "tag": "granite3.3:8b",
-   "family": "Granite 3.3",
-   "generation": "3.3",
-   "size_label": "8B",
-   "params_b": 8,
-   "role": "other"
-  },
-  {
-   "tag": "ministral-3:8b",
-   "family": "Ministral 3",
-   "generation": "3",
-   "size_label": "8B",
-   "params_b": 8,
-   "role": "other"
+   "role": "other",
+   "arch": "dense",
+   "active_params_b": 8
   },
   {
    "tag": "lfm2.5:8b",
@@ -206,7 +176,349 @@
    "generation": "2.5",
    "size_label": "8B",
    "params_b": 8,
-   "role": "other"
+   "role": "other",
+   "arch": "dense",
+   "active_params_b": 8
+  },
+  {
+   "tag": "ministral-3:8b",
+   "family": "Ministral 3",
+   "generation": "3",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "other",
+   "arch": "dense",
+   "active_params_b": 8
+  },
+  {
+   "tag": "qwen3.6:27b",
+   "family": "Qwen 3.6",
+   "generation": "3.6",
+   "size_label": "27B",
+   "params_b": 27,
+   "role": "other",
+   "arch": "dense",
+   "active_params_b": 27
+  },
+  {
+   "tag": "qwen3.6:35b-a3b",
+   "family": "Qwen 3.6",
+   "generation": "3.6",
+   "size_label": "35B-A3B",
+   "params_b": 35,
+   "role": "other",
+   "arch": "moe",
+   "active_params_b": 3
+  },
+  {
+   "tag": "qwen3.8:27b-mtp-q4_K_M",
+   "family": "Qwen 3.8",
+   "generation": "3.8",
+   "size_label": "27B",
+   "params_b": 27,
+   "role": "other",
+   "arch": "dense",
+   "active_params_b": 27
+  },
+  {
+   "tag": "gemma3:270m",
+   "family": "Gemma 3",
+   "generation": "3",
+   "size_label": "270M",
+   "params_b": 0.27,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 0.27
+  },
+  {
+   "tag": "gemma3:1b",
+   "family": "Gemma 3",
+   "generation": "3",
+   "size_label": "1B",
+   "params_b": 1,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 1
+  },
+  {
+   "tag": "gemma3:4b",
+   "family": "Gemma 3",
+   "generation": "3",
+   "size_label": "4B",
+   "params_b": 4,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 4
+  },
+  {
+   "tag": "gemma3:12b",
+   "family": "Gemma 3",
+   "generation": "3",
+   "size_label": "12B",
+   "params_b": 12,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 12
+  },
+  {
+   "tag": "gemma3:27b",
+   "family": "Gemma 3",
+   "generation": "3",
+   "size_label": "27B",
+   "params_b": 27,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 27
+  },
+  {
+   "tag": "granite3-moe:1b",
+   "family": "Granite 3",
+   "generation": "3.0",
+   "size_label": "1B-A400M",
+   "params_b": 1,
+   "role": "older-gen",
+   "arch": "moe",
+   "active_params_b": 0.4
+  },
+  {
+   "tag": "granite3-dense:2b",
+   "family": "Granite 3",
+   "generation": "3.0",
+   "size_label": "2B",
+   "params_b": 2,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 2
+  },
+  {
+   "tag": "granite3-moe:3b",
+   "family": "Granite 3",
+   "generation": "3.0",
+   "size_label": "3B-A800M",
+   "params_b": 3,
+   "role": "older-gen",
+   "arch": "moe",
+   "active_params_b": 0.8
+  },
+  {
+   "tag": "granite3-dense:8b",
+   "family": "Granite 3",
+   "generation": "3.0",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 8
+  },
+  {
+   "tag": "granite3.3:2b",
+   "family": "Granite 3.3",
+   "generation": "3.3",
+   "size_label": "2B",
+   "params_b": 2,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 2
+  },
+  {
+   "tag": "granite3.3:8b",
+   "family": "Granite 3.3",
+   "generation": "3.3",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 8
+  },
+  {
+   "tag": "llama2:7b",
+   "family": "Llama 2",
+   "generation": "2",
+   "size_label": "7B",
+   "params_b": 7,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 7
+  },
+  {
+   "tag": "llama2:13b",
+   "family": "Llama 2",
+   "generation": "2",
+   "size_label": "13B",
+   "params_b": 13,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 13
+  },
+  {
+   "tag": "llama3:8b",
+   "family": "Llama 3",
+   "generation": "3",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 8
+  },
+  {
+   "tag": "llama3.1:8b",
+   "family": "Llama 3.1",
+   "generation": "3.1",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 8
+  },
+  {
+   "tag": "llama3.2:1b",
+   "family": "Llama 3.2",
+   "generation": "3.2",
+   "size_label": "1B",
+   "params_b": 1,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 1
+  },
+  {
+   "tag": "llama3.2:3b",
+   "family": "Llama 3.2",
+   "generation": "3.2",
+   "size_label": "3B",
+   "params_b": 3,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 3
+  },
+  {
+   "tag": "qwen2.5:0.5b",
+   "family": "Qwen 2.5",
+   "generation": "2.5",
+   "size_label": "0.5B",
+   "params_b": 0.5,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 0.5
+  },
+  {
+   "tag": "qwen2.5:1.5b",
+   "family": "Qwen 2.5",
+   "generation": "2.5",
+   "size_label": "1.5B",
+   "params_b": 1.5,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 1.5
+  },
+  {
+   "tag": "qwen2.5:3b",
+   "family": "Qwen 2.5",
+   "generation": "2.5",
+   "size_label": "3B",
+   "params_b": 3,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 3
+  },
+  {
+   "tag": "qwen2.5:7b",
+   "family": "Qwen 2.5",
+   "generation": "2.5",
+   "size_label": "7B",
+   "params_b": 7,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 7
+  },
+  {
+   "tag": "qwen2.5:14b",
+   "family": "Qwen 2.5",
+   "generation": "2.5",
+   "size_label": "14B",
+   "params_b": 14,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 14
+  },
+  {
+   "tag": "qwen2.5:32b",
+   "family": "Qwen 2.5",
+   "generation": "2.5",
+   "size_label": "32B",
+   "params_b": 32,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 32
+  },
+  {
+   "tag": "qwen3:0.6b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "0.6B",
+   "params_b": 0.6,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 0.6
+  },
+  {
+   "tag": "qwen3:1.7b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "1.7B",
+   "params_b": 1.7,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 1.7
+  },
+  {
+   "tag": "qwen3:4b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "4B",
+   "params_b": 4,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 4
+  },
+  {
+   "tag": "qwen3:8b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "8B",
+   "params_b": 8,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 8
+  },
+  {
+   "tag": "qwen3:14b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "14B",
+   "params_b": 14,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 14
+  },
+  {
+   "tag": "qwen3:30b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "30B",
+   "params_b": 30,
+   "role": "older-gen",
+   "arch": "moe",
+   "active_params_b": 3
+  },
+  {
+   "tag": "qwen3:32b",
+   "family": "Qwen 3",
+   "generation": "3",
+   "size_label": "32B",
+   "params_b": 32,
+   "role": "older-gen",
+   "arch": "dense",
+   "active_params_b": 32
   }
  ],
  "judge_model": "gemma4:31b"

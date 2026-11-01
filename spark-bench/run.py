@@ -64,6 +64,10 @@ def gen_item(model, think, item, run_id, can_think):
         truncated = truncated or dr == "length"
         turns.append({"user": u, "thinking": m.get("thinking", "") or "", "answer": ans, "done_reason": dr,
                       "eval_count": r.get("eval_count"), "prompt_eval_count": r.get("prompt_eval_count"),
+                      "eval_duration_ns": r.get("eval_duration"), "prompt_eval_duration_ns": r.get("prompt_eval_duration"),
+                      "load_duration_ns": r.get("load_duration"), "total_duration_ns": r.get("total_duration"),
+                      "thinking_chars": len(m.get("thinking", "") or ""), "answer_chars": len(ans or ""),
+                      "gen_tok_per_s": (round(r["eval_count"] / (r["eval_duration"] / 1e9), 2) if r.get("eval_count") and r.get("eval_duration") else None),
                       "wall_s": round(time.time() - t1, 2)})
         msgs.append({"role": "assistant", "content": ans})
     return {"run_id": run_id, "model": model, "think": think, "item": item["id"], "options": GEN_OPTS_THINK if think == "on" else GEN_OPTS,
@@ -351,7 +355,7 @@ def main():
     man = json.load(open(mp)) if os.path.exists(mp) else {}
     known = {x["tag"]: x for x in man.get("models", [])}
     for m in models:
-        known[m["tag"]] = {k: m[k] for k in ("tag", "family", "generation", "size_label", "params_b", "role", "digest", "capabilities")}
+        known[m["tag"]] = {k: m[k] for k in ("tag", "family", "generation", "size_label", "params_b", "role", "arch", "active_params_b", "digest", "capabilities")}
     jt = tags.get(judge, {})
     man.update(run_id=run_id, ollama_version=version, pack_version=pack["pack_version"],
                pack_sha256=hashlib.sha256(open(os.path.join(HERE, "pack.json"), "rb").read()).hexdigest(),

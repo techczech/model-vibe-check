@@ -182,15 +182,32 @@ def num(x, default=0):
         return default
 
 
+def ladder_status(test, m):
+    """pass / partial / fail for ladder items, else None."""
+    if test in ("vertical-ladder", "vertical"):
+        return "pass" if m.get("exact_all") else ("partial" if m.get("fraction", 0) > 0 else "fail")
+    if test in ("reverse-w", "reverse-r", "reverse"):
+        return "pass" if m.get("exact") else ("partial" if m.get("contains") else "fail")
+    return None
+
+
+def break_points(recs):
+    """recs: score records of ONE ladder test for one model x think. Returns dict(max_pass, first_fail, n)."""
+    by = sorted((r for r in recs if r.get("size") is not None and r.get("status")), key=lambda r: r["size"])
+    passed = [r["size"] for r in by if r["status"] == "pass"]
+    failed = [r["size"] for r in by if r["status"] != "pass"]
+    return {"max_pass": max(passed) if passed else None, "first_fail": min(failed) if failed else None, "n": len(by)}
+
+
 def score_record(out, item, judgement, judge_tag, people):
     turns = out.get("turns", [])
     answer = turns[-1].get("answer", "") if turns else ""
     m, head, label = {}, None, ""
     test = item["test"]
-    if test == "vertical":
+    if test in ("vertical", "vertical-ladder"):
         m = score_vertical(item, answer)
         head, label = m["fraction"], "%d/%d%s" % (m["matched"], m["expected"], " ✓" if m["exact_all"] else "")
-    elif test == "reverse":
+    elif test in ("reverse", "reverse-w", "reverse-r"):
         m = score_reverse(item, answer)
         head, label = (1.0 if m["exact"] else 0.0), ("✓" if m["exact"] else ("~" if m["contains"] else "✗"))
     else:
@@ -235,7 +252,8 @@ def score_record(out, item, judgement, judge_tag, people):
                 head = m["recall"]
                 label = "%d/%d fab%d" % (m["on_checklist"], len(people), m["fabricated_or_obscure"])
     return {"run_id": out.get("run_id"), "model": out["model"], "think": out["think"], "item": item["id"], "test": test,
-            "lang": item["lang"], "scoring": item["scoring"], "truncated": bool(out.get("truncated")),
+            "lang": item["lang"], "scoring": item["scoring"], "size": item.get("size"),
+            "status": ladder_status(test, m), "truncated": bool(out.get("truncated")),
             "error": out.get("error"), "judged": bool(judgement and not judgement.get("error")),
             "judge_error": (judgement or {}).get("error"),
             "self_judged": bool(judgement) and out["model"] == judge_tag, "metrics": m,
@@ -262,7 +280,7 @@ def score_run(run_dir):
             judgement = json.load(open(jp, encoding="utf-8")) if os.path.exists(jp) else None
             if out.get("error") and not out.get("turns"):
                 rec = {"run_id": out.get("run_id"), "model": out["model"], "think": out["think"], "item": item["id"], "test": item["test"],
-                       "lang": item["lang"], "scoring": item["scoring"], "truncated": False, "error": out["error"], "judged": False,
+                       "lang": item["lang"], "scoring": item["scoring"], "size": item.get("size"), "status": "fail", "truncated": False, "error": out["error"], "judged": False,
                        "self_judged": False, "metrics": {}, "headline": None, "label": "error"}
             else:
                 rec = score_record(out, item, judgement, judge_tag, people)
