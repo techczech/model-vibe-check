@@ -21,49 +21,41 @@ Items in v3 stay unchanged so earlier results remain comparable.
 | 5 | Going back to the first president: where was he born? | Vraťme se k prvnímu prezidentovi: kde se narodil? | Hodonín |
 | 6 | How has the country changed since then? | Jak se země od té doby změnila? | judged |
 
-## 2. Pronoun resolution: the Natasha story
+## 2. Pronoun resolution: one long Natasha sentence
 
-One story, ten sentences. The length ladder uses prefixes of it: 1, 2, 4, 7 and 10 sentences. The gold
-key for a prefix is the first part of the full key, so results are comparable across lengths.
+Revised 2026-11-02 after Dominik's correction. Not a story with many people: one sentence, two women
+(Natasha and her mother), extended clause by clause. Every pronoun is grammatically open to both women
+(and in Czech often to a feminine noun as well); only what makes sense settles it. The length ladder
+uses the five cumulative lengths L1–L5; each gold key is a prefix of the full key.
 
-### English (pronouns numbered for the gold key; the prompt text has no numbers except in format C)
+### English (numbers are for the gold key only; format C shows them)
 
-1. Natasha was afraid that her(1) mother would be worried, and that's why she(2) didn't tell her(3) about her(4) accident.
-2. Her(5) sister Vera found out anyway, because the hospital had called her(6) by mistake.
-3. She(7) promised Natasha that she(8) would keep it(9) a secret, but she(10) was a terrible liar.
-4. When their(11) mother phoned on Sunday, she(12) asked her(13) why she(14) sounded so nervous.
-5. Vera told her(15) everything, and she(16) drove to Natasha's flat that same evening.
-6. Natasha opened the door with her(17) arm in a cast, and her(18) face fell when she(19) saw who it was.
-7. Her(20) mother did not shout at her(21); she(22) just hugged her(23) and asked why she(24) had kept it(25) from her(26).
-8. Natasha said she(27) hadn't wanted to spoil her(28) sixtieth birthday, which was the following week.
-9. Her(29) mother laughed and said that the only thing that would have spoiled it(30) was finding out from Vera.
-10. Later, Vera apologised to her(31) sister, but she(32) told her(33) not to worry, because she(34) would have done the same.
+- L1: Natasha was afraid that her(1) mother would be worried and that's why she(2) didn't tell her(3) about her(4) accident,
+- L2: but when she(5) rang her(6) on Sunday to ask whether she(7) was still coming home for Christmas, she(8) heard in her(9) voice that something was wrong,
+- L3: so she(10) kept asking until she(11) admitted that she(12) had broken her(13) arm falling off her(14) bike,
+- L4: and although she(15) promised her(16) that it(17) was nothing serious and that she(18) would be back at work in a week, she(19) got into her(20) car that same evening and drove three hours to see her(21),
+- L5: and when she(22) saw her(23) in the doorway with her(24) arm in a cast, she(25) hugged her(26) so tightly that she(27) yelped, because she(28) had completely forgotten about it(29).
 
-Gold: 1 N · 2 N · 3 M · 4 N · 5 N · 6 V · 7 V · 8 V · 9 the accident · 10 V · 11 N+V · 12 M · 13 V · 14 V ·
-15 M · 16 M · 17 N · 18 N · 19 N · 20 N · 21 N · 22 M · 23 N · 24 N · 25 the accident · 26 M · 27 N ·
-28 M (sixtieth: world knowledge) · 29 N · 30 the birthday · 31 V · 32 N · 33 V · 34 N
-(N = Natasha, V = Vera, M = the mother). The hardest points are 13–14 (whom the mother phoned: inferred
-from "terrible liar"), 15–16 (topic switch to the mother), 28 (whose birthday) and 32–34.
+Gold (N = Natasha, M = mother): 1 N · 2 N · 3 M · 4 N · 5 M · 6 N · 7 N · 8 M · 9 N · 10 M · 11 N · 12 N ·
+13 N · 14 N · 15 N · 16 M · 17 the injury · 18 N · 19 M · 20 M · 21 N · 22 M · 23 N · 24 N · 25 M · 26 N ·
+27 N (the one in pain) · 28 M · 29 the arm. Pronouns per length: 4, 9, 14, 21, 29.
 
-### Czech (written natively, not translated; no reflexive possessives, so "své/svůj" never settles a referent)
+### Czech (gendered pronouns throughout, no "své/svůj"; nehoda, ruka are feminine, so ní/ni can also mean them)
 
-1. Nataša se bála, že by to matku vyděsilo, a tak jí o nehodě neřekla.
-2. Věra se to stejně dozvěděla, protože jí omylem volali z nemocnice.
-3. Slíbila Nataše, že to nikomu neřekne, jenže lhát nikdy neuměla.
-4. Když jim matka v neděli volala, ptala se jí, proč je tak nervózní.
-5. Věra jí všechno řekla a ona ještě ten večer jela za Natašou.
-6. Nataša otevřela dveře s rukou v sádře, a když ji uviděla, zbledla.
-7. Matka na ni nekřičela, jen ji objala a zeptala se, proč jí to tajila.
-8. Nataša řekla, že jí nechtěla kazit šedesáté narozeniny.
-9. Matka se zasmála, že by jí je zkazilo jedině to, kdyby se to dozvěděla od Věry.
-10. Věra se pak Nataše omluvila, ale ta jí řekla, ať si nedělá starosti, protože by udělala totéž.
+- L1: Nataša se bála, že nehoda matku vyděsí, a tak jí o ní neřekla,
+- L2: ale když jí v neděli volala, jestli přijede na Vánoce domů, poznala jí na hlase, že něco není v pořádku,
+- L3: a tak se jí vyptávala tak dlouho, až jí přiznala, že si zlomila ruku, když spadla z kola,
+- L4: a přestože ji ujišťovala, že to nic vážného není a že se za týden vrátí do práce, ještě ten večer sedla do auta a jela za ní tři hodiny,
+- L5: a když ji uviděla ve dveřích s rukou v sádře, objala ji tak pevně, že vykřikla, protože na ni úplně zapomněla.
 
-Czech gold covers overt pronouns and dropped subjects (∅). Examples: s1 jí = M, ∅neřekla = N; s3 ∅ ×3 = V;
-s4 jim = N+V, ∅ptala = M, jí = V, ∅je = V; s5 jí = M, ona = M; s6 ji = M, ∅zbledla = N;
-s7 ni = N, ji = N, jí = M, ∅tajila = N; s8 jí = M; s9 jí = M, je = narozeniny, ∅dozvěděla = M;
-s10 ta = N, jí = V, ∅nedělá = V, ∅udělala = N.
-Open for Dominik: "ona" (s5) and "ta" (s10) are natural Czech cues that help resolution. Keep them,
-or rewrite to make Czech as hard as English?
+Czech gold (overt pronouns and dropped subjects ∅): L1 jí M, o ní nehoda, ∅neřekla N · L2 ∅volala M, jí N,
+∅přijede N, ∅poznala M, jí (na hlase) N · L3 ∅vyptávala M, jí N, ∅přiznala N, jí M, ∅zlomila N, ∅spadla N ·
+L4 ∅ujišťovala N, ji M, to the injury, ∅vrátí N, ∅sedla M, za ní N · L5 ∅uviděla M, ji N, ∅objala M, ji N,
+∅vykřikla N, ∅zapomněla M, na ni ruka (not Nataša).
+Note: Dominik's "a tak jí o ní neřekla" needs the accident named earlier for "o ní" to point to it, so L1
+introduces "nehoda" in the first clause.
+
+Superseded: the ten-sentence three-person story (tracked coreference across sentences, not the point).
 
 ### Three formats per length (each item = one format × one prefix × one language)
 
@@ -78,7 +70,7 @@ or rewrite to make Czech as hard as English?
   pronouns are marked; dropped subjects are covered by B.
 - Legacy: the original table prompt, English only, unchanged.
 
-Count: 5 lengths × 3 formats × 2 languages = 30, plus 1 legacy = 31 items.
+Count: 5 lengths × 3 formats × 2 languages = 30, plus 1 legacy = 31 items. Format B questions follow the clauses: whose accident, who rang whom, whose voice, who broke an arm, who drove, who yelped, what was forgotten.
 
 ## 3. Ambiguity and world knowledge (new sentences)
 
