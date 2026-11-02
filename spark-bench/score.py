@@ -1,3 +1,4 @@
+import re
 #!/usr/bin/env python3
 """Auto scores plus judge-JSON combination. Writes <run>/scores.jsonl.
 Usage: python3 score.py runs/<run-id>"""
@@ -199,6 +200,20 @@ def break_points(recs):
     return {"max_pass": max(passed) if passed else None, "first_fail": min(failed) if failed else None, "n": len(by)}
 
 
+EN_FUNCTION_WORDS = set("the a an of and to in is was he his who by first president after that this it for as with".split())
+CZ_CHARS = set("ěščřžýáíéůúťďňĚŠČŘŽÝÁÍÉŮÚŤĎŇ")
+
+
+def is_czech(text):
+    """Code check (replaces the judge's language flag, which proved unreliable): share of Czech diacritic letters."""
+    if len((text or "").split()) < 8:
+        return None  # too short to tell (bare names, one-word answers)
+    letters = [c for c in (text or "") if c.isalpha()]
+    words = re.findall(r"[a-z]+", (text or "").lower())
+    en = sum(w in EN_FUNCTION_WORDS for w in words) / len(words) if words else 0
+    return 1 if letters and sum(c in CZ_CHARS for c in letters) / len(letters) > 0.02 and en < 0.12 else 0
+
+
 def score_record(out, item, judgement, judge_tag, people):
     turns = out.get("turns", [])
     answer = turns[-1].get("answer", "") if turns else ""
@@ -229,7 +244,8 @@ def score_record(out, item, judgement, judge_tag, people):
             m = coherence_turn1(item, turns[0].get("answer", "") if turns else "")
             if j:
                 m.update(masaryk=b(j.get("masaryk_named")), benes=b(j.get("benes_named")), referent_kept=b(j.get("referent_kept")),
-                         factual_errors=num(j.get("factual_errors")), language_matches=b(j.get("language_matches")))
+                         factual_errors=num(j.get("factual_errors")), judge_language_matches=b(j.get("language_matches")),
+                         language_matches=int(all(v == (1 if item.get("lang") == "cs" else 0) for v in (is_czech(t.get("answer", "")) for t in turns) if v is not None)))
                 parts = [b(m["turn1_one_word"]), b(m["turn1_prague"]), m["masaryk"], m["benes"], m["referent_kept"], m["language_matches"]]
                 head = max(0.0, sum(parts) / 6 - 0.1 * m["factual_errors"])
                 label = "%d/6 err%d" % (sum(parts), m["factual_errors"])
@@ -237,7 +253,7 @@ def score_record(out, item, judgement, judge_tag, people):
             if j:
                 sc = num(j.get("stated_count"), -1)
                 m = {"stated_count": sc, "is_10": sc == 10, "reference_matched": num(j.get("reference_matched")),
-                     "wrong_examples": num(j.get("wrong_examples")), "answer_in_czech": b(j.get("answer_in_czech"))}
+                     "wrong_examples": num(j.get("wrong_examples")), "answer_in_czech": is_czech(answer) or 0, "judge_answer_in_czech": b(j.get("answer_in_czech"))}
                 head = ((1 if m["is_10"] else 0) + min(m["reference_matched"], 10) / 10 + m["answer_in_czech"]) / 3
                 label = "n=%d ref%d w%d" % (sc, m["reference_matched"], m["wrong_examples"])
         elif test == "totiz":
