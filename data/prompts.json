@@ -2027,6 +2027,125 @@
       },
       "createdAt": "2026-04-25T14:38:47.996Z",
       "updatedAt": "2026-04-25T14:38:47.996Z"
+    },
+    {
+      "id": "czech-spring-poem-20260712",
+      "title": "Czech Spring Poem — Three-Turn Revision",
+      "category": "Creative Writing",
+      "keywords": [
+        "czech",
+        "poetry",
+        "spring",
+        "multi-turn"
+      ],
+      "description": "Archived three-turn Czech spring-poem test.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Write a short three stanza poem about spring in Czech. Make sure it rhymes."
+        },
+        {
+          "id": "step-2",
+          "sequence": 2,
+          "content": "Now change the rhyme scheme to ABAB."
+        },
+        {
+          "id": "step-3",
+          "sequence": 3,
+          "content": "Now rewrite it in the style of the top 5 most famous Czech poets of the 19th and 20th century."
+        }
+      ],
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2026-07-12T12:00:00.000Z",
+      "updatedAt": "2026-07-12T12:00:00.000Z"
+    },
+    {
+      "id": "czech-nanynka-five-poets-20260712",
+      "title": "Šla Nanynka do zelí — Five Poets",
+      "category": "Creative Writing",
+      "keywords": [
+        "czech",
+        "poetry",
+        "style"
+      ],
+      "description": "Five controlled Czech poet-style transformations.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Tady je text české lidové písně Šla Nanynka do zelí:\n\nŠla Nanynka do zelí,\ndo zelí, do zelí,\nnatrhala lupení lupeníčka.\n\nPřišel na ni Pepíček,\nrozšlapal jí košíček. Ty ty ty! Ty ty ty!\nTy to budeš platiti!\n\nJá to platit nebudu,\nnebudu, nebudu,\nradši se dám na vojnu, na vojničku.\n\nNa vojnu se nedávej,\ntruc rodičům nedělej!\n\nUdělám, udělám,\nna vojnu se přece dám.\n\nPřepiš píseň v pěti výrazně odlišných variantách ve stylu těchto českých básníků:\n\n1. Karel Hynek Mácha\n2. Jan Neruda\n3. Jaroslav Vrchlický\n4. Otokar Březina\n5. Jaroslav Seifert\n\nKaždou variantu jasně nadepiš jménem básníka. Zachovej základní situaci a postavy původní písně, ale přetvoř jazyk, obraznost, rytmus a tón tak, aby varianty nebyly jen povrchní parodie se známými jmény a frázemi."
+        }
+      ],
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human",
+          "llm-judge"
+        ]
+      },
+      "createdAt": "2026-07-12T12:00:00.000Z",
+      "updatedAt": "2026-07-12T12:00:00.000Z"
+    },
+    {
+      "id": "terra-critique-spring-20260712",
+      "title": "Terra Blind Critique — Spring",
+      "category": "Creative Writing",
+      "keywords": [
+        "terra",
+        "judge",
+        "blind",
+        "czech"
+      ],
+      "description": "Terra comments on blind-labelled final Spring outputs. Labels: A GPT-4o, B o1, C o3, D GPT-5, E GPT-5.5, F Terra.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Blind qualitative critique of the six final Spring outputs."
+        }
+      ],
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2026-07-12T12:00:00.000Z",
+      "updatedAt": "2026-07-12T12:00:00.000Z"
+    },
+    {
+      "id": "terra-critique-nanynka-20260712",
+      "title": "Terra Blind Critique — Nanynka",
+      "category": "Creative Writing",
+      "keywords": [
+        "terra",
+        "judge",
+        "blind",
+        "czech"
+      ],
+      "description": "Terra comments on blind-labelled Nanynka outputs. Labels: A GPT-4o, B o1, C o3, D GPT-5, E GPT-5.5, F Terra.",
+      "steps": [
+        {
+          "id": "step-1",
+          "sequence": 1,
+          "content": "Blind qualitative critique of the six Nanynka outputs."
+        }
+      ],
+      "attachments": [],
+      "evaluationConfig": {
+        "methods": [
+          "human"
+        ]
+      },
+      "createdAt": "2026-07-12T12:00:00.000Z",
+      "updatedAt": "2026-07-12T12:00:00.000Z"
     }
   ]
 }

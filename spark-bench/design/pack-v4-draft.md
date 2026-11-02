@@ -23,39 +23,40 @@ Items in v3 stay unchanged so earlier results remain comparable.
 
 ## 2. Pronoun resolution: one long Natasha sentence
 
-Revised 2026-11-02 after Dominik's correction. Not a story with many people: one sentence, two women
-(Natasha and her mother), extended clause by clause. Every pronoun is grammatically open to both women
-(and in Czech often to a feminine noun as well); only what makes sense settles it. The length ladder
-uses the five cumulative lengths L1–L5; each gold key is a prefix of the full key.
+Revised twice on 2026-11-02 after Dominik's corrections. One sentence, two women (Natasha and her mother),
+lengthened by adding modifiers to the same sentence (his model: "...when she called her on Sunday at the
+dorm after her visit home to check if she'd had a safe journey"). Every pronoun is grammatically open to
+both women; only what makes sense settles it (the dorm is Natasha's, the visit home is hers, the caller
+checks on the traveller). Each length's gold key is a prefix of the full key.
 
-### English (numbers are for the gold key only; format C shows them)
+### English (numbers for the gold key only; format C shows them)
 
-- L1: Natasha was afraid that her(1) mother would be worried and that's why she(2) didn't tell her(3) about her(4) accident,
-- L2: but when she(5) rang her(6) on Sunday to ask whether she(7) was still coming home for Christmas, she(8) heard in her(9) voice that something was wrong,
-- L3: so she(10) kept asking until she(11) admitted that she(12) had broken her(13) arm falling off her(14) bike,
-- L4: and although she(15) promised her(16) that it(17) was nothing serious and that she(18) would be back at work in a week, she(19) got into her(20) car that same evening and drove three hours to see her(21),
-- L5: and when she(22) saw her(23) in the doorway with her(24) arm in a cast, she(25) hugged her(26) so tightly that she(27) yelped, because she(28) had completely forgotten about it(29).
+- L1: Natasha was afraid that her(1) mother would be worried and that's why she(2) didn't tell her(3) about her(4) accident.
+- L2: … accident when she(5) called her(6) at the dorm on Sunday.
+- L3: … at the dorm on Sunday after her(7) visit home.
+- L4: … after her(7) visit home to check if she(8) had had a safe journey back.
+- L5: … safe journey back, even though she(9) could hear in her(10) voice that something was wrong and kept asking her(11) whether she(12) was eating properly.
 
-Gold (N = Natasha, M = mother): 1 N · 2 N · 3 M · 4 N · 5 M · 6 N · 7 N · 8 M · 9 N · 10 M · 11 N · 12 N ·
-13 N · 14 N · 15 N · 16 M · 17 the injury · 18 N · 19 M · 20 M · 21 N · 22 M · 23 N · 24 N · 25 M · 26 N ·
-27 N (the one in pain) · 28 M · 29 the arm. Pronouns per length: 4, 9, 14, 21, 29.
+Gold (N = Natasha, M = mother): 1 N · 2 N · 3 M · 4 N · 5 M · 6 N · 7 N · 8 N · 9 M · 10 N · 11 N · 12 N.
+Pronouns per length: 4, 6, 7, 8, 12.
 
-### Czech (gendered pronouns throughout, no "své/svůj"; nehoda, ruka are feminine, so ní/ni can also mean them)
+### Czech (gendered pronouns, no "své/svůj", no possessive "její" where the subject rule would settle it)
 
-- L1: Nataša se bála, že nehoda matku vyděsí, a tak jí o ní neřekla,
-- L2: ale když jí v neděli volala, jestli přijede na Vánoce domů, poznala jí na hlase, že něco není v pořádku,
-- L3: a tak se jí vyptávala tak dlouho, až jí přiznala, že si zlomila ruku, když spadla z kola,
-- L4: a přestože ji ujišťovala, že to nic vážného není a že se za týden vrátí do práce, ještě ten večer sedla do auta a jela za ní tři hodiny,
-- L5: a když ji uviděla ve dveřích s rukou v sádře, objala ji tak pevně, že vykřikla, protože na ni úplně zapomněla.
+- L1: Nataša se bála, že nehoda matku vyděsí, a tak jí o ní neřekla.
+- L2: … neřekla, když jí v neděli volala na kolej.
+- L3: … na kolej, potom co byla doma na návštěvě.
+- L4: … na návštěvě, aby zjistila, jestli dojela v pořádku.
+- L5: … v pořádku, přestože jí na hlase poznala, že něco není v pořádku, a pořád se jí vyptávala, jestli pořádně jí.
 
-Czech gold (overt pronouns and dropped subjects ∅): L1 jí M, o ní nehoda, ∅neřekla N · L2 ∅volala M, jí N,
-∅přijede N, ∅poznala M, jí (na hlase) N · L3 ∅vyptávala M, jí N, ∅přiznala N, jí M, ∅zlomila N, ∅spadla N ·
-L4 ∅ujišťovala N, ji M, to the injury, ∅vrátí N, ∅sedla M, za ní N · L5 ∅uviděla M, ji N, ∅objala M, ji N,
-∅vykřikla N, ∅zapomněla M, na ni ruka (not Nataša).
-Note: Dominik's "a tak jí o ní neřekla" needs the accident named earlier for "o ní" to point to it, so L1
-introduces "nehoda" in the first clause.
+Czech gold (overt pronouns and dropped subjects ∅): L1 jí M, o ní nehoda, ∅neřekla N · L2 ∅volala M, jí N ·
+L3 ∅byla N · L4 ∅zjistila M, ∅dojela N · L5 jí (na hlase) N, ∅poznala M, ∅vyptávala M, jí N, ∅jí (eats) N.
+Design notes: "po její návštěvě" was avoided because with the mother as subject "její" would point away
+from her, the same give-away as "své"; the dropped subject in "byla doma" carries the ambiguity instead.
+L5 ends on "jí" = eats, homonymous with the pronoun "jí". "o ní" needs the accident named first, so L1
+names "nehoda" in its first clause.
 
-Superseded: the ten-sentence three-person story (tracked coreference across sentences, not the point).
+Superseded: the ten-sentence three-person story and the five-clause chain (both tracked a narrative,
+not ambiguity resolved by sense).
 
 ### Three formats per length (each item = one format × one prefix × one language)
 
@@ -70,7 +71,7 @@ Superseded: the ten-sentence three-person story (tracked coreference across sent
   pronouns are marked; dropped subjects are covered by B.
 - Legacy: the original table prompt, English only, unchanged.
 
-Count: 5 lengths × 3 formats × 2 languages = 30, plus 1 legacy = 31 items. Format B questions follow the clauses: whose accident, who rang whom, whose voice, who broke an arm, who drove, who yelped, what was forgotten.
+Count: 5 lengths × 3 formats × 2 languages = 30, plus 1 legacy = 31 items. Format B questions: whose accident, who called whom, who lives in the dorm, who had visited home, who travelled, whose voice, who was asked about eating.
 
 ## 3. Ambiguity and world knowledge (new sentences)
 
