@@ -196,6 +196,10 @@ export default function RunDetailPage() {
     }
   }
 
+  function getPromptStepCount(promptId: string): number {
+    return prompts[promptId]?.steps?.length || 1;
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -216,7 +220,16 @@ export default function RunDetailPage() {
     );
   }
 
-  const totalCombinations = run.promptIds.length * run.modelIds.length * run.iterations;
+  const totalPromptSteps = run.promptIds.reduce(
+    (sum, promptId) => sum + getPromptStepCount(promptId),
+    0
+  );
+  const totalSequenceSteps = (run.sequenceIds || []).reduce(
+    (sum, sequenceId) => sum + (sequences[sequenceId]?.steps?.length || 1),
+    0
+  );
+  const totalCombinations =
+    (totalPromptSteps + totalSequenceSteps) * run.modelIds.length * run.iterations;
   const completedCount = run.results.length;
   const errorCount = run.results.filter((r) => r.error).length;
 
@@ -666,7 +679,7 @@ export default function RunDetailPage() {
             <h3 className="text-lg font-semibold mb-2">Ready to run</h3>
             <p className="text-muted-foreground mb-4">
               This will generate {totalCombinations} responses
-              ({run.promptIds.length} prompts × {run.modelIds.length} models × {run.iterations} iterations)
+              ({totalPromptSteps + totalSequenceSteps} prompt steps × {run.modelIds.length} models × {run.iterations} iterations)
             </p>
             <Button onClick={executeRun} disabled={executing}>
               <Play className="h-4 w-4 mr-2" />

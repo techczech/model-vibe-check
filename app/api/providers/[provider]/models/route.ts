@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSettings } from "@/lib/storage";
+import { getRuntimeSettings } from "@/lib/storage";
 import { discoverModels } from "@/lib/providers";
 
 // Cache for model discovery results (5 minute TTL)
@@ -27,7 +27,7 @@ export async function GET(
   }
 
   try {
-    const settings = await getSettings();
+    const settings = await getRuntimeSettings();
     const result = await discoverModels(provider, settings);
     
     // Cache the result

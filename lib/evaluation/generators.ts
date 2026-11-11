@@ -5,6 +5,27 @@ export interface TestCase {
   expected: string | number;
 }
 
+type RandomSource = () => number;
+
+function hashSeed(seed: string): number {
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function createRandomSource(seed?: string): RandomSource {
+  if (!seed) return Math.random;
+
+  let state = hashSeed(seed) || 1;
+  return () => {
+    state = Math.imul(1664525, state) + 1013904223;
+    return (state >>> 0) / 4294967296;
+  };
+}
+
 // Common English words for dictionary mode
 const DICTIONARY_WORDS = [
   "hello", "world", "computer", "science", "testing",
@@ -33,25 +54,26 @@ export interface StringReversalGenerationConfig {
   minLength: number;
   maxLength: number;
   charType: 'random' | 'words' | 'mixed';
+  seed?: string;
 }
 
-function generateRandomString(length: number): string {
+function generateRandomString(length: number, random: RandomSource): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz';
   let result = '';
   for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+    result += chars.charAt(Math.floor(random() * chars.length));
   }
   return result;
 }
 
-function getRandomWord(minLen: number, maxLen: number): string {
+function getRandomWord(minLen: number, maxLen: number, random: RandomSource): string {
   const validWords = DICTIONARY_WORDS.filter(
     w => w.length >= minLen && w.length <= maxLen
   );
   if (validWords.length === 0) {
-    return generateRandomString(Math.floor((minLen + maxLen) / 2));
+    return generateRandomString(Math.floor((minLen + maxLen) / 2), random);
   }
-  return validWords[Math.floor(Math.random() * validWords.length)];
+  return validWords[Math.floor(random() * validWords.length)];
 }
 
 export function generateStringReversalCases(
@@ -59,6 +81,7 @@ export function generateStringReversalCases(
 ): TestCase[] {
   const cases: TestCase[] = [];
   const usedInputs = new Set<string>();
+  const random = createRandomSource(config.seed);
 
   for (let i = 0; i < config.count; i++) {
     let input: string;
@@ -66,18 +89,18 @@ export function generateStringReversalCases(
 
     do {
       const length = Math.floor(
-        Math.random() * (config.maxLength - config.minLength + 1) + config.minLength
+        random() * (config.maxLength - config.minLength + 1) + config.minLength
       );
 
       if (config.charType === 'words') {
-        input = getRandomWord(config.minLength, config.maxLength);
+        input = getRandomWord(config.minLength, config.maxLength, random);
       } else if (config.charType === 'random') {
-        input = generateRandomString(length);
+        input = generateRandomString(length, random);
       } else {
         // mixed - 50% chance of each
-        input = Math.random() < 0.5
-          ? getRandomWord(config.minLength, config.maxLength)
-          : generateRandomString(length);
+        input = random() < 0.5
+          ? getRandomWord(config.minLength, config.maxLength, random)
+          : generateRandomString(length, random);
       }
       attempts++;
     } while (usedInputs.has(input) && attempts < 20);
@@ -100,14 +123,15 @@ export interface ArithmeticGenerationConfig {
   minOperand: number;
   maxOperand: number;
   complexity: 'simple' | 'moderate' | 'complex';
+  seed?: string;
 }
 
-function getRandomOperand(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+function getRandomOperand(min: number, max: number, random: RandomSource): number {
+  return Math.floor(random() * (max - min + 1) + min);
 }
 
-function getRandomOperator(operators: ('+' | '-' | '*' | '/')[]): string {
-  return operators[Math.floor(Math.random() * operators.length)];
+function getRandomOperator(operators: ('+' | '-' | '*' | '/')[], random: RandomSource): string {
+  return operators[Math.floor(random() * operators.length)];
 }
 
 function evaluateExpression(expr: string): number {
@@ -122,11 +146,12 @@ function evaluateExpression(expr: string): number {
 }
 
 function generateSimpleExpression(
-  config: ArithmeticGenerationConfig
+  config: ArithmeticGenerationConfig,
+  random: RandomSource
 ): { expression: string; result: number } {
-  const a = getRandomOperand(config.minOperand, config.maxOperand);
-  const b = getRandomOperand(config.minOperand, config.maxOperand);
-  const op = getRandomOperator(config.operators);
+  const a = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const b = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const op = getRandomOperator(config.operators, random);
 
   // For division, ensure clean results
   if (op === '/') {
@@ -145,13 +170,14 @@ function generateSimpleExpression(
 }
 
 function generateModerateExpression(
-  config: ArithmeticGenerationConfig
+  config: ArithmeticGenerationConfig,
+  random: RandomSource
 ): { expression: string; result: number } {
-  const a = getRandomOperand(config.minOperand, config.maxOperand);
-  const b = getRandomOperand(config.minOperand, config.maxOperand);
-  const c = getRandomOperand(config.minOperand, config.maxOperand);
-  const op1 = getRandomOperator(config.operators.filter(o => o !== '/'));
-  const op2 = getRandomOperator(config.operators.filter(o => o !== '/'));
+  const a = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const b = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const c = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const op1 = getRandomOperator(config.operators.filter(o => o !== '/'), random);
+  const op2 = getRandomOperator(config.operators.filter(o => o !== '/'), random);
 
   const expression = `${a} ${op1} ${b} ${op2} ${c}`;
   const result = evaluateExpression(expression);
@@ -160,15 +186,16 @@ function generateModerateExpression(
 }
 
 function generateComplexExpression(
-  config: ArithmeticGenerationConfig
+  config: ArithmeticGenerationConfig,
+  random: RandomSource
 ): { expression: string; result: number } {
-  const a = getRandomOperand(config.minOperand, config.maxOperand);
-  const b = getRandomOperand(config.minOperand, config.maxOperand);
-  const c = getRandomOperand(config.minOperand, config.maxOperand);
-  const d = getRandomOperand(config.minOperand, config.maxOperand);
-  const op1 = getRandomOperator(config.operators.filter(o => o !== '/'));
-  const op2 = getRandomOperator(config.operators.filter(o => o !== '/'));
-  const op3 = getRandomOperator(config.operators.filter(o => o !== '/'));
+  const a = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const b = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const c = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const d = getRandomOperand(config.minOperand, config.maxOperand, random);
+  const op1 = getRandomOperator(config.operators.filter(o => o !== '/'), random);
+  const op2 = getRandomOperator(config.operators.filter(o => o !== '/'), random);
+  const op3 = getRandomOperator(config.operators.filter(o => o !== '/'), random);
 
   // Use parentheses for some variety
   const patterns = [
@@ -178,7 +205,7 @@ function generateComplexExpression(
     `${a} ${op1} ${b} ${op2} ${c} ${op3} ${d}`,
   ];
 
-  const expression = patterns[Math.floor(Math.random() * patterns.length)];
+  const expression = patterns[Math.floor(random() * patterns.length)];
   const result = evaluateExpression(expression);
 
   return { expression, result };
@@ -189,6 +216,7 @@ export function generateArithmeticCases(
 ): TestCase[] {
   const cases: TestCase[] = [];
   const usedExpressions = new Set<string>();
+  const random = createRandomSource(config.seed);
 
   for (let i = 0; i < config.count; i++) {
     let expression: string;
@@ -198,13 +226,13 @@ export function generateArithmeticCases(
     do {
       switch (config.complexity) {
         case 'simple':
-          ({ expression, result } = generateSimpleExpression(config));
+          ({ expression, result } = generateSimpleExpression(config, random));
           break;
         case 'moderate':
-          ({ expression, result } = generateModerateExpression(config));
+          ({ expression, result } = generateModerateExpression(config, random));
           break;
         case 'complex':
-          ({ expression, result } = generateComplexExpression(config));
+          ({ expression, result } = generateComplexExpression(config, random));
           break;
       }
       attempts++;

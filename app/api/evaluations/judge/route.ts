@@ -3,7 +3,7 @@ import {
   getPrompt, 
   getRubric, 
   getModel, 
-  getSettings,
+  getRuntimeSettings,
   saveRubricEvaluation,
   getRuns
 } from "@/lib/storage";
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
     }
 
     // Get settings for API keys
-    const settings = await getSettings();
+    const settings = await getRuntimeSettings();
 
     // Build the judge prompt
     const judgePrompt = buildJudgePrompt(

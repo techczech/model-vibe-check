@@ -69,6 +69,20 @@ npm run dev
 3. **Prompts** → Create prompts or import the sample library
 4. **Evaluators** → (Optional) Configure which models to use for LLM-as-judge
 
+### Runtime API Keys
+
+The app can also read provider keys from environment variables at execution time:
+
+- `OPENAI_API_KEY`
+- `GOOGLE_AI_API_KEY` or `GEMINI_API_KEY`
+- `OPENROUTER_API_KEY`
+
+This keeps secrets out of `data/settings.json` when running with a secret manager. For example, with Bitwarden Secrets Manager:
+
+```bash
+bws run --project-id <project-id> -- npm run dev
+```
+
 ## Usage
 
 ### Running a Vibe Check
